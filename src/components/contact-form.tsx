@@ -2,10 +2,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { site } from "@/lib/site"
 
 export function ContactForm() {
@@ -14,6 +11,7 @@ export function ContactForm() {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    event.stopPropagation()
     const data = new FormData(event.currentTarget)
     const name = String(data.get("name") ?? "").trim()
     const email = String(data.get("email") ?? "").trim()
@@ -31,9 +29,7 @@ export function ContactForm() {
     }
 
     const subject = encodeURIComponent(`ZodOps — note from ${name}`)
-    const body = encodeURIComponent(
-      `${message}\n\n— ${name}\n${email}`
-    )
+    const body = encodeURIComponent(`${message}\n\n— ${name}\n${email}`)
     window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`
     setStatus("sent")
     setError("")
@@ -56,45 +52,56 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      onSubmit={onSubmit}
+      method="post"
+      action="#"
+      noValidate
+      className="space-y-4"
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name" htmlFor="name">
-          <Input
+          <input
             id="name"
             name="name"
             autoComplete="name"
-            className="h-10"
+            required
+            className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             placeholder="Your name"
           />
         </Field>
         <Field label="Email" htmlFor="email">
-          <Input
+          <input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            className="h-10"
+            required
+            className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             placeholder="you@company.com"
           />
         </Field>
       </div>
       <Field label="Message" htmlFor="message">
-        <Textarea
+        <textarea
           id="message"
           name="message"
-          className="min-h-36"
+          required
+          className="min-h-36 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           placeholder="What are you trying to ship?"
         />
       </Field>
       {status === "error" ? (
-        <p className="text-sm text-destructive">{error}</p>
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
       ) : null}
-      <Button
+      <button
         type="submit"
-        className="h-10 rounded-md bg-navy px-4 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
+        className="inline-flex h-10 items-center rounded-md bg-navy px-4 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
       >
         Send a note
-      </Button>
+      </button>
     </form>
   )
 }
