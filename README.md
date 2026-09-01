@@ -15,6 +15,13 @@ npm run dev
 
 Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Edit a file, save, and the page reloads.
 
+To serve the production static build (the same files GitLab Pages publishes):
+
+```bash
+npm run build
+npm start
+```
+
 ## Where to edit
 
 | What you want to change | File |
