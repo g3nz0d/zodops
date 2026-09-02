@@ -56,8 +56,8 @@ export function SiteHeader() {
 
           <div className="hidden justify-self-end md:block">
             <Link
-              href="/writing/"
-              className="inline-flex h-9 items-center rounded-md bg-navy px-3.5 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
+              href="/articles/"
+              className="inline-flex h-9 items-center rounded-md bg-brand px-3.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
             >
               {ctaLabel}
             </Link>
@@ -113,8 +113,8 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              href="/writing/"
-              className="mt-3 inline-flex h-10 items-center justify-center rounded-md bg-navy text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
+              href="/articles/"
+              className="mt-3 inline-flex h-10 items-center justify-center rounded-md bg-brand text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
               onClick={() => setOpen(false)}
             >
               {ctaLabel}

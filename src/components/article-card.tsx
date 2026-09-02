@@ -23,7 +23,7 @@ export function ArticleCard({
         {topic.label} · {article.minutes} min
       </p>
       <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-tight text-foreground">
-        <Link href={`/writing/${article.slug}/`} className="hover:text-brand">
+        <Link href={`/articles/${article.slug}/`} className="hover:text-brand">
           {article.title}
         </Link>
       </h3>
@@ -31,7 +31,7 @@ export function ArticleCard({
         {article.excerpt}
       </p>
       <Link
-        href={`/writing/${article.slug}/`}
+        href={`/articles/${article.slug}/`}
         className="mt-6 text-[11px] font-semibold tracking-[0.16em] text-brand uppercase hover:underline"
       >
         Read →

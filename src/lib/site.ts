@@ -14,6 +14,7 @@ export const site = {
 export const ctaLabel = "View My Work"
 
 export const nav = [
-  { href: "/topics/cloud-security/", label: "Cloud" },
-  { href: "/topics/devops/", label: "Devops" },
+  { href: "/articles/", label: "Articles" },
+  { href: "/tech/", label: "Tech" },
+  { href: "/about/", label: "About" },
 ] as const

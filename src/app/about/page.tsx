@@ -39,7 +39,7 @@ export default function AboutPage() {
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
-          href="/writing/"
+          href="/articles/"
           className="inline-flex h-10 items-center rounded-md bg-navy px-4 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
         >
           Read the notes

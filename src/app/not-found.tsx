@@ -10,11 +10,11 @@ export default function NotFound() {
         That page is not in the repo.
       </h1>
       <p className="mt-3 max-w-md text-muted-foreground">
-        It may have moved, or it never shipped. The writing index is the safest
+        It may have moved, or it never shipped. The articles index is the safest
         next hop.
       </p>
       <Link
-        href="/writing/"
+        href="/articles/"
         className="mt-8 inline-flex h-10 items-center rounded-md bg-navy px-4 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
       >
         View articles

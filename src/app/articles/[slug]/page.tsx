@@ -11,7 +11,7 @@ import {
   topicBySlug,
 } from "@/lib/content"
 
-type Props = PageProps<"/writing/[slug]">
+type Props = PageProps<"/articles/[slug]">
 
 export function generateStaticParams() {
   return articles.map((article) => ({ slug: article.slug }))
@@ -45,7 +45,7 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <article className="container-page py-14 sm:py-16">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        <Link href={`/topics/${topic.slug}/`} className="hover:underline">
+        <Link href={`/tech/${topic.slug}/`} className="hover:underline">
           {topic.label}
         </Link>
         {" · "}

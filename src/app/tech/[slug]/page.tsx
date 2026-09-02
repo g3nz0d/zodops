@@ -8,7 +8,7 @@ import {
   topicSlugs,
 } from "@/lib/content"
 
-type Props = PageProps<"/topics/[slug]">
+type Props = PageProps<"/tech/[slug]">
 
 export function generateStaticParams() {
   return topicSlugs.map((slug) => ({ slug }))

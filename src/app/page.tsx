@@ -20,13 +20,11 @@ export default function HomePage() {
               Cloud Security / DevOps / Data Protection
             </p>
             <h1 className="mt-5 max-w-xl text-[2.35rem] leading-[1.12] font-semibold tracking-tight text-foreground sm:text-5xl">
-              Engineering notes on the systems that keep data{" "}
-              <span className="text-brand">safe.</span>
+              Approach<span className="text-brand">.</span>
             </h1>
             <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              I’m a security architect writing long-form, implementation-level
-              articles on DevOps, containers, and DSPM/DLP. No noise — just the
-              ideas that actually ship.
+              How I think about risk, tradeoffs, and what actually ships — the
+              judgment behind the work, not just the write-up of it.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (
@@ -46,10 +44,10 @@ export default function HomePage() {
       <section className="container-page py-16 sm:py-20">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-            Latest writing
+            Latest articles
           </h2>
           <Link
-            href="/writing/"
+            href="/articles/"
             className="text-[13px] font-medium text-brand hover:underline"
           >
             View all articles
@@ -64,7 +62,7 @@ export default function HomePage() {
 
       <section className="container-page pb-16 sm:pb-20">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-          Explore by topic
+          Explore by tech
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {topics.map((topic) => (
