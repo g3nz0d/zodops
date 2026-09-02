@@ -34,7 +34,18 @@ npm start
 
 Add a new article by appending an object to `articles` in `src/lib/content.ts`. The writing index, topic pages, and article URLs update from that list.
 
-## Host on GitLab Pages (with your domain)
+## Host on GitHub Pages (with zodops.io)
+
+This is the intended host: `.github/workflows/deploy.yml` builds the site and publishes it on every push to `main`, and `public/CNAME` already contains `zodops.io`.
+
+1. In the GitHub repo: **Settings → Pages → Build and deployment → Source** → set to **GitHub Actions**.
+2. Push to `main`. The **Deploy to GitHub Pages** workflow (Actions tab) builds and publishes.
+3. Under **Settings → Pages**, set the custom domain to `zodops.io` if it is not already picked up from the `CNAME` file, and enable **Enforce HTTPS** once the certificate is issued.
+4. At your domain registrar, point DNS at GitHub Pages:
+   - Apex (`zodops.io`): four `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
+   - `www` (optional): `CNAME` to `g3nz0d.github.io`.
+
+## Host on GitLab Pages (alternative)
 
 Yes — that is what this repo is set up for. GitLab Pages serves the static files produced by `npm run build`. `.gitlab-ci.yml` already defines the `pages` job.
 

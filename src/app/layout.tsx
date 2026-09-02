@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.description,
-  metadataBase: new URL("https://zodops.com"),
+  metadataBase: new URL("https://zodops.io"),
   openGraph: {
     title: site.title,
     description: site.description,
