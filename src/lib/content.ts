@@ -64,7 +64,36 @@ export type Article = {
   minutes: number
   date: string
   body: Block[]
+  fieldNotes?: boolean
 }
+
+export type Principle = {
+  label: string
+  text: string
+}
+
+export const principles: Principle[] = [
+  {
+    label: "Evidence over claims",
+    text: "I don't trust a claim — mine or a vendor's — until it's been checked against a primary source or tested by hand, and I hold what I publish on this site to the same bar.",
+  },
+  {
+    label: "Compliance is a floor, not a target",
+    text: "A control that satisfies an auditor without reducing real exposure isn't one I'll ship, so I weigh decisions by actual risk rather than checklist language.",
+  },
+  {
+    label: "Assume it's already inside",
+    text: "I build on the assumption that perimeter defenses eventually fail — that something inside is already compromised — and ask what limits the damage once that's true, rather than only what keeps it out.",
+  },
+  {
+    label: "Criteria before tools",
+    text: "Before I trust a new tool or platform, I build the evaluation criteria first — coverage, false-positive rate, integration cost — and only then apply it, because tools change but the discipline behind evaluating them shouldn't.",
+  },
+  {
+    label: "I say where I'm still reasoning",
+    text: "Twelve years has given me certainty in a fair amount of this work, though not all of it. Where I'm reasoning through something newer — AI security, DSPM/DLP — I say so outright instead of letting the line blur. Those posts are marked Field Notes, and worth reading with that in mind.",
+  },
+]
 
 export const articles: Article[] = [
   {
@@ -135,6 +164,7 @@ ENTRYPOINT ["/api"]`,
     topic: "dspm-dlp",
     minutes: 11,
     date: "2026-07-28",
+    fieldNotes: true,
     body: [
       {
         type: "p",
@@ -330,6 +360,7 @@ spec:
     topic: "dspm-dlp",
     minutes: 12,
     date: "2026-03-22",
+    fieldNotes: true,
     body: [
       {
         type: "p",

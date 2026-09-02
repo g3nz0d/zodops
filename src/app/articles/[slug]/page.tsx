@@ -44,19 +44,32 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <article className="container-page py-14 sm:py-16">
-      <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        <Link href={`/tech/${topic.slug}/`} className="hover:underline">
-          {topic.label}
-        </Link>
-        {" · "}
-        {article.minutes} min · {formatDate(article.date)}
-      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
+          <Link href={`/tech/${topic.slug}/`} className="hover:underline">
+            {topic.label}
+          </Link>
+          {" · "}
+          {article.minutes} min · {formatDate(article.date)}
+        </p>
+        {article.fieldNotes ? (
+          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] text-brand uppercase">
+            Field Notes
+          </span>
+        ) : null}
+      </div>
       <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.5rem] sm:leading-tight">
         {article.title}
       </h1>
       <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted-foreground">
         {article.excerpt}
       </p>
+      {article.fieldNotes ? (
+        <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground/80 italic">
+          Field Notes: reasoning through something newer rather than settled
+          guidance — read accordingly.
+        </p>
+      ) : null}
       <div className="mt-12 max-w-2xl">
         <ArticleBody blocks={article.body} />
       </div>

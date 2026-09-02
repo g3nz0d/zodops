@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { ApproachSection } from "@/components/approach-section"
 import { ArticleCard } from "@/components/article-card"
 import { CtaBanner } from "@/components/cta-banner"
 import { TerminalPanel } from "@/components/terminal-panel"
@@ -40,6 +41,8 @@ export default function HomePage() {
           <TerminalPanel />
         </div>
       </section>
+
+      <ApproachSection />
 
       <section className="container-page py-16 sm:py-20">
         <div className="flex items-end justify-between gap-4">

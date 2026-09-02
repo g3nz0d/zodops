@@ -19,9 +19,16 @@ export function ArticleCard({
         className
       )}
     >
-      <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
-        {topic.label} · {article.minutes} min
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+          {topic.label} · {article.minutes} min
+        </p>
+        {article.fieldNotes ? (
+          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] text-brand uppercase">
+            Field Notes
+          </span>
+        ) : null}
+      </div>
       <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-tight text-foreground">
         <Link href={`/articles/${article.slug}/`} className="hover:text-brand">
           {article.title}
