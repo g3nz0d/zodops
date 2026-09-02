@@ -5,8 +5,8 @@ export const site = {
     "Engineering notes on the systems that keep data safe. Long-form, implementation-level writing on DevOps, containers, and DSPM/DLP.",
   location: "San Diego, CA",
   role: "Security Architect",
-  email: "hello@zodops.com",
-  linkedin: "https://www.linkedin.com/in/your-handle",
+  email: "hello@zodops.io",
+  linkedin: "https://www.linkedin.com/in/ztagedini",
   years: "12+",
   domains: 4,
 } as const
