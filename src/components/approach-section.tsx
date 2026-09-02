@@ -2,7 +2,7 @@ import { principles } from "@/lib/content"
 
 export function ApproachSection() {
   return (
-    <section className="container-page py-16 sm:py-20">
+    <section id="approach" className="container-page py-16 sm:py-20 scroll-mt-24">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
         How I decide
       </p>

@@ -11,7 +11,8 @@ export const site = {
   domains: 4,
 } as const
 
-export const ctaLabel = "View My Work"
+export const ctaLabel = "Approach"
+export const ctaHref = "/#approach"
 
 export const nav = [
   { href: "/articles/", label: "Articles" },

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 
 import { Logo } from "@/components/logo"
-import { ctaLabel, nav } from "@/lib/site"
+import { ctaHref, ctaLabel, nav } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
@@ -56,7 +56,7 @@ export function SiteHeader() {
 
           <div className="hidden justify-self-end md:block">
             <Link
-              href="/articles/"
+              href={ctaHref}
               className="inline-flex h-9 items-center rounded-md bg-brand px-3.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
             >
               {ctaLabel}
@@ -113,7 +113,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              href="/articles/"
+              href={ctaHref}
               className="mt-3 inline-flex h-10 items-center justify-center rounded-md bg-brand text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
               onClick={() => setOpen(false)}
             >
