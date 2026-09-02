@@ -34,16 +34,14 @@ npm start
 
 Add a new article by appending an object to `articles` in `src/lib/content.ts`. The writing index, topic pages, and article URLs update from that list.
 
-## Host on GitHub Pages (with zodops.io)
+## Host on Cloudflare Pages (with zodops.io)
 
-This is the intended host: `.github/workflows/deploy.yml` builds the site and publishes it on every push to `main`, and `public/CNAME` already contains `zodops.io`.
+This is the intended host: the domain `zodops.io` was registered through Cloudflare, so Cloudflare Pages can attach it with no manual DNS records.
 
-1. In the GitHub repo: **Settings → Pages → Build and deployment → Source** → set to **GitHub Actions**.
-2. Push to `main`. The **Deploy to GitHub Pages** workflow (Actions tab) builds and publishes.
-3. Under **Settings → Pages**, set the custom domain to `zodops.io` if it is not already picked up from the `CNAME` file, and enable **Enforce HTTPS** once the certificate is issued.
-4. At your domain registrar, point DNS at GitHub Pages:
-   - Apex (`zodops.io`): four `A` records to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-   - `www` (optional): `CNAME` to `g3nz0d.github.io`.
+1. Push this repo to GitHub.
+2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → select the repo.
+3. Build settings: framework preset **Next.js (Static HTML Export)**, build command `npm run build`, build output directory `out`.
+4. After the first deploy, open the project → **Custom domains → Add a custom domain** → enter `zodops.io`. Because the domain is already in this Cloudflare account, it activates immediately — no DNS records to copy.
 
 ## Host on GitLab Pages (alternative)
 
