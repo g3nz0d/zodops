@@ -4,7 +4,6 @@ import Link from "next/link"
 import { site } from "@/lib/site"
 
 export const metadata: Metadata = {
-  title: "About",
   description:
     "Background on ZodOps — security architecture across cloud, containers, and data protection.",
 }

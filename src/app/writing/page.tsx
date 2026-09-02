@@ -4,7 +4,6 @@ import { ArticleCard } from "@/components/article-card"
 import { articles } from "@/lib/content"
 
 export const metadata: Metadata = {
-  title: "Writing",
   description:
     "Implementation-level articles on DevOps, containers, DSPM/DLP, and cloud security.",
 }

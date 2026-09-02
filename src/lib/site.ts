@@ -11,9 +11,9 @@ export const site = {
   domains: 4,
 } as const
 
+export const ctaLabel = "View My Work"
+
 export const nav = [
-  { href: "/writing/", label: "Writing" },
-  { href: "/topics/", label: "Topics" },
-  { href: "/about/", label: "About" },
-  { href: "/contact/", label: "Contact" },
+  { href: "/topics/cloud-security/", label: "Cloud" },
+  { href: "/topics/devops/", label: "Devops" },
 ] as const

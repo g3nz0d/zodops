@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 
 import { Logo } from "@/components/logo"
-import { nav } from "@/lib/site"
+import { ctaLabel, nav } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
@@ -59,7 +59,7 @@ export function SiteHeader() {
               href="/writing/"
               className="inline-flex h-9 items-center rounded-md bg-navy px-3.5 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
             >
-              Read my work
+              {ctaLabel}
             </Link>
           </div>
 
@@ -117,7 +117,7 @@ export function SiteHeader() {
               className="mt-3 inline-flex h-10 items-center justify-center rounded-md bg-navy text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
               onClick={() => setOpen(false)}
             >
-              Read my work
+              {ctaLabel}
             </Link>
           </nav>
         </div>

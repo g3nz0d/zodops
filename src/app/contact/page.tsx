@@ -4,7 +4,6 @@ import { ContactForm } from "@/components/contact-form"
 import { site } from "@/lib/site"
 
 export const metadata: Metadata = {
-  title: "Contact",
   description: "Write to ZodOps about security architecture, DevOps, or data protection work.",
 }
 

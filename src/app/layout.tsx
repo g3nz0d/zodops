@@ -18,10 +18,7 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: {
-    default: site.title,
-    template: `%s · ${site.name}`,
-  },
+  title: site.name,
   description: site.description,
   metadataBase: new URL("https://zodops.io"),
   openGraph: {

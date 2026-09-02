@@ -4,7 +4,6 @@ import { TopicCard } from "@/components/topic-card"
 import { topics } from "@/lib/content"
 
 export const metadata: Metadata = {
-  title: "Topics",
   description:
     "Explore ZodOps writing by topic: DevOps, containers, DSPM/DLP, and cloud security.",
 }

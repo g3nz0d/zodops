@@ -23,10 +23,9 @@ export async function generateMetadata({
   const { slug } = await params
   const article = getArticle(slug)
   if (!article) {
-    return { title: "Not found" }
+    return {}
   }
   return {
-    title: article.title,
     description: article.excerpt,
   }
 }

@@ -20,10 +20,9 @@ export async function generateMetadata({
   const { slug } = await params
   const topic = getTopic(slug)
   if (!topic) {
-    return { title: "Not found" }
+    return {}
   }
   return {
-    title: topic.name,
     description: topic.longDescription,
   }
 }
