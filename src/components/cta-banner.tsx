@@ -11,7 +11,7 @@ export function CtaBanner() {
             Built, broken, documented.
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-white/70">
-            Twelve years across cloud, containers, and data protection. I write
+            Fifteen-plus years across cloud, containers, and data protection. I write
             up the designs that survived contact with production — and the ones
             that did not.
           </p>

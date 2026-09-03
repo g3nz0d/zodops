@@ -41,8 +41,8 @@ export default function HomePage() {
               now exploring what AI security demands.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              This is where I break down what actually works in cloud, data,
-              and AI security — no fluff, no vendor spin.
+              Fifteen-plus years of learning this the hard way — written down
+              so you don&apos;t have to.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (

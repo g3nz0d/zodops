@@ -20,7 +20,7 @@ export default function AboutPage() {
       <div className="mt-8 max-w-2xl space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
         <p>
           ZodOps is the public notebook of a security architect based in{" "}
-          {site.location}. The work underneath it is twelve years of cloud,
+          {site.location}. The work underneath it is fifteen-plus years of cloud,
           DevOps, containers, and data protection — designing controls that
           have to live next to a release train, not in a slide.
         </p>

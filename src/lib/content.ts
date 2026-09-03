@@ -91,7 +91,7 @@ export const principles: Principle[] = [
   },
   {
     label: "I say where I'm still reasoning",
-    text: "Twelve years has given me certainty in a fair amount of this work, though not all of it. Where I'm reasoning through something newer — AI security, DSPM/DLP — I say so outright instead of letting the line blur. Those posts are marked Field Notes, and worth reading with that in mind.",
+    text: "Fifteen-plus years has given me certainty in a fair amount of this work, though not all of it. Where I'm reasoning through something newer — AI security, DSPM/DLP — I say so outright instead of letting the line blur. Those posts are marked Field Notes, and worth reading with that in mind.",
   },
 ]
 

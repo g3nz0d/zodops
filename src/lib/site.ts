@@ -7,7 +7,7 @@ export const site = {
   role: "Security Architect",
   email: "hello@zodops.io",
   linkedin: "https://www.linkedin.com/in/ztagedini",
-  years: "12+",
+  years: "15+",
   domains: 4,
 } as const
 
