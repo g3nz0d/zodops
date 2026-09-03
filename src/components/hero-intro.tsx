@@ -9,8 +9,9 @@ const tags = ["DevOps", "Containers", "DSPM / DLP", "Cloud Security"]
 
 const stats = [
   { value: site.years, label: "Years" },
+  { value: "8+", label: "Industries" },
   { value: `${site.domains}`, label: "Domains" },
-  { value: "96%+", label: "Classification Accuracy" },
+  { value: "1", label: "Published Book" },
 ]
 
 export function HeroIntro() {
