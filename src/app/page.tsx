@@ -38,7 +38,7 @@ export default function HomePage() {
               </div>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
-              Fifteen years in, and I still test everything before I trust it.
+              Fifteen years in. I still verify before I trust.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
               Learned the hard way — written down so you don&apos;t have to.
