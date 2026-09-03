@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ApproachSection } from "@/components/approach-section"
 import { ArticleCard } from "@/components/article-card"
 import { CtaBanner } from "@/components/cta-banner"
+import { ProfileAvatar } from "@/components/profile-avatar"
 import { TerminalPanel } from "@/components/terminal-panel"
 import { TopicCard } from "@/components/topic-card"
 import { articles, topics } from "@/lib/content"
@@ -20,12 +21,21 @@ export default function HomePage() {
             <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
               Cloud Security / DevOps / Data Protection
             </p>
-            <h1 className="mt-5 max-w-xl text-[2.35rem] leading-[1.12] font-semibold tracking-tight text-foreground sm:text-5xl">
-              Approach<span className="text-brand">.</span>
-            </h1>
+            <div className="mt-5 flex items-center gap-4">
+              <ProfileAvatar alt="Zodi Tagedini" initials="ZT" />
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Hi, I&rsquo;m
+                </p>
+                <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+                  Zodi Tagedini
+                </p>
+              </div>
+            </div>
             <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              How I think about risk, tradeoffs, and what actually ships — the
-              judgment behind the work, not just the write-up of it.
+              A security architect who&apos;s spent 12+ years making cloud,
+              containers, and data pipelines harder to break into. This site
+              is where I write up how I actually think through the work.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (
