@@ -37,12 +37,10 @@ export default function HomePage() {
               </div>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
-              From an Army SOC to enterprise DSPM and cloud security —
-              now exploring what AI security demands.
+              Fifteen years in, and I still test everything before I trust it.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              Fifteen-plus years of learning this the hard way — written down
-              so you don&apos;t have to.
+              Learned the hard way — written down so you don&apos;t have to.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (
