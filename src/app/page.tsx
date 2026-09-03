@@ -21,11 +21,12 @@ export default function HomePage() {
             <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
               Cloud Security / DevOps / Data Protection
             </p>
-            <div className="mt-5 flex items-center gap-4">
+            <div className="mt-5 flex flex-col items-start gap-4">
               <ProfileAvatar
                 src="/zodi.jpg"
                 alt="Zodi Tagedini"
                 initials="ZT"
+                className="size-48 sm:size-64 lg:size-80"
               />
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
