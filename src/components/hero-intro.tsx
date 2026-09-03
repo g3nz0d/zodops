@@ -45,28 +45,30 @@ export function HeroIntro() {
         className="size-48 sm:size-60"
         style={photoSize ? { width: photoSize, height: photoSize } : undefined}
       />
-      <div ref={textRef} className="max-w-lg text-center lg:text-left">
+      <div ref={textRef} className="max-w-lg space-y-5 text-center lg:text-left">
         <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
           Cloud Security / DevOps / Data Protection
         </p>
-        <div className="mt-4">
+        <div>
           <p className="text-sm font-medium text-muted-foreground">
             Hi, I&rsquo;m
           </p>
-          <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
-            Zodi Tagedini{" "}
+          <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+            <span className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+              Zodi Tagedini
+            </span>
             <span className="text-base font-normal text-muted-foreground">
               — cybersecurity professional
             </span>
           </p>
         </div>
-        <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
+        <p className="text-xl font-bold tracking-tight text-brand sm:text-2xl">
           Fifteen years in. I still verify before I trust.
         </p>
-        <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
+        <p className="max-w-lg text-[16px] leading-relaxed text-muted-foreground">
           Learned the hard way — written down so you don&apos;t have to.
         </p>
-        <ul className="mt-7 flex flex-wrap justify-center gap-2 lg:justify-start">
+        <ul className="flex flex-wrap justify-center gap-2 lg:justify-start">
           {tags.map((tag) => (
             <li
               key={tag}
@@ -76,7 +78,7 @@ export function HeroIntro() {
             </li>
           ))}
         </ul>
-        <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 border-t border-border pt-6 lg:flex-nowrap lg:justify-between">
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 lg:flex-nowrap lg:justify-between">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center lg:text-left">
               <div className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
