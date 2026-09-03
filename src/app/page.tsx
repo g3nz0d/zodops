@@ -22,7 +22,11 @@ export default function HomePage() {
               Cloud Security / DevOps / Data Protection
             </p>
             <div className="mt-5 flex items-center gap-4">
-              <ProfileAvatar alt="Zodi Tagedini" initials="ZT" />
+              <ProfileAvatar
+                src="/zodi.jpg"
+                alt="Zodi Tagedini"
+                initials="ZT"
+              />
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
                   Hi, I&rsquo;m
@@ -33,12 +37,14 @@ export default function HomePage() {
               </div>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
-              I break things ethically to build unbreakable systems.
+              From an Army SOC to enterprise DSPM and cloud security —
+              now exploring what AI security demands.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              A security architect who&apos;s spent 12+ years making cloud,
-              containers, and data pipelines harder to break into. This site
-              is where I write up how I actually think through the work.
+              I&apos;ve worked cloud security from every angle — Zero Trust
+              and NGWAF at Fastly, DSPM and DLP at Cyera, and threat detection
+              in the Army before that. This site is where I write up how I
+              actually think through the work.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (
