@@ -13,6 +13,7 @@ const tags = ["DevOps", "Containers", "DSPM / DLP", "Cloud Security"]
 const stats = [
   { value: site.years, label: "Years" },
   { value: `${site.domains}`, label: "Domains" },
+  { value: "$20M+", label: "Pipeline Influenced" },
 ]
 
 export default function HomePage() {
@@ -21,7 +22,7 @@ export default function HomePage() {
   return (
     <>
       <section className="hero-grid border-b border-border/70">
-        <div className="container-page flex flex-col items-center gap-10 py-14 lg:flex-row lg:justify-center lg:gap-28 lg:py-20">
+        <div className="container-page flex flex-col items-center gap-10 py-14 lg:flex-row lg:items-start lg:justify-center lg:gap-28 lg:py-20">
           <ProfileAvatar
             src="/zodi.jpg"
             alt="Zodi Tagedini"
@@ -37,7 +38,10 @@ export default function HomePage() {
                 Hi, I&rsquo;m
               </p>
               <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
-                Zodi Tagedini
+                Zodi Tagedini{" "}
+                <span className="text-base font-normal text-muted-foreground">
+                  — cybersecurity professional
+                </span>
               </p>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
