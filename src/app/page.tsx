@@ -33,7 +33,7 @@ export default function HomePage() {
               </div>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
-              I&rsquo;m a Security Architect.
+              I break things ethically to build unbreakable systems.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
               A security architect who&apos;s spent 12+ years making cloud,
