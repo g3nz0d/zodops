@@ -10,7 +10,7 @@ const tags = ["DevOps", "Containers", "DSPM / DLP", "Cloud Security"]
 const stats = [
   { value: site.years, label: "Years" },
   { value: `${site.domains}`, label: "Domains" },
-  { value: "96%+", label: "Classification Accuracy" },
+  { value: "1", label: "Published Book" },
 ]
 
 export function HeroIntro() {
@@ -76,13 +76,13 @@ export function HeroIntro() {
             </li>
           ))}
         </ul>
-        <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 border-t border-border pt-6 lg:justify-start">
+        <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 border-t border-border pt-6 lg:flex-nowrap lg:justify-between">
           {stats.map((stat) => (
-            <div key={stat.label}>
+            <div key={stat.label} className="text-center lg:text-left">
               <div className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                 {stat.value}
               </div>
-              <div className="mt-0.5 text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+              <div className="mt-0.5 whitespace-nowrap text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
                 {stat.label}
               </div>
             </div>
