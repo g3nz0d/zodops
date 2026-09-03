@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { ApproachSection } from "@/components/approach-section"
+import { PrinciplesSection } from "@/components/principles-section"
 import { ArticleCard } from "@/components/article-card"
 import { CtaBanner } from "@/components/cta-banner"
 import { HeroIntro } from "@/components/hero-intro"
@@ -16,7 +16,7 @@ export default function HomePage() {
         <HeroIntro />
       </section>
 
-      <ApproachSection />
+      <PrinciplesSection />
 
       <section className="container-page py-16 sm:py-20">
         <div className="flex items-end justify-between gap-4">

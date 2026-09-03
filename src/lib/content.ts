@@ -75,23 +75,23 @@ export type Principle = {
 export const principles: Principle[] = [
   {
     label: "Evidence over claims",
-    text: "I don't trust a claim — mine or a vendor's — until it's been checked against a primary source or tested by hand, and I hold what I publish on this site to the same bar.",
+    text: "I don't trust a claim — mine or a vendor's — until it's checked against a primary source or tested by hand. I hold what I publish here to the same bar.",
   },
   {
     label: "Compliance is a floor, not a target",
-    text: "A control that satisfies an auditor without reducing real exposure isn't one I'll ship, so I weigh decisions by actual risk rather than checklist language.",
+    text: "A control that satisfies an auditor without reducing real exposure isn't one I'll ship. I weigh decisions by actual risk, not checklist language.",
   },
   {
     label: "Assume it's already inside",
-    text: "I build on the assumption that perimeter defenses eventually fail — that something inside is already compromised — and ask what limits the damage once that's true, rather than only what keeps it out.",
+    text: "Perimeter defenses eventually fail. I build assuming something inside is already compromised, and design for what limits the damage once that's true — not just what keeps it out.",
   },
   {
     label: "Criteria before tools",
-    text: "Before I trust a new tool or platform, I build the evaluation criteria first — coverage, false-positive rate, integration cost — and only then apply it, because tools change but the discipline behind evaluating them shouldn't.",
+    text: "Before I trust a new tool or platform, I build the evaluation criteria first — coverage, false-positive rate, integration cost — then apply it. Tools change. The discipline doesn't.",
   },
   {
-    label: "I say where I'm still reasoning",
-    text: "Fifteen-plus years has given me certainty in a fair amount of this work, though not all of it. Where I'm reasoning through something newer — AI security, DSPM/DLP — I say so outright instead of letting the line blur. Those posts are marked Field Notes, and worth reading with that in mind.",
+    label: "Say what's still uncertain",
+    text: "Fifteen-plus years gives me certainty in most of this work — not all of it. Where I'm reasoning through something newer, like AI security or DSPM/DLP, I say so outright instead of letting the line blur. Those posts are marked Field Notes.",
   },
 ]
 

@@ -1,10 +1,10 @@
 import { principles } from "@/lib/content"
 
-export function ApproachSection() {
+export function PrinciplesSection() {
   return (
-    <section id="approach" className="container-page py-16 sm:py-20 scroll-mt-24">
+    <section id="principles" className="container-page py-16 sm:py-20 scroll-mt-24">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        How I decide
+        Principles
       </p>
       <div className="mt-6 divide-y divide-border border-t border-border">
         {principles.map((principle, index) => (
