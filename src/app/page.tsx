@@ -41,10 +41,8 @@ export default function HomePage() {
               now exploring what AI security demands.
             </p>
             <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground">
-              I&apos;ve worked cloud security from every angle — Zero Trust
-              and NGWAF at Fastly, DSPM and DLP at Cyera, and threat detection
-              in the Army before that. This site is where I write up how I
-              actually think through the work.
+              This is where I break down what actually works in cloud, data,
+              and AI security — no fluff, no vendor spin.
             </p>
             <ul className="mt-7 flex flex-wrap gap-2">
               {tags.map((tag) => (
