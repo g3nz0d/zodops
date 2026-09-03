@@ -5,23 +5,26 @@ export function ProfileAvatar({
   alt,
   initials,
   className,
+  style,
 }: {
   src?: string
   alt: string
   initials: string
   className?: string
+  style?: React.CSSProperties
 }) {
   if (src) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt}
+      <span
+        style={style}
         className={cn(
-          "size-20 shrink-0 rounded-full object-cover ring-2 ring-brand/20",
+          "relative inline-block shrink-0 overflow-hidden rounded-full ring-2 ring-brand/20",
           className
         )}
-      />
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} className="size-full object-cover" />
+      </span>
     )
   }
 
@@ -29,6 +32,7 @@ export function ProfileAvatar({
     <div
       role="img"
       aria-label={alt}
+      style={style}
       className={cn(
         "flex size-20 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-semibold text-white ring-2 ring-brand/20",
         className
