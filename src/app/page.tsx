@@ -4,11 +4,17 @@ import { ApproachSection } from "@/components/approach-section"
 import { ArticleCard } from "@/components/article-card"
 import { CtaBanner } from "@/components/cta-banner"
 import { ProfileAvatar } from "@/components/profile-avatar"
-import { TerminalPanel } from "@/components/terminal-panel"
 import { TopicCard } from "@/components/topic-card"
 import { articles, topics } from "@/lib/content"
+import { site } from "@/lib/site"
 
 const tags = ["DevOps", "Containers", "DSPM / DLP", "Cloud Security"]
+
+const stats = [
+  { value: site.years, label: "Years" },
+  { value: `${site.domains}`, label: "Domains" },
+  { value: `${articles.length}`, label: "Articles" },
+]
 
 export default function HomePage() {
   const latest = articles.slice(0, 3)
@@ -16,26 +22,24 @@ export default function HomePage() {
   return (
     <>
       <section className="hero-grid border-b border-border/70">
-        <div className="container-page grid items-center gap-12 py-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:py-20">
+        <div className="container-page grid items-center gap-10 py-14 lg:grid-cols-[auto_1fr] lg:gap-14 lg:py-20">
+          <ProfileAvatar
+            src="/zodi.jpg"
+            alt="Zodi Tagedini"
+            initials="ZT"
+            className="size-48 sm:size-60 lg:size-64"
+          />
           <div>
             <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
               Cloud Security / DevOps / Data Protection
             </p>
-            <div className="mt-5 flex flex-col items-start gap-4">
-              <ProfileAvatar
-                src="/zodi.jpg"
-                alt="Zodi Tagedini"
-                initials="ZT"
-                className="size-48 sm:size-64 lg:size-80"
-              />
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Hi, I&rsquo;m
-                </p>
-                <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
-                  Zodi Tagedini
-                </p>
-              </div>
+            <div className="mt-4">
+              <p className="text-sm font-medium text-muted-foreground">
+                Hi, I&rsquo;m
+              </p>
+              <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem]">
+                Zodi Tagedini
+              </p>
             </div>
             <p className="mt-4 text-xl font-bold tracking-tight text-brand sm:text-2xl">
               Fifteen years in. I still verify before I trust.
@@ -53,8 +57,19 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
+            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-6">
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                    {stat.value}
+                  </div>
+                  <div className="mt-0.5 text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <TerminalPanel />
         </div>
       </section>
 
