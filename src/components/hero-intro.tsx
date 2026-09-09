@@ -38,7 +38,7 @@ export function HeroIntro() {
   }, [])
 
   return (
-    <div className="container-page flex flex-col items-center gap-10 py-14 lg:flex-row lg:items-start lg:justify-center lg:gap-28 lg:py-20">
+    <div className="container-page flex w-full flex-col items-center gap-10 py-14 lg:flex-row lg:items-start lg:justify-center lg:gap-28 lg:py-20">
       <ProfileAvatar
         src="/zodi.jpg"
         alt="Zodi Tagedini"

@@ -11,8 +11,8 @@ export const site = {
   domains: 4,
 } as const
 
-export const ctaLabel = "Principles"
-export const ctaHref = "/#principles"
+export const ctaLabel = "Connect"
+export const ctaHref = site.linkedin
 
 export const nav = [
   { href: "/articles/", label: "Articles" },
