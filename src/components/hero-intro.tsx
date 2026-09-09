@@ -14,22 +14,35 @@ const stats = [
   { value: "1", label: "Published Book" },
 ]
 
+const HERO_GAP_PX = 96 // matches lg:gap-24
+const CONTAINER_PADDING_PX = 64 // container-page's left+right padding at sm and up
+
 export function HeroIntro() {
+  const rowRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
   const [photoSize, setPhotoSize] = useState<number | null>(null)
 
   useEffect(() => {
+    const row = rowRef.current
     const el = textRef.current
-    if (!el) return
+    if (!row || !el) return
 
     function update() {
       const isDesktop = window.matchMedia("(min-width: 1024px)").matches
-      setPhotoSize(isDesktop && el ? Math.min(el.offsetHeight, 420) : null)
+      if (!isDesktop || !row || !el) {
+        setPhotoSize(null)
+        return
+      }
+      const available =
+        row.clientWidth - CONTAINER_PADDING_PX - el.offsetWidth - HERO_GAP_PX
+      const size = Math.min(el.offsetHeight, available, 480)
+      setPhotoSize(Math.max(size, 220))
     }
 
     update()
     const observer = new ResizeObserver(update)
     observer.observe(el)
+    observer.observe(row)
     window.addEventListener("resize", update)
     return () => {
       observer.disconnect()
@@ -38,12 +51,15 @@ export function HeroIntro() {
   }, [])
 
   return (
-    <div className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-start lg:justify-center lg:gap-24 lg:py-20">
+    <div
+      ref={rowRef}
+      className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-start lg:justify-center lg:gap-24 lg:py-20"
+    >
       <ProfileAvatar
         src="/zodi.jpg"
         alt="Zodi Tagedini"
         initials="ZT"
-        className="size-64 sm:size-80"
+        className="size-72 sm:size-96"
         style={photoSize ? { width: photoSize, height: photoSize } : undefined}
       />
       <div ref={textRef} className="max-w-lg space-y-6 text-center lg:text-left">
@@ -69,11 +85,11 @@ export function HeroIntro() {
         <p className="max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
           Learned the hard way — written down so you don&apos;t have to.
         </p>
-        <ul className="flex flex-wrap justify-center gap-2.5 lg:justify-start">
+        <ul className="flex flex-wrap justify-center gap-2 lg:flex-nowrap lg:justify-start">
           {tags.map((tag) => (
             <li
               key={tag}
-              className="rounded-full bg-[#eceff3] px-4 py-1.5 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-sm"
+              className="rounded-full bg-[#eceff3] px-3 py-1.5 text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-muted-foreground uppercase sm:text-xs"
             >
               {tag}
             </li>
