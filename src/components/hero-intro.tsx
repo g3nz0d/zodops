@@ -38,7 +38,7 @@ export function HeroIntro() {
   }, [])
 
   return (
-    <div className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-start lg:justify-center lg:gap-16 lg:py-20">
+    <div className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-start lg:justify-center lg:gap-24 lg:py-20">
       <ProfileAvatar
         src="/zodi.jpg"
         alt="Zodi Tagedini"
@@ -46,7 +46,7 @@ export function HeroIntro() {
         className="size-64 sm:size-80"
         style={photoSize ? { width: photoSize, height: photoSize } : undefined}
       />
-      <div ref={textRef} className="max-w-xl space-y-6 text-center lg:text-left">
+      <div ref={textRef} className="max-w-lg space-y-6 text-center lg:text-left">
         <p className="text-xs font-semibold tracking-[0.18em] text-brand uppercase sm:text-sm">
           Cloud Security / DevOps / Data Protection
         </p>
