@@ -17,9 +17,9 @@ export function HeroIntro() {
         src="/zodi.jpg"
         alt="Zodi Tagedini"
         initials="ZT"
-        className="size-72 sm:size-96 lg:size-[28rem] xl:size-[30rem]"
+        className="size-72 sm:size-96 lg:size-[28rem] xl:size-[28rem]"
       />
-      <div className="max-w-[34rem] space-y-7 text-center xl:text-left">
+      <div className="max-w-[38rem] space-y-7 text-center xl:text-left">
         <p className="text-sm font-semibold tracking-[0.18em] text-brand uppercase sm:text-base">
           Cloud Security / DevOps / Data Protection
         </p>
@@ -36,10 +36,10 @@ export function HeroIntro() {
             — cybersecurity professional
           </p>
         </div>
-        <p className="text-3xl font-bold tracking-tight text-brand sm:text-4xl">
+        <p className="text-2xl font-bold tracking-tight text-brand sm:text-3xl xl:whitespace-nowrap">
           Fifteen years in. I still verify before I trust.
         </p>
-        <p className="max-w-[34rem] text-xl leading-relaxed text-muted-foreground sm:text-2xl">
+        <p className="max-w-[38rem] text-lg leading-relaxed text-muted-foreground sm:text-xl xl:whitespace-nowrap">
           Learned the hard way — written down so you don&apos;t have to.
         </p>
         <ul className="flex flex-wrap justify-center gap-2 xl:flex-nowrap xl:justify-start">
