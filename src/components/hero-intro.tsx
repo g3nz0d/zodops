@@ -12,50 +12,50 @@ const stats = [
 
 export function HeroIntro() {
   return (
-    <div className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-center lg:justify-center lg:gap-16 lg:py-20">
+    <div className="container-page flex w-full flex-col items-center gap-16 py-16 xl:flex-row xl:items-center xl:justify-center xl:gap-32 xl:py-24">
       <ProfileAvatar
         src="/zodi.jpg"
         alt="Zodi Tagedini"
         initials="ZT"
-        className="size-64 sm:size-80 lg:size-[21rem] xl:size-[26rem]"
+        className="size-72 sm:size-96 lg:size-[28rem] xl:size-[26rem]"
       />
-      <div className="max-w-lg space-y-6 text-center lg:text-left">
-        <p className="text-xs font-semibold tracking-[0.18em] text-brand uppercase sm:text-sm">
+      <div className="max-w-[30rem] space-y-7 text-center xl:text-left">
+        <p className="text-sm font-semibold tracking-[0.18em] text-brand uppercase sm:text-base">
           Cloud Security / DevOps / Data Protection
         </p>
         <div>
-          <p className="text-base font-medium text-muted-foreground sm:text-lg">
+          <p className="text-lg font-medium text-muted-foreground sm:text-xl">
             Hi, I&rsquo;m
           </p>
-          <p className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-            <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+          <p className="flex flex-wrap items-center justify-center gap-3 xl:justify-start">
+            <span className="text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
               Zodi Tagedini
             </span>
-            <span className="text-lg font-normal text-muted-foreground sm:text-xl">
-              — cybersecurity professional
-            </span>
+          </p>
+          <p className="mt-1 text-xl font-normal text-muted-foreground sm:text-2xl">
+            — cybersecurity professional
           </p>
         </div>
-        <p className="text-2xl font-bold tracking-tight text-brand sm:text-3xl">
+        <p className="text-3xl font-bold tracking-tight text-brand sm:text-4xl">
           Fifteen years in. I still verify before I trust.
         </p>
-        <p className="max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+        <p className="max-w-[30rem] text-xl leading-relaxed text-muted-foreground sm:text-2xl">
           Learned the hard way — written down so you don&apos;t have to.
         </p>
-        <ul className="flex flex-wrap justify-center gap-2 lg:flex-nowrap lg:justify-start">
+        <ul className="flex flex-wrap justify-center gap-2 xl:flex-nowrap xl:justify-start">
           {tags.map((tag) => (
             <li
               key={tag}
-              className="rounded-full bg-[#eceff3] px-3 py-1.5 text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-muted-foreground uppercase sm:text-xs"
+              className="rounded-full bg-[#eceff3] px-2.5 py-1 text-[10px] font-medium tracking-[0.08em] whitespace-nowrap text-muted-foreground uppercase sm:text-[11px]"
             >
               {tag}
             </li>
           ))}
         </ul>
-        <div className="flex flex-wrap justify-center gap-x-10 gap-y-4 lg:flex-nowrap lg:justify-between">
+        <div className="flex flex-wrap justify-center gap-x-10 gap-y-4 xl:flex-nowrap xl:justify-between">
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center lg:text-left">
-              <div className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <div key={stat.label} className="text-center xl:text-left">
+              <div className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {stat.value}
               </div>
               <div className="mt-1 whitespace-nowrap text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase sm:text-sm">
