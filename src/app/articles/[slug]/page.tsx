@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 
 import { ArticleBody } from "@/components/article-body"
 import { ArticleCard } from "@/components/article-card"
+import { ArticleToc } from "@/components/article-toc"
 import {
   articles,
   formatDate,
@@ -70,9 +71,14 @@ export default async function ArticlePage({ params }: Props) {
           guidance — read accordingly.
         </p>
       ) : null}
-      <div className="mt-12 max-w-2xl">
-        <ArticleBody blocks={article.body} />
+
+      <div className="mt-12 grid min-w-0 gap-10 lg:max-w-[68rem] lg:grid-cols-[minmax(0,42rem)_1fr] lg:gap-16">
+        <div className="min-w-0 max-w-2xl">
+          <ArticleBody blocks={article.body} />
+        </div>
+        <ArticleToc blocks={article.body} topic={topic} />
       </div>
+
       {related.length > 0 ? (
         <section className="mt-16 border-t border-border pt-12">
           <h2 className="text-xl font-semibold tracking-tight">More in {topic.name}</h2>

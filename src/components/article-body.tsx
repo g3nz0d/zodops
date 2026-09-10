@@ -1,4 +1,6 @@
+import { CodeBlock } from "@/components/code-block"
 import type { Block } from "@/lib/content"
+import { slugifyHeading } from "@/lib/content"
 
 export function ArticleBody({ blocks }: { blocks: Block[] }) {
   return (
@@ -18,7 +20,8 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
           return (
             <h2
               key={index}
-              className="pt-4 text-xl font-semibold tracking-tight text-foreground"
+              id={slugifyHeading(block.text)}
+              className="pt-4 text-xl font-semibold tracking-tight text-foreground scroll-mt-24"
             >
               {block.text}
             </h2>
@@ -38,18 +41,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             </ul>
           )
         }
-        return (
-          <figure key={index} className="overflow-hidden rounded-xl bg-navy">
-            {block.caption ? (
-              <figcaption className="border-b border-white/8 px-4 py-2 font-mono text-[11px] text-white/50">
-                {block.caption}
-              </figcaption>
-            ) : null}
-            <pre className="overflow-x-auto p-4 font-mono text-[12.5px] leading-relaxed text-navy-foreground">
-              {block.code}
-            </pre>
-          </figure>
-        )
+        return <CodeBlock key={index} caption={block.caption} code={block.code} />
       })}
     </div>
   )
