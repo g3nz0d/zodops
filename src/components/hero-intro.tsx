@@ -1,7 +1,3 @@
-"use client"
-
-import { useEffect, useRef, useState } from "react"
-
 import { ProfileAvatar } from "@/components/profile-avatar"
 import { site } from "@/lib/site"
 
@@ -14,55 +10,16 @@ const stats = [
   { value: "1", label: "Published Book" },
 ]
 
-const HERO_GAP_PX = 96 // matches lg:gap-24
-const CONTAINER_PADDING_PX = 64 // container-page's left+right padding at sm and up
-
 export function HeroIntro() {
-  const rowRef = useRef<HTMLDivElement>(null)
-  const textRef = useRef<HTMLDivElement>(null)
-  const [photoSize, setPhotoSize] = useState<number | null>(null)
-
-  useEffect(() => {
-    const row = rowRef.current
-    const el = textRef.current
-    if (!row || !el) return
-
-    function update() {
-      const isDesktop = window.matchMedia("(min-width: 1024px)").matches
-      if (!isDesktop || !row || !el) {
-        setPhotoSize(null)
-        return
-      }
-      const available =
-        row.clientWidth - CONTAINER_PADDING_PX - el.offsetWidth - HERO_GAP_PX
-      const size = Math.min(el.offsetHeight, available, 480)
-      setPhotoSize(Math.max(size, 220))
-    }
-
-    update()
-    const observer = new ResizeObserver(update)
-    observer.observe(el)
-    observer.observe(row)
-    window.addEventListener("resize", update)
-    return () => {
-      observer.disconnect()
-      window.removeEventListener("resize", update)
-    }
-  }, [])
-
   return (
-    <div
-      ref={rowRef}
-      className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-start lg:justify-center lg:gap-24 lg:py-20"
-    >
+    <div className="container-page flex w-full flex-col items-center gap-12 py-16 lg:flex-row lg:items-center lg:justify-center lg:gap-16 lg:py-20">
       <ProfileAvatar
         src="/zodi.jpg"
         alt="Zodi Tagedini"
         initials="ZT"
-        className="size-72 sm:size-96"
-        style={photoSize ? { width: photoSize, height: photoSize } : undefined}
+        className="size-64 sm:size-80 lg:size-[21rem] xl:size-[26rem]"
       />
-      <div ref={textRef} className="max-w-lg space-y-6 text-center lg:text-left">
+      <div className="max-w-lg space-y-6 text-center lg:text-left">
         <p className="text-xs font-semibold tracking-[0.18em] text-brand uppercase sm:text-sm">
           Cloud Security / DevOps / Data Protection
         </p>
