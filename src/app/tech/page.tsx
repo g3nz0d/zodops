@@ -18,8 +18,8 @@ export default function TechPage() {
         Four domains, no filler
       </h1>
       <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Everything here sits in one of these buckets. If a draft does not, it
-        does not ship.
+        Everything here sits in one of these buckets. Each one has reference
+        configs for working with the stack, plus the long-form articles.
       </p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {topics.map((topic) => (

@@ -408,6 +408,89 @@ spec:
   },
 ]
 
+export type ConfigSnippet = {
+  title: string
+  description: string
+  language: string
+  code: string
+}
+
+export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
+  devops: [
+    {
+      title: "Policy exception with an expiry",
+      description:
+        "The only sanctioned way around an admission rule — a dated exception in the same repo, not a Slack approval.",
+      language: "yaml",
+      code: `apiVersion: kyverno.io/v1
+kind: PolicyException
+metadata:
+  name: ingress-capabilities-until-2026-10-01
+spec:
+  exceptions:
+    - policyName: disallow-capabilities
+      ruleNames: ["drop-all"]
+  match:
+    any:
+      - resources:
+          namespaces: ["ingress"]
+          names: ["controller"]`,
+    },
+  ],
+  containers: [
+    {
+      title: "Minimal, non-root runtime image",
+      description:
+        "Distroless base, digest-pinned, no shell — copy the binary and run as an unprivileged UID.",
+      language: "dockerfile",
+      code: `FROM gcr.io/distroless/static-debian12:nonroot@sha256:…
+COPY --from=build /out/api /api
+USER 65532:65532
+ENTRYPOINT ["/api"]`,
+    },
+  ],
+  "dspm-dlp": [
+    {
+      title: "Service-account inventory in one line",
+      description:
+        "The query that replaces a 40-page DSPM questionnaire: who can write, from where.",
+      language: "bash",
+      code: `kubectl get deploy,cronjob -A -o json \\
+  | jq -r '.items[]
+    | [.metadata.namespace, .metadata.name,
+       (.spec.template.spec.serviceAccountName // "default")]
+    | @tsv'`,
+    },
+  ],
+  "cloud-security": [
+    {
+      title: "Deny cross-account KMS decrypt",
+      description:
+        "Stops a replication role in another account from reaching a production key — without touching the key policy.",
+      language: "json",
+      code: `{
+  "Effect": "Deny",
+  "Action": "kms:Decrypt",
+  "Resource": "arn:aws:kms:*:111111111111:key/prod-*",
+  "Condition": {
+    "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
+  }
+}`,
+    },
+  ],
+}
+
+export function configsForTopic(slug: TopicSlug): ConfigSnippet[] {
+  return configsByTopic[slug] ?? []
+}
+
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
 export function getTopic(slug: string): Topic | undefined {
   return topics.find((topic) => topic.slug === slug)
 }
