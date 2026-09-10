@@ -13,6 +13,7 @@ const aboutLines: TerminalLine[] = [
   { kind: "cmd", text: "$ whoami --history" },
   { kind: "out", text: "15y     security architecture · cloud & data protection" },
   { kind: "out", text: "core    DevOps, Cloud Security" },
+  { kind: "out", text: "scope   enterprise accounts, large environments" },
   { kind: "out", text: "active  AI Security, DLP" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat priorities.log" },
@@ -46,7 +47,8 @@ export default function AboutPage() {
             {site.location}. The work underneath it is fifteen-plus years of
             cloud, DevOps, containers, and data protection — designing
             controls that have to live next to a release train, not in a
-            slide.
+            slide, on enterprise accounts where a bad control blocks
+            thousands of engineers instead of a handful.
           </p>
           <p>
             I care about the unglamorous parts: image provenance, IAM graphs,

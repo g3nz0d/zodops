@@ -33,7 +33,7 @@ export function HeroIntro() {
             </span>
           </p>
           <p className="mt-1 text-xl font-normal text-muted-foreground sm:text-2xl">
-            — cybersecurity professional
+            — {site.role.toLowerCase()}
           </p>
         </div>
         <p className="text-2xl font-bold tracking-tight text-brand sm:text-3xl xl:whitespace-nowrap">

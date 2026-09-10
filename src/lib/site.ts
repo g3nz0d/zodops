@@ -4,7 +4,7 @@ export const site = {
   description:
     "Engineering notes on the systems that keep data safe. Long-form, implementation-level writing on DevOps, containers, and DSPM/DLP.",
   location: "San Diego, CA",
-  role: "Security Architect",
+  role: "Enterprise Security Architect",
   email: "hello@zodops.io",
   linkedin: "https://www.linkedin.com/in/ztagedini",
   years: "15+",
