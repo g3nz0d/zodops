@@ -12,8 +12,27 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="hero-grid flex min-h-[calc(100vh-72px)] w-full items-center border-b border-border/70">
+      <section className="hero-grid relative flex min-h-[calc(100vh-72px)] w-full items-center border-b border-border/70">
         <HeroIntro />
+        <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-muted-foreground">
+          <span className="text-xs font-medium tracking-[0.16em] uppercase">
+            Scroll to explore
+          </span>
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-4 animate-bounce"
+          >
+            <path d="M12 5v14" />
+            <path d="m19 12-7 7-7-7" />
+          </svg>
+        </div>
       </section>
 
       <PrinciplesSection />
