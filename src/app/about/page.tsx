@@ -11,20 +11,23 @@ export const metadata: Metadata = {
 
 const aboutLines: TerminalLine[] = [
   { kind: "cmd", text: "$ whoami --history" },
-  { kind: "out", text: "15y     security architecture · cloud & data protection" },
-  { kind: "out", text: "core    DevOps, Cloud Security" },
+  { kind: "out", text: "15y+    security architecture · cloud & data protection" },
+  { kind: "out", text: "core    DevOps, cloud security, containers" },
   { kind: "out", text: "scope   enterprise accounts, large environments" },
-  { kind: "out", text: "active  AI Security, DLP" },
+  { kind: "out", text: "focus   AI security, DLP" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat priorities.log" },
   { kind: "ok", text: "+  verify before trusting" },
   { kind: "ok", text: "+  risk-based over checkbox compliance" },
   { kind: "ok", text: "+  assume breach, design for containment" },
-  { kind: "warn", text: "~  still learning: AI security, DLP" },
+  { kind: "ok", text: "+  controls that ship with the code" },
+  { kind: "blank", text: "" },
+  { kind: "cmd", text: "$ ls ./field-notes/" },
+  { kind: "out", text: "ai-security/   reasoning in public" },
+  { kind: "out", text: "dspm-dlp/      reasoning in public" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ ls ./currently/" },
-  { kind: "out", text: "writing/    field notes" },
-  { kind: "out", text: "pursuit/    AWS and Azure certifications" },
+  { kind: "out", text: "studying/   AWS & Azure certifications" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat reach.txt" },
   { kind: "out", text: "→  linkedin.com/in/ztagedini" },
@@ -43,26 +46,25 @@ export default function AboutPage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
           <p>
-            ZodOps is the public notebook of a security architect based in{" "}
-            {site.location}. The work underneath it is fifteen-plus years of
-            cloud, DevOps, containers, and data protection — designing
-            controls that have to live next to a release train, not in a
-            slide, on enterprise accounts where a bad control blocks
-            thousands of engineers instead of a handful.
+            I&rsquo;m Zodi, a security architect in {site.location}. For 15+
+            years I&rsquo;ve worked across cloud, DevOps, containers, and data
+            protection, designing controls that live next to a release
+            train, not in a slide deck. Most of that work has been on
+            enterprise accounts, where a bad control blocks thousands of
+            engineers instead of a handful.
           </p>
           <p>
-            I care about the unglamorous parts: image provenance, IAM graphs,
-            admission policy, DSPM inventory, and DLP on the paths that
-            actually leave the cluster. Most of the writing is
-            implementation-level on purpose. If a design cannot be typed into
-            a repo, it is not finished.
+            ZodOps is my public notebook. I write about the unglamorous
+            parts: image provenance, IAM graphs, admission policy, DSPM
+            inventory, and DLP on the paths that actually leave the cluster.
+            Increasingly, that means securing AI systems, where models,
+            agents, and sensitive data meet. The writing is
+            implementation-level on purpose. If a design can&apos;t be
+            committed to a repo, it isn&apos;t finished.
           </p>
           <p>
-            This site is intentionally small. Four topics, a handful of
-            essays, and a way to get in touch. No newsletter maze. The same
-            pages are meant to be hosted as a static site — GitLab Pages,
-            GitHub Pages, or any object-storage CDN — with a custom domain in
-            front.
+            The site is small by design: a handful of essays, no newsletter
+            maze, and a direct line if you want to talk shop.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
@@ -71,12 +73,12 @@ export default function AboutPage() {
             >
               Read the notes
             </Link>
-            <Link
-              href="/contact/"
+            <a
+              href={`mailto:${site.email}`}
               className="inline-flex h-10 items-center rounded-md border border-border px-4 text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-muted"
             >
               Get in touch
-            </Link>
+            </a>
           </div>
         </div>
         <TerminalPanel

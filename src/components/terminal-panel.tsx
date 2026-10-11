@@ -52,7 +52,7 @@ export function TerminalPanel({
           <span className="size-[9px] rounded-full bg-[#ff5f57]" />
           <span className="size-[9px] rounded-full bg-[#febc2e]" />
           <span className="size-[9px] rounded-full bg-[#28c840]" />
-          <span className="ml-2 font-mono text-[10px] tracking-[0.12em] text-white/45 uppercase">
+          <span className="ml-2 font-mono text-[10px] tracking-[0.12em] text-white/50 uppercase">
             {title}
           </span>
         </div>
