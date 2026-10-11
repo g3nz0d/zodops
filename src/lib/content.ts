@@ -65,6 +65,7 @@ export type Article = {
   date: string
   body: Block[]
   fieldNotes?: boolean
+  draft?: boolean
 }
 
 export type Principle = {
