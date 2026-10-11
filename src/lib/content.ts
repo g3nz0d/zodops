@@ -465,15 +465,17 @@ ENTRYPOINT ["/api"]`,
   ],
   "cloud-security": [
     {
-      title: "Deny cross-account KMS decrypt",
+      title: "Deny cross-account KMS decrypt (SCP)",
       description:
-        "Stops a replication role in another account from reaching a production key — without touching the key policy.",
+        "An org-level SCP that stops roles in other accounts from decrypting prod-tagged keys, without touching any key policy.",
       language: "json",
       code: `{
+  "Sid": "DenyCrossAccountDecryptOfProdKeys",
   "Effect": "Deny",
   "Action": "kms:Decrypt",
-  "Resource": "arn:aws:kms:*:111111111111:key/prod-*",
+  "Resource": "*",
   "Condition": {
+    "StringEquals": { "aws:ResourceTag/env": "prod" },
     "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
   }
 }`,
