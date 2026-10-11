@@ -1,8 +1,10 @@
 import Link from "next/link"
 
-import { type Topic } from "@/lib/content"
+import { articlesByTopic, type Topic } from "@/lib/content"
 
 export function TopicCard({ topic }: { topic: Topic }) {
+  const count = articlesByTopic(topic.slug).length
+
   return (
     <Link
       href={`/tech/${topic.slug}/`}
@@ -11,8 +13,11 @@ export function TopicCard({ topic }: { topic: Topic }) {
       <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
         {topic.name}
       </h3>
-      <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+      <p className="mt-2 flex-1 text-[14px] leading-relaxed text-muted-foreground">
         {topic.description}
+      </p>
+      <p className="mt-4 text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
+        {count} {count === 1 ? "article" : "articles"} →
       </p>
     </Link>
   )

@@ -12,14 +12,14 @@ export default function TechPage() {
   return (
     <section className="container-page py-14 sm:py-16">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        Tech
+        Topics
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Four domains, no filler
+        Every domain, no filler
       </h1>
       <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Everything here sits in one of these buckets. Each one has reference
-        configs for working with the stack, plus the long-form articles.
+        Everything here fits into one of these areas. Each topic has
+        reference configs I actually run, plus the long-form articles.
       </p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {topics.map((topic) => (
