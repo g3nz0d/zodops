@@ -6,16 +6,16 @@ import { ArticleBody } from "@/components/article-body"
 import { ArticleCard } from "@/components/article-card"
 import { ArticleToc } from "@/components/article-toc"
 import {
-  articles,
   formatDate,
   getArticle,
+  publishedArticles,
   topicBySlug,
 } from "@/lib/content"
 
 type Props = PageProps<"/articles/[slug]">
 
 export function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }))
+  return publishedArticles.map((article) => ({ slug: article.slug }))
 }
 
 export async function generateMetadata({
@@ -39,7 +39,7 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   const topic = topicBySlug(article.topic)
-  const related = articles
+  const related = publishedArticles
     .filter((item) => item.slug !== article.slug && item.topic === article.topic)
     .slice(0, 2)
 

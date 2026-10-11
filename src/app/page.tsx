@@ -5,10 +5,10 @@ import { ArticleCard } from "@/components/article-card"
 import { CtaBanner } from "@/components/cta-banner"
 import { HeroIntro } from "@/components/hero-intro"
 import { TopicCard } from "@/components/topic-card"
-import { articles, topics } from "@/lib/content"
+import { publishedArticles, topics } from "@/lib/content"
 
 export default function HomePage() {
-  const latest = articles.slice(0, 3)
+  const latest = publishedArticles.slice(0, 3)
 
   return (
     <>
@@ -60,7 +60,7 @@ export default function HomePage() {
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           Explore by tech
         </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
           {topics.map((topic) => (
             <TopicCard key={topic.slug} topic={topic} />
           ))}

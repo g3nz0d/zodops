@@ -1,5 +1,5 @@
 import { site } from "@/lib/site"
-import { articles } from "@/lib/content"
+import { publishedArticles } from "@/lib/content"
 
 export type TerminalLineKind = "cmd" | "dim" | "ok" | "warn" | "err" | "out" | "blank"
 
@@ -68,7 +68,7 @@ export function TerminalPanel({
         <div className="grid grid-cols-3 divide-x divide-border">
           <Stat value={`${site.years}`} label="Years" />
           <Stat value={`${site.domains}`} label="Domains" />
-          <Stat value={`${articles.length}`} label="Articles" />
+          <Stat value={`${publishedArticles.length}`} label="Articles" />
         </div>
       ) : null}
     </div>

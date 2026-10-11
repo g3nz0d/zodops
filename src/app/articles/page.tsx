@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import { ArticleCard } from "@/components/article-card"
-import { articles } from "@/lib/content"
+import { publishedArticles } from "@/lib/content"
 
 export const metadata: Metadata = {
   description:
@@ -22,7 +22,7 @@ export default function ArticlesPage() {
         implement. Newest first.
       </p>
       <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {articles.map((article) => (
+        {publishedArticles.map((article) => (
           <ArticleCard key={article.slug} article={article} />
         ))}
       </div>

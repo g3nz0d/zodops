@@ -80,7 +80,7 @@ export default async function TopicPage({ params }: Props) {
         </h2>
         {posts.length === 0 ? (
           <p className="mt-4 text-muted-foreground">
-            Nothing published in this topic yet.
+            First field notes in progress.
           </p>
         ) : (
           <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">

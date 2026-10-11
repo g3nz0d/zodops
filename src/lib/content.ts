@@ -3,6 +3,7 @@ export const topicSlugs = [
   "containers",
   "dspm-dlp",
   "cloud-security",
+  "ai-security",
 ] as const
 
 export type TopicSlug = (typeof topicSlugs)[number]
@@ -47,6 +48,14 @@ export const topics: Topic[] = [
     description: "Identity, blast radius, and the control planes that actually decide who can take the data.",
     longDescription:
       "Cloud security architecture with an identity-first lens: IAM graphs, trust boundaries, logging that is useful in an incident, and the shared-responsibility details vendors leave out.",
+  },
+  {
+    slug: "ai-security",
+    name: "AI Security",
+    label: "AI Security",
+    description: "Prompt injection as an exfil path, data flowing into AI tools, and controls for agentic workflows.",
+    longDescription:
+      "Securing the places where models, agents, and sensitive data meet: prompt injection as an exfil path, data flowing into AI tools, and controls for agentic workflows. Posts here are Field Notes.",
   },
 ]
 
@@ -407,6 +416,22 @@ spec:
       },
     ],
   },
+  {
+    slug: "todo-first-ai-security-field-note",
+    title: "TODO: first AI security field note",
+    excerpt: "TODO: excerpt for the first AI security field note.",
+    topic: "ai-security",
+    minutes: 0,
+    date: "2026-10-11",
+    fieldNotes: true,
+    draft: true,
+    body: [
+      {
+        type: "p",
+        text: "TODO: Zodi to write this field note.",
+      },
+    ],
+  },
 ]
 
 export type ConfigSnippet = {
@@ -476,11 +501,12 @@ ENTRYPOINT ["/api"]`,
   "Resource": "*",
   "Condition": {
     "StringEquals": { "aws:ResourceTag/env": "prod" },
-    "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
+      "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
   }
 }`,
     },
   ],
+  "ai-security": [],
 }
 
 export function configsForTopic(slug: TopicSlug): ConfigSnippet[] {
@@ -498,12 +524,14 @@ export function getTopic(slug: string): Topic | undefined {
   return topics.find((topic) => topic.slug === slug)
 }
 
+export const publishedArticles = articles.filter((article) => !article.draft)
+
 export function getArticle(slug: string): Article | undefined {
   return articles.find((article) => article.slug === slug)
 }
 
 export function articlesByTopic(slug: TopicSlug): Article[] {
-  return articles.filter((article) => article.topic === slug)
+  return publishedArticles.filter((article) => article.topic === slug)
 }
 
 export function topicBySlug(slug: TopicSlug): Topic {

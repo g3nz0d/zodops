@@ -1,13 +1,13 @@
 import Link from "next/link"
 
 import { ProfileAvatar } from "@/components/profile-avatar"
-import { articles, topics } from "@/lib/content"
+import { publishedArticles, topics } from "@/lib/content"
 import { site } from "@/lib/site"
 
 const stats = [
   { value: site.years, label: "Years" },
   { value: "8+", label: "Industries" },
-  { value: `${articles.length}`, label: "Articles" },
+  { value: `${publishedArticles.length}`, label: "Articles" },
   {
     value: "1",
     label: "Published Book",
