@@ -54,12 +54,8 @@ export default async function TopicPage({ params }: Props) {
       {configs.length > 0 ? (
         <div className="mt-10">
           <h2 className="text-xl font-semibold tracking-tight">
-            Working with {topic.name}
+            Reference configs
           </h2>
-          <p className="mt-2 max-w-2xl text-[14.5px] leading-relaxed text-muted-foreground">
-            Reference configs and one-liners I actually run — no theory, no
-            slide deck.
-          </p>
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             {configs.map((config) => (
               <div key={config.title} className="min-w-0">
