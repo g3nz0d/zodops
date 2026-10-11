@@ -26,7 +26,7 @@ export function SiteHeader() {
         <div className="container-page grid h-[72px] grid-cols-[1fr_auto] items-center md:grid-cols-[1fr_auto_1fr]">
           <Link
             href="/"
-            className="justify-self-start"
+            className="justify-self-start rounded-md outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             aria-label="ZodOps home"
             onClick={() => setOpen(false)}
           >

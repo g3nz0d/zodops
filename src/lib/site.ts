@@ -9,6 +9,10 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/ztagedini",
   years: "15+",
   domains: 4,
+  book: {
+    title: "It's Halloween Once Again",
+    href: "https://www.vitalsource.com/products/it-39-s-halloween-once-again-zodi-tagedini-v9798886543834?srsltid=AU7gw4XYRhAbHlftv5sGgk-T6CZR6XVi-sJ473pNKazVa4y3Exnuo_fo",
+  },
 } as const
 
 export const ctaLabel = "Connect"
