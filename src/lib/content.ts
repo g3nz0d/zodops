@@ -29,7 +29,7 @@ export const topics: Topic[] = [
     slug: "containers",
     name: "Containers",
     label: "Containers",
-    description: "Image hardening, runtime isolation, and Kubernetes posture that does not stall delivery.",
+    description: "Image hardening, runtime isolation, and Kubernetes posture that doesn't stall delivery.",
     longDescription:
       "Practical container security: base image strategy, SBOMs, admission controls, workload identity, and the tradeoffs between scanner noise and actually reducing risk.",
   },
@@ -287,7 +287,7 @@ spec:
     slug: "iam-blast-radius",
     title: "Cloud IAM blast radius: map trust before the incident",
     excerpt:
-      "The resource policy you did not draw is the one the attacker walks. Graph who can assume whom, then cut the edges that surprise you.",
+      "The resource policy you didn't draw is the one the attacker walks. Graph who can assume whom, then cut the edges that surprise you.",
     topic: "cloud-security",
     minutes: 10,
     date: "2026-05-04",
@@ -325,7 +325,7 @@ spec:
   },
   {
     slug: "secret-scanning-that-people-trust",
-    title: "Secret scanning that does not train people to ignore alerts",
+    title: "Secret scanning that doesn't train people to ignore alerts",
     excerpt:
       "Pre-commit, the git host, and runtime detection are three different jobs. Mixing them is how every finding becomes a medium.",
     topic: "devops",
