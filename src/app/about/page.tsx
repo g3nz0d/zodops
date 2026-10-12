@@ -42,9 +42,13 @@ export default function AboutPage() {
             <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
               Enterprise security architect · AI &amp; data security
             </p>
-            <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-foreground italic sm:text-4xl">
+            <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               The model isn&apos;t the risk. Its permissions are.
             </h1>
+            <p className="max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
+              Background in enterprise security architecture, now focused on
+              AI agent permissions and the access they&apos;re given.
+            </p>
           </div>
           <p>
             I&rsquo;m Zodi, a security architect and military veteran in{" "}
