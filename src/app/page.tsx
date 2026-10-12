@@ -12,7 +12,7 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="hero-grid relative flex min-h-[calc(100vh-192px)] w-full items-center border-b border-border/70">
+      <section className="hero-grid relative flex min-h-[calc(100vh-72px)] w-full items-center border-b border-border/70">
         <HeroIntro />
         <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-muted-foreground">
           <span className="text-xs font-medium tracking-[0.16em] uppercase">
