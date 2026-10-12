@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 import { site } from "@/lib/site"
 
 export function SiteFooter() {
@@ -10,9 +8,6 @@ export function SiteFooter() {
           {site.name} · {site.role} · Cloud &amp; DevSecOps
         </p>
         <div className="flex items-center gap-4">
-          <Link href="/contact/" className="hover:text-foreground">
-            Contact
-          </Link>
           <a href={`mailto:${site.email}`} className="hover:text-foreground">
             {site.email}
           </a>

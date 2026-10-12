@@ -7,7 +7,7 @@ export const dynamic = "force-static"
 const BASE_URL = "https://zodops.io"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["/", "/articles/", "/tech/", "/about/", "/contact/"]
+  const staticRoutes = ["/", "/articles/", "/tech/", "/about/"]
   const topicRoutes = topics.map((topic) => `/tech/${topic.slug}/`)
   const articleRoutes = publishedArticles.map(
     (article) => `/articles/${article.slug}/`

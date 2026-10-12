@@ -7,6 +7,7 @@ export const site = {
   role: "Enterprise Security Architect",
   email: "hello@zodops.io",
   linkedin: "https://www.linkedin.com/in/ztagedini",
+  github: "https://github.com/g3nz0d",
   years: "15+",
   domains: 4,
   book: {

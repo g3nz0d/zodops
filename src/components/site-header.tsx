@@ -5,8 +5,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 
+import { GithubIcon } from "@/components/github-icon"
 import { Logo } from "@/components/logo"
-import { ctaHref, ctaLabel, nav } from "@/lib/site"
+import { ctaHref, ctaLabel, nav, site } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
@@ -54,7 +55,16 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="hidden justify-self-end md:block">
+          <div className="hidden items-center gap-2.5 justify-self-end md:flex">
+            <a
+              href={site.github}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="GitHub"
+              className="inline-flex size-9 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted"
+            >
+              <GithubIcon />
+            </a>
             <Link
               href={ctaHref}
               target="_blank"
@@ -114,15 +124,27 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href={ctaHref}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mt-3 inline-flex h-10 items-center justify-center rounded-md bg-brand text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
-              onClick={() => setOpen(false)}
-            >
-              {ctaLabel}
-            </Link>
+            <div className="mt-3 flex items-center gap-2.5">
+              <a
+                href={site.github}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="GitHub"
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted"
+                onClick={() => setOpen(false)}
+              >
+                <GithubIcon />
+              </a>
+              <Link
+                href={ctaHref}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex h-10 flex-1 items-center justify-center rounded-md bg-brand text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
+                onClick={() => setOpen(false)}
+              >
+                {ctaLabel}
+              </Link>
+            </div>
           </nav>
         </div>
       ) : null}
