@@ -35,7 +35,7 @@ const aboutLines: TerminalLine[] = [
 
 export default function AboutPage() {
   return (
-    <section className="container-page py-14 sm:py-16">
+    <section className="container-page flex min-h-[calc(100vh-72px)] flex-col justify-center py-16 sm:py-20">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16">
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
           <div className="space-y-3">
