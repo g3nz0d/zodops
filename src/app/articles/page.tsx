@@ -5,7 +5,7 @@ import { publishedArticles } from "@/lib/content"
 
 export const metadata: Metadata = {
   description:
-    "Implementation-level articles on AI and agent security, data security, field notes, and software supply chain.",
+    "Implementation-level articles on AI and agent security, data security, field notes, and security automation.",
 }
 
 export default function ArticlesPage() {

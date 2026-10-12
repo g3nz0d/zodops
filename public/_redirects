@@ -1,5 +1,6 @@
 /tech/ai-security/ /tech/ai-agent-security/ 301
 /tech/dspm-dlp/ /tech/data-security/ 301
 /tech/cloud-security/ /tech/data-security/ 301
-/tech/devops/ /tech/software-supply-chain/ 301
-/tech/containers/ /tech/software-supply-chain/ 301
+/tech/devops/ /tech/security-automation/ 301
+/tech/containers/ /tech/security-automation/ 301
+/tech/software-supply-chain/ /tech/security-automation/ 301
