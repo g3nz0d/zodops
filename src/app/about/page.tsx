@@ -48,15 +48,19 @@ const aboutLines: TerminalLine[] = [
 export default function AboutPage() {
   return (
     <section className="container-page py-14 sm:py-16">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16">
+      <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
+        Enterprise security architect · AI &amp; data security
+      </p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight italic sm:text-4xl lg:whitespace-nowrap">
+        &ldquo;The model isn&apos;t the risk. Its permissions are.&rdquo;
+      </h1>
+      <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
+        15+ years locking down cloud and data. Now I decide what AI agents can
+        reach.
+      </p>
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-            Enterprise security architect · AI &amp; data security
-          </p>
-          <h1 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight italic sm:text-4xl">
-            &ldquo;The model isn&apos;t the risk. Its permissions are.&rdquo;
-          </h1>
-          <div className="mt-3 max-w-2xl space-y-4 text-[16px] leading-relaxed text-muted-foreground">
+          <div className="max-w-2xl space-y-4 text-[16px] leading-relaxed text-muted-foreground">
             <p>
               I&rsquo;m Zodi, a security architect and military veteran in{" "}
               {site.location}. For 15+ years I&rsquo;ve designed controls for
