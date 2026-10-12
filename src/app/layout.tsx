@@ -36,6 +36,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 -z-10 bg-white bg-cover bg-no-repeat"
+          style={{
+            backgroundImage: "url(/bg-network.webp)",
+            backgroundPosition: "right center",
+          }}
+        />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
