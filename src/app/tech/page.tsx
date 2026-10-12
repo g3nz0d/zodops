@@ -23,9 +23,9 @@ export default function TechPage() {
         Everything here fits into one of these areas. Each topic has
         reference configs I actually run, plus the long-form articles.
       </p>
-      <div className="mt-10 space-y-4">
+      <div className="mt-10 max-w-2xl space-y-4">
         {lead ? <TopicCard topic={lead} featured /> : null}
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {rest.map((topic) => (
             <TopicCard key={topic.slug} topic={topic} />
           ))}

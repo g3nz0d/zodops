@@ -22,7 +22,7 @@ export default function ArticlesPage() {
         implement. Newest first.
       </p>
       {publishedArticles.length > 0 ? (
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-2">
           {publishedArticles.map((article) => (
             <ArticleCard key={article.slug} article={article} />
           ))}
