@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import { TerminalPanel, type TerminalLine } from "@/components/terminal-panel"
 import { site } from "@/lib/site"
@@ -46,7 +45,7 @@ export default function AboutPage() {
         Enterprise security architect. Veteran. Now securing what AI can
         touch.
       </p>
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-16">
+      <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20">
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
           <p>
             I&rsquo;m Zodi, a security architect and military veteran in{" "}
@@ -73,20 +72,6 @@ export default function AboutPage() {
             Working on AI or data security, or stuck on a control that keeps
             getting bypassed? Let&apos;s talk shop.
           </p>
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              href="/articles/"
-              className="inline-flex h-10 items-center rounded-md bg-navy px-4 text-[11px] font-semibold tracking-[0.14em] text-navy-foreground uppercase hover:bg-navy/90"
-            >
-              Read the notes
-            </Link>
-            <a
-              href={`mailto:${site.email}`}
-              className="inline-flex h-10 items-center rounded-md border border-border px-4 text-[11px] font-semibold tracking-[0.14em] uppercase hover:bg-muted"
-            >
-              Get in touch
-            </a>
-          </div>
         </div>
         <TerminalPanel
           title="~/about/zodi.sh"
