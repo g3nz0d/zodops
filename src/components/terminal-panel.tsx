@@ -47,16 +47,16 @@ export function TerminalPanel({
 }) {
   return (
     <div className="overflow-hidden rounded-xl border border-black/8 bg-white shadow-[0_12px_40px_-18px_rgba(15,23,42,0.28)]">
-      <div className="bg-navy px-4 pt-3.5 pb-4">
+      <div className="bg-navy px-4 pt-4 pb-5 sm:px-6 sm:pt-5 sm:pb-6">
         <div className="mb-4 flex items-center gap-2">
-          <span className="size-[9px] rounded-full bg-[#ff5f57]" />
-          <span className="size-[9px] rounded-full bg-[#febc2e]" />
-          <span className="size-[9px] rounded-full bg-[#28c840]" />
-          <span className="ml-2 font-mono text-[10px] tracking-[0.12em] text-white/50 uppercase">
+          <span className="size-[10px] rounded-full bg-[#ff5f57]" />
+          <span className="size-[10px] rounded-full bg-[#febc2e]" />
+          <span className="size-[10px] rounded-full bg-[#28c840]" />
+          <span className="ml-2 font-mono text-[11px] tracking-[0.12em] text-white/50 uppercase">
             {title}
           </span>
         </div>
-        <pre className="font-mono text-[11px] leading-[1.7] sm:text-[12px]">
+        <pre className="overflow-x-auto font-mono text-[11.5px] leading-[1.8] sm:text-[12.5px] xl:text-[13.5px]">
           {lines.map((line, index) => (
             <div key={`${line.text}-${index}`} className={kindClass[line.kind]}>
               {line.text || " "}

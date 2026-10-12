@@ -36,15 +36,16 @@ const aboutLines: TerminalLine[] = [
 export default function AboutPage() {
   return (
     <section className="container-page py-14 sm:py-16">
-      <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        About
-      </p>
-      <h1 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
-        Security architecture for people who still ship.
-      </h1>
-
-      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16">
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
+              About
+            </p>
+            <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Security architecture for people who still ship.
+            </h1>
+          </div>
           <p>
             I&rsquo;m Zodi, a security architect in {site.location}. For 15+
             years I&rsquo;ve worked across cloud, DevOps, containers, and data
