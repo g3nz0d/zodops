@@ -16,12 +16,13 @@ export default function TechPage() {
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
         Topics
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Every domain, no filler
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight italic sm:text-4xl">
+        &ldquo;Where the risk actually lives.&rdquo;
       </h1>
       <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Everything here fits into one of these areas. Each topic has
-        reference configs I actually run, plus the long-form articles.
+        AI agents, sensitive data, and automation are where production gets
+        exposed now. Each topic pairs long-form write-ups with the configs and
+        playbooks I actually run, ready to lift into your own environment.
       </p>
       <div className="mt-10 max-w-2xl space-y-4">
         {lead ? <TopicCard topic={lead} featured /> : null}

@@ -6,7 +6,7 @@ export function CodeBlock({
   code: string
 }) {
   return (
-    <figure className="overflow-hidden rounded-xl bg-navy">
+    <figure className="overflow-hidden rounded-xl border border-brand bg-navy">
       {caption ? (
         <figcaption className="border-b border-white/8 px-4 py-2 font-mono text-[11px] text-white/50">
           {caption}

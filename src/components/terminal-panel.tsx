@@ -46,7 +46,7 @@ export function TerminalPanel({
   showStats?: boolean
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-black/8 bg-white shadow-[0_12px_40px_-18px_rgba(15,23,42,0.28)]">
+    <div className="overflow-hidden rounded-xl border border-brand bg-white shadow-[0_12px_40px_-18px_rgba(15,23,42,0.28)]">
       <div className="bg-navy px-4 pt-4 pb-5 sm:px-6 sm:pt-5 sm:pb-6">
         <div className="mb-4 flex items-center gap-2">
           <span className="size-[10px] rounded-full bg-[#ff5f57]" />

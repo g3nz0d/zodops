@@ -15,7 +15,7 @@ export function ArticleCard({
   return (
     <article
       className={cn(
-        "flex h-full flex-col rounded-xl border border-border bg-white p-6 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.28)] transition-shadow hover:shadow-[0_14px_32px_-16px_rgba(15,23,42,0.38)]",
+        "flex h-full flex-col rounded-xl border border-brand bg-white p-6 shadow-[0_8px_24px_-16px_rgba(15,23,42,0.28)] transition-shadow hover:shadow-[0_14px_32px_-16px_rgba(15,23,42,0.38)]",
         className
       )}
     >
