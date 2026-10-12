@@ -41,7 +41,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-xl border border-border bg-muted px-5 py-6">
+      <div className="rounded-xl border border-brand bg-muted px-5 py-6">
         <p className="font-medium text-foreground">Your mail client should open.</p>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           If it does not, write directly to{" "}

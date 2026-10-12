@@ -5,7 +5,7 @@ import { site } from "@/lib/site"
 export function CtaBanner() {
   return (
     <section className="container-page pb-16">
-      <div className="flex flex-col gap-8 rounded-2xl bg-navy px-7 py-10 sm:px-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+      <div className="flex flex-col gap-8 rounded-2xl border border-brand bg-navy px-7 py-10 sm:px-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <div className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-[2rem]">
             Built, broken, documented.

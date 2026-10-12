@@ -16,7 +16,7 @@ export function ArticleToc({
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="rounded-xl border border-border bg-[#f8f9fb] p-5">
+      <div className="rounded-xl border border-brand bg-[#f8f9fb] p-5">
         {headings.length > 0 ? (
           <>
             <p className="text-[11px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
