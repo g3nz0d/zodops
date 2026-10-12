@@ -14,12 +14,11 @@ export default function ArticlesPage() {
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
         Articles
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Notes that survived production
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight italic sm:text-4xl lg:whitespace-nowrap">
+        &ldquo;The playbook I wish I&rsquo;d had.&rdquo;
       </h1>
-      <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Long-form pieces on the controls, pipelines, and data paths I actually
-        implement. Newest first.
+      <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
+        Implementation-level guides for securing cloud, data, and AI agents.
       </p>
       {publishedArticles.length > 0 ? (
         <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-2">
