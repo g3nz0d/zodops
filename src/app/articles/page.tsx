@@ -5,7 +5,7 @@ import { publishedArticles } from "@/lib/content"
 
 export const metadata: Metadata = {
   description:
-    "Implementation-level articles on DevOps, containers, DSPM/DLP, and cloud security.",
+    "Implementation-level articles on AI and agent security, data security, field notes, and software supply chain.",
 }
 
 export default function ArticlesPage() {
@@ -21,11 +21,17 @@ export default function ArticlesPage() {
         Long-form pieces on the controls, pipelines, and data paths I actually
         implement. Newest first.
       </p>
-      <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {publishedArticles.map((article) => (
-          <ArticleCard key={article.slug} article={article} />
-        ))}
-      </div>
+      {publishedArticles.length > 0 ? (
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {publishedArticles.map((article) => (
+            <ArticleCard key={article.slug} article={article} />
+          ))}
+        </div>
+      ) : (
+        <p className="mt-10 text-muted-foreground">
+          First essays are in progress. Check back soon.
+        </p>
+      )}
     </section>
   )
 }

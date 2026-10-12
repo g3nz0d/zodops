@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/contact-form"
 import { site } from "@/lib/site"
 
 export const metadata: Metadata = {
-  description: "Write to ZodOps about security architecture, DevOps, or data protection work.",
+  description: "Write to ZodOps about security architecture, software supply chain, or data protection work.",
 }
 
 export default function ContactPage() {
@@ -17,7 +17,7 @@ export default function ContactPage() {
         If the problem is real, write.
       </h1>
       <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
-        Architecture reviews, platform security, DSPM/DLP programs, or a
+        Architecture reviews, platform security, data security programs, or a
         question about something on this site. Direct email is{" "}
         <a className="text-brand hover:underline" href={`mailto:${site.email}`}>
           {site.email}

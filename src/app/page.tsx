@@ -49,16 +49,22 @@ export default function HomePage() {
             View all articles
           </Link>
         </div>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {latest.map((article) => (
-            <ArticleCard key={article.slug} article={article} />
-          ))}
-        </div>
+        {latest.length > 0 ? (
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {latest.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-8 text-muted-foreground">
+            First essays are in progress. Check back soon.
+          </p>
+        )}
       </section>
 
       <section className="container-page pb-16 sm:pb-20">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-          Explore by tech
+          Explore by topic
         </h2>
         <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
           {topics.map((topic) => (

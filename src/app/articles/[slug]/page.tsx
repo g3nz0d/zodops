@@ -6,6 +6,7 @@ import { ArticleBody } from "@/components/article-body"
 import { ArticleCard } from "@/components/article-card"
 import { ArticleToc } from "@/components/article-toc"
 import {
+  articles,
   formatDate,
   getArticle,
   publishedArticles,
@@ -15,7 +16,11 @@ import {
 type Props = PageProps<"/articles/[slug]">
 
 export function generateStaticParams() {
-  return publishedArticles.map((article) => ({ slug: article.slug }))
+  // Maps over all articles (not just published ones) so the route always
+  // has at least one static param, which `output: "export"` requires even
+  // while the published list is empty. See the placeholder entry in
+  // `src/lib/content.ts`.
+  return articles.map((article) => ({ slug: article.slug }))
 }
 
 export async function generateMetadata({

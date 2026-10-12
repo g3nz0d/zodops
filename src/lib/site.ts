@@ -1,8 +1,8 @@
 export const site = {
   name: "ZodOps",
-  title: "ZodOps — Security architect notes on DevOps, containers, and data protection",
+  title: "ZodOps — Security architect notes on AI security, data security, and software supply chain",
   description:
-    "Engineering notes on the systems that keep data safe. Long-form, implementation-level writing on DevOps, containers, and DSPM/DLP.",
+    "Engineering notes on the systems that keep data safe. Long-form, implementation-level writing on AI and agent security, data security, and software supply chain.",
   location: "San Diego, CA",
   role: "Enterprise Security Architect",
   email: "hello@zodops.io",

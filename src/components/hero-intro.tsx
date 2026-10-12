@@ -7,7 +7,9 @@ import { site } from "@/lib/site"
 const stats = [
   { value: site.years, label: "Years" },
   { value: "8+", label: "Industries" },
-  { value: `${publishedArticles.length}`, label: "Articles" },
+  ...(publishedArticles.length > 0
+    ? [{ value: `${publishedArticles.length}`, label: "Articles" }]
+    : []),
   {
     value: "1",
     label: "Published Book",
