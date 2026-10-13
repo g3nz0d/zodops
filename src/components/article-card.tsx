@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { type Article, topicBySlug } from "@/lib/content"
+import { type Article, topicBadgeClassName, topicBySlug } from "@/lib/content"
 import { cn } from "@/lib/utils"
 
 export function ArticleCard({
@@ -19,15 +19,18 @@ export function ArticleCard({
         className
       )}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
           {topic.label} · {article.minutes} min
         </p>
-        {article.fieldNotes ? (
-          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] text-brand uppercase">
-            Field Notes
-          </span>
-        ) : null}
+        <span
+          className={cn(
+            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
+            topicBadgeClassName[article.topic]
+          )}
+        >
+          {topic.label}
+        </span>
       </div>
       <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-tight text-foreground">
         <Link href={`/articles/${article.slug}/`} className="hover:text-brand">

@@ -15,6 +15,13 @@ export type Topic = {
   longDescription: string
 }
 
+export const topicBadgeClassName: Record<TopicSlug, string> = {
+  "ai-agent-security": "bg-red-500/10 text-red-600",
+  "data-security": "bg-emerald-500/10 text-emerald-600",
+  "field-notes": "bg-brand/10 text-brand",
+  "security-automation": "bg-yellow-500/20 text-yellow-700",
+}
+
 export const topics: Topic[] = [
   {
     slug: "ai-agent-security",

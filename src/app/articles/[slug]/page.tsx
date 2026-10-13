@@ -9,8 +9,10 @@ import {
   formatDate,
   getArticle,
   publishedArticles,
+  topicBadgeClassName,
   topicBySlug,
 } from "@/lib/content"
+import { cn } from "@/lib/utils"
 
 type Props = PageProps<"/articles/[slug]">
 
@@ -53,11 +55,14 @@ export default async function ArticlePage({ params }: Props) {
           {" · "}
           {article.minutes} min · {formatDate(article.date)}
         </p>
-        {article.fieldNotes ? (
-          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] text-brand uppercase">
-            Field Notes
-          </span>
-        ) : null}
+        <span
+          className={cn(
+            "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
+            topicBadgeClassName[article.topic]
+          )}
+        >
+          {topic.label}
+        </span>
       </div>
       <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.5rem] sm:leading-tight">
         {article.title}
