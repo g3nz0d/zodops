@@ -227,17 +227,37 @@ export const articles: Article[] = [
   },
   {
     slug: "rollout-playbook-without-stalling-engineering",
-    title: "Getting a security tool adopted without becoming the thing that stalls the sprint",
+    title: "Guardrail, Not Roadblock.",
     excerpt:
-      "The rollout fails in the first two weeks, not the first two months. Lead with the fastest path to a false positive, and fix that before you ask anyone to trust the tool.",
+      "Getting a security tool adopted without becoming the thing that stalls the sprint.",
     topic: "field-notes",
-    minutes: 9,
-    date: "2026-07-14",
+    minutes: 5,
+    date: "2026-10-13",
     fieldNotes: true,
     body: [
       {
         type: "p",
-        text: "The moment a new policy engine or scanner blocks someone's actual deploy on day three, it stops mattering how good the detection logic is. That one bad experience becomes the story the org tells about security tooling for the next year. Rollouts fail in the first two weeks, almost never in the first two months — by then the opinion is already set.",
+        text: "A new security tool usually succeeds or fails in its first few weeks, not its first few months. By the time the dashboards look healthy, engineering has already decided whether the tool is a guardrail or an obstacle, and that opinion is hard to change.",
+      },
+      {
+        type: "p",
+        text: "The decision rarely comes down to detection quality. It comes down to the first time the tool gets in someone's way.",
+      },
+      {
+        type: "h2",
+        text: "What it looks like in practice",
+      },
+      {
+        type: "p",
+        text: "It's Wednesday afternoon. A team has a fix ready for a customer-facing bug, and the new admission policy blocks the deploy. The cause is a base image flagged for a vulnerability that has nothing to do with the change. The error message names a policy ID and nothing else. There's no documented way around it, so the engineer posts in the security channel and waits. The fix ships Friday.",
+      },
+      {
+        type: "p",
+        text: "Nothing in that chain was technically wrong. The policy fired correctly. But the team now has a story about security tooling, and they'll tell it at every planning meeting for the next year.",
+      },
+      {
+        type: "p",
+        text: "The goal of a rollout is to make sure that story never gets written. Everything below serves that goal.",
       },
       {
         type: "h2",
@@ -245,7 +265,30 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Run the new control in monitor-only mode for a defined window before enforcing anything. Use that window to find and fix the predictable false positives — the CI service account that looks like an attacker, the known debug tool that keeps tripping the secret scanner — before you've ever actually blocked a real person's work.",
+        text: "Run the new control in monitor-only mode for a defined window before enforcing anything. Use that time to find the predictable false positives and fix them before they ever block a real person's work. Typical examples are the CI service account that looks like an attacker, or the known debug tool that keeps tripping the secret scanner.",
+      },
+      {
+        type: "p",
+        text: "Two things make observe mode work:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Set exit criteria up front. Decide in advance what false-positive rate, coverage, and team sign-off mean \"ready to enforce.\" Without them, observe mode quietly becomes permanent, and you've deployed an expensive log.",
+          "Graduate the enforcement. Go from observe, to warn, to block. A warning with a clear message and a date (\"this will block starting the 15th\") gives teams time to fix things on their own schedule instead of yours.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Make every block actionable",
+      },
+      {
+        type: "p",
+        text: "When the control does block something, the message is the user experience. \"Policy violation: CIS-4.2.1\" tells an engineer they've been stopped. \"This image runs as root. Add USER 1000 to your Dockerfile, or request an exception here\" tells them how to move forward.",
+      },
+      {
+        type: "p",
+        text: "Every block should answer three questions: what happened, how to fix it, and who to contact if the tool is wrong. A finding without a fix is just a delay.",
       },
       {
         type: "h2",
@@ -253,7 +296,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Don't launch broadly. Pick a team with an existing working relationship with security, a review cadence that can absorb a few early misses, and a visible owner on their side — not the highest-risk team, and not a hostile one. An early win compounds: that team becomes the one that tells the next team it's fine, which does more for adoption than any amount of documentation.",
+        text: "Don't launch broadly. Start with a team that has an existing working relationship with security, a cadence that can absorb a few early misses, and a visible owner on their side. Avoid both the highest-risk team and the most skeptical one for the first round; you'll get to them with evidence in hand.",
+      },
+      {
+        type: "p",
+        text: "Early wins compound. The first team becomes the one that tells the next team it's fine, and that does more for adoption than any amount of documentation.",
       },
       {
         type: "h2",
@@ -261,20 +308,44 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Whoever is enforcing the control needs a documented, time-boxed exception process in place before launch, not one improvised in a Slack thread during an incident. If the only way around a block is \"ping security and wait,\" you've built a bottleneck, not a control, and that's the version people route around permanently.",
+        text: "Have a documented, time-boxed exception process ready before launch, not improvised in a Slack thread during an incident. A good exception has an owner, a reason, and an expiry date, and it's logged so you can see which rules generate the most of them. Those rules are often the ones that need tuning.",
+      },
+      {
+        type: "p",
+        text: "Include a break-glass path for genuine emergencies, with after-the-fact review rather than up-front approval.",
+      },
+      {
+        type: "p",
+        text: "If the only way around a block is \"ping security and wait,\" you've built a bottleneck, not a control. That's the version people route around permanently.",
+      },
+      {
+        type: "h2",
+        text: "What to do",
       },
       {
         type: "ul",
         items: [
-          "Measure false-positive rate for at least two sprints before widening scope.",
-          "Give the rollout a named owner on the platform or engineering side, not just security.",
-          "Publish what got blocked and why, every week, during the rollout window. Silence reads as surveillance.",
-          "Design the exception process with the same care as the detection logic. It's part of the control, not an afterthought to it.",
+          "Define observe-mode exit criteria before you start, so monitoring doesn't become the destination.",
+          "Measure the false-positive rate for at least two sprints before widening scope.",
+          "Roll out in stages: observe, warn with a date, then block.",
+          "Make every block message actionable: what happened, how to fix it, and how to get help.",
+          "Give the rollout a named owner on the engineering or platform side, not just in security.",
+          "Publish what got blocked and why every week during rollout. Silence reads as surveillance.",
+          "Design the exception process with the same care as the detection logic, including expiry dates and a break-glass path. It's part of the control, not an afterthought.",
+          "Track time-to-unblock, not just findings. It's the metric engineers actually feel.",
         ],
       },
       {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
         type: "p",
-        text: "A tool that's technically correct and operationally resented gets uninstalled eventually — just slowly, and usually after the next reorg. Land the trust first. The coverage follows.",
+        text: "A tool that's technically correct but operationally resented doesn't fail loudly. It gets bypassed, exempted, and eventually uninstalled, usually after the next reorg.",
+      },
+      {
+        type: "p",
+        text: "Earn the trust first. The coverage follows.",
       },
     ],
   },

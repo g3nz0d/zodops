@@ -67,8 +67,9 @@ export default async function ArticlePage({ params }: Props) {
       </p>
       {article.fieldNotes ? (
         <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground/80 italic">
-          Field Notes: reasoning through something newer rather than settled
-          guidance — read accordingly.
+          Field Notes: working through something still being figured out,
+          not settled guidance. Read it as one practitioner&rsquo;s
+          playbook, and adapt freely.
         </p>
       ) : null}
 
