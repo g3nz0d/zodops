@@ -1,4 +1,5 @@
 import { CodeBlock } from "@/components/code-block"
+import { TableBlock } from "@/components/table-block"
 import type { Block } from "@/lib/content"
 import { slugifyHeading } from "@/lib/content"
 
@@ -41,7 +42,10 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             </ul>
           )
         }
-        return <CodeBlock key={index} caption={block.caption} code={block.code} />
+        if (block.type === "code") {
+          return <CodeBlock key={index} caption={block.caption} code={block.code} />
+        }
+        return <TableBlock key={index} headers={block.headers} rows={block.rows} />
       })}
     </div>
   )

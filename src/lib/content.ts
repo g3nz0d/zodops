@@ -66,6 +66,7 @@ export type Block =
   | { type: "h2"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "code"; caption?: string; code: string }
+  | { type: "table"; headers: string[]; rows: string[][] }
 
 export type Article = {
   slug: string
@@ -1136,6 +1137,236 @@ async function injectionRegression(fixtures, classify) {
       {
         type: "p",
         text: "Let it read, rank, and summarize. Don't let it be the reason an alert disappears.",
+      },
+    ],
+  },
+  {
+    slug: "dspm-dlp-shadow-ai-leaks",
+    title: "The Paste Is the Leak",
+    excerpt:
+      "Running DSPM and DLP to hunt for shadow AI taught me two things: the leaks are bigger than you expect, and much of the noise comes from the AI tools you already approved.",
+    topic: "data-security",
+    minutes: 8,
+    date: "2026-03-17",
+    body: [
+      {
+        type: "p",
+        text: "When we set out to find shadow AI usage, I expected the work to be mostly about discovery: which AI tools are people using, and which ones did nobody approve? That part turned out to be the easy half.",
+      },
+      {
+        type: "p",
+        text: "The harder half was what people were sending to those tools. Once DSPM and DLP were pointed at the problem together, the volume of sensitive data leaving through prompts, pastes, and uploads was larger than I expected, and some of the most serious findings weren't customer records at all. They were credentials. AWS secret keys, pasted into AI chats by people trying to debug something.",
+      },
+      {
+        type: "p",
+        text: "This is what that work looked like, what surprised me, and how I'd design the policies if I were starting again.",
+      },
+      {
+        type: "h2",
+        text: "How the stack fits together",
+      },
+      {
+        type: "p",
+        text: "No single tool sees the whole picture, so the job is making each one do the part it's best at:",
+      },
+      {
+        type: "ul",
+        items: [
+          "DSPM finds the data at rest. We used Cyera to discover and classify where sensitive data lives across cloud and SaaS stores, and who can reach it. That answers the question DLP can't answer on its own: what's worth protecting, and where is it?",
+          "Endpoint and Microsoft 365 DLP see the user's actions. Purview covers labels, documents, and activity on managed devices, including paste and upload into browser-based AI tools.",
+          "Inline DLP sees the traffic. Zscaler inspects data in motion at the network edge, which is where you see which AI apps are actually in use and what's being sent to them.",
+        ],
+      },
+      {
+        type: "p",
+        text: "DSPM tells DLP what matters. DLP tells you where it's going. Shadow AI shows up in the gap between the two: sensitive data that DSPM says belongs in a governed store, appearing in traffic to an AI app nobody approved.",
+      },
+      {
+        type: "h2",
+        text: "Surprise one: the worst leaks were secrets",
+      },
+      {
+        type: "p",
+        text: "I expected to find customer data and internal documents in AI prompts, and we did. What I didn't expect was how often the most dangerous thing in a prompt was a credential.",
+      },
+      {
+        type: "p",
+        text: "The pattern makes sense once you see it. An engineer hits an error, copies the stack trace, config file, or log output, and pastes it into an AI assistant to ask what went wrong. That block of text often contains an access key, a token, or a connection string. Nobody meant to share a secret. They meant to fix a bug.",
+      },
+      {
+        type: "p",
+        text: "The detection itself is something the platforms handle well, and it's worth understanding why. An AWS access key ID has a recognizable prefix, but the secret that goes with it is just 40 random-looking characters, which could match plenty of harmless strings. The reliable signal is the two appearing together, and good detectors score that combination far higher than either piece alone. When you review a credential detector's settings, that's the behavior to look for.",
+      },
+      {
+        type: "h2",
+        text: "When a key leaks, the DLP tool's job is done and yours starts",
+      },
+      {
+        type: "p",
+        text: "A DLP alert tells you a credential left. It doesn't revoke it. Any credential that reached an outside AI service has to be treated as exposed, even if the user deletes the chat, because you don't control that provider's logs or retention.",
+      },
+      {
+        type: "p",
+        text: "For a long-lived AWS access key, the first response is a few commands. You can run them by hand, or trigger them from an automation workflow when the DLP alert fires:",
+      },
+      {
+        type: "code",
+        code: String.raw`KEY_ID="AKIA..."   # from the DLP event
+
+# 1. Find which IAM user owns the key, and when it was last used.
+USER_NAME=$(aws iam get-access-key-last-used --access-key-id "$KEY_ID" \
+  --query 'UserName' --output text)
+
+# 2. Deactivate it. Unlike deleting, this is reversible if something
+#    in production depended on the key.
+aws iam update-access-key --user-name "$USER_NAME" \
+  --access-key-id "$KEY_ID" --status Inactive
+
+# 3. See what the key has done recently.
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=AccessKeyId,AttributeValue="$KEY_ID" \
+  --max-results 50`,
+      },
+      {
+        type: "p",
+        text: "A few details matter here:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Deactivate first, delete later. Once the owning team has issued a replacement and updated whatever used the old key, delete it.",
+          "CloudTrail's event history covers 90 days of management events, one region at a time. Check every region the account uses, or query your SIEM or CloudTrail Lake for the full picture.",
+          "Keys starting with ASIA are temporary credentials issued to a role. You can't deactivate them in IAM; instead, revoke the role's active sessions, which denies any credentials issued before that moment.",
+          "Fix the source. Find the config file, repo, or environment the key came from, so the next paste doesn't leak it again.",
+          "Talk to the user without blame. They were trying to do their job. The conversation should end with them knowing a safer way to get the same help.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Surprise two: much of the noise was the approved AI",
+      },
+      {
+        type: "p",
+        text: "The other big lesson was about false positives. Early on, a large share of AI-related DLP alerts came from people using the AI tools the company had already approved, doing exactly what they were supposed to do.",
+      },
+      {
+        type: "p",
+        text: "The cause was policy built on destinations. Many AI services use the same domain for corporate and personal accounts. Someone using the company's enterprise AI tenant, with its contractual data protections, and someone using a free personal account on the same service can look nearly identical if your policy only checks where traffic is going.",
+      },
+      {
+        type: "p",
+        text: "Once we accounted for which instance the user was in, not just which app, the false positives dropped noticeably. The real question isn't \"is this AI?\" It's \"is this our AI?\"",
+      },
+      {
+        type: "p",
+        text: "That means policy should key on the pair of instance and data class, not the domain:",
+      },
+      {
+        type: "table",
+        headers: ["", "Public", "Internal", "Customer data", "Credentials"],
+        rows: [
+          ["Corporate AI tenant", "Allow", "Allow", "Allow and log", "Block"],
+          ["Personal account", "Allow", "Coach", "Block", "Block"],
+          ["Unknown or unsanctioned", "Allow", "Coach", "Block", "Block"],
+        ],
+      },
+      {
+        type: "p",
+        text: "Two rows deserve a note. Credentials are blocked even in the corporate tenant: an enterprise AI agreement protects how your data is used, but it doesn't make pasting a production key into a chat a good idea. And when the instance can't be determined, the \"unknown\" row should behave like personal, not corporate.",
+      },
+      {
+        type: "p",
+        text: "How you identify the instance depends on your stack. Common mechanisms include tenant restrictions, which let the proxy allow sign-in only to your organization's tenant for a given service; signals from your single sign-on provider; and tenant or workspace identifiers your inline inspection can read.",
+      },
+      {
+        type: "h2",
+        text: "Designing DLP policies that hold up",
+      },
+      {
+        type: "p",
+        text: "The table above is the heart of the policy, but most of the difference between a DLP program people trust and one they resent comes from how the policies are built and run. These are the practices I'd start with.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Design from data classes and channels, not vendor templates. Out-of-the-box policies are a useful starting point, but they're written for everyone, which means they fit no one exactly. Define your own small set of data classes, agree on them with the business, and make sure DSPM classifications and DLP labels mean the same thing across every tool. If two tools give different answers to \"is this sensitive?\", users will find the gap before you do.",
+          "Tie the action to confidence and volume. A single high-confidence credential warrants a block. One customer email address in a message probably warrants nothing; five hundred of them warrants a block. Set thresholds per data class, and reserve hard blocks for high-confidence, high-impact matches.",
+          "Run every new policy in audit mode first. Most platforms let you run a policy in simulation or audit-only mode. Use it for a defined window, review what would have fired, tune, and only then enforce. A policy that blocks real work in its first week loses trust it rarely gets back.",
+          "Make every policy enforceable on every channel. If customer data is blocked in the browser but allowed through a desktop app or a sync client, the policy hasn't reduced risk; it has redirected it. Map each rule to endpoint, inline, and SaaS enforcement, and note any channel you can't cover.",
+          "One intent per policy, with a name and an owner. A naming convention like AI-CREDENTIAL-ALL-BLOCK or AI-CUSTOMER-PERSONAL-BLOCK makes it obvious what a policy does when it shows up in an alert. Each policy needs an owner who reviews its results, plus a clear order of precedence, so overlapping rules don't produce conflicting outcomes.",
+          "Write the user message as carefully as the rule. The notification is the policy's user interface. Tell people what was detected, why it matters, and what to do instead, ideally with a link to the approved tool. \"This looks like customer data. Use the company AI assistant instead\" stops more leaks than a generic \"blocked by policy.\"",
+          "Coach before you block, and read the overrides. For lower-risk cases, let users proceed with a business justification. Those justifications are free feedback: if people keep overriding the same rule with the same reason, the rule is wrong, or a team is missing a tool they need.",
+          "Scope exceptions narrowly and give them expiry dates. Exclude specific groups or service accounts only with a reason, an owner, and an end date, never broad \"temporary\" carve-outs that become permanent.",
+          "Collect only the evidence you need. DLP events can capture the content that triggered them, which makes your DLP console a new store of sensitive data. Limit who can see captured content, set a retention period, and check what your privacy and works-council obligations require before turning on full capture.",
+          "Measure each policy and retire the dead ones. Track the false-positive rate, override rate, and time to remediate for every policy. A rule that never fires, or only ever fires wrongly, is overhead; remove or rewrite it.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Test your policies like a user would",
+      },
+      {
+        type: "p",
+        text: "Policies drift. Apps change domains, tenants get added, and vendors update detectors. The only way to know a policy still works is to try to break it.",
+      },
+      {
+        type: "p",
+        text: "Build a small set of test cases with dummy data, and run them on a schedule and after every policy change:",
+      },
+      {
+        type: "table",
+        headers: ["Test content", "Corporate AI tenant", "Personal account"],
+        rows: [
+          ["Fake AWS key ID and secret together", "Block", "Block"],
+          [
+            "Synthetic customer record (fake name, email, account, contract value)",
+            "Allow and log",
+            "Block",
+          ],
+          ["Text from a document labeled Internal", "Allow", "Coach"],
+          ["Public marketing copy", "Allow", "Allow"],
+        ],
+      },
+      {
+        type: "p",
+        text: "Paste each one from a managed test device into both a corporate and a personal account, and compare what happens with the expected result. Any mismatch is a finding.",
+      },
+      {
+        type: "p",
+        text: "Use clearly fake values that still match the real format. AWS publishes example credentials in its documentation (AKIAIOSFODNN7EXAMPLE), but some detectors deliberately ignore those well-known examples, so a randomly generated key in the correct format may be a better test. Never use real data, and tell your SOC before you run tests, so they don't open an incident on your own test.",
+      },
+      {
+        type: "h2",
+        text: "What to do",
+      },
+      {
+        type: "ul",
+        items: [
+          "Pair DSPM with DLP. DSPM finds and classifies data at rest; DLP shows where it moves. Neither finds shadow AI leaks well alone.",
+          "Align data classes across tools before writing policies.",
+          "Treat credentials as their own data class, and confirm your detectors score key-and-secret combinations highest.",
+          "Assume any credential sent to an outside AI tool is exposed: deactivate, investigate, rotate, and fix the source.",
+          "Write AI policy on instance and data class, not domain, and treat unknown instances as personal.",
+          "Block credentials everywhere, including in approved AI tools.",
+          "Run new policies in audit mode before enforcing them.",
+          "Tie actions to confidence and volume, with hard blocks reserved for high-impact matches.",
+          "Name, own, and measure every policy; retire the ones that don't earn their keep.",
+          "Write clear user messages, coach before blocking, and use override reasons to tune.",
+          "Limit captured evidence and treat the DLP console as sensitive.",
+          "Test policies with dummy data on a schedule and after every change.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "Finding shadow AI isn't really about the AI. It's about the data people hand it, and most of them aren't trying to leak anything. They're trying to get work done faster.",
+      },
+      {
+        type: "p",
+        text: "Give them a safe place to do that, know which tool they're actually in, and treat every leaked key like the open door it is.",
       },
     ],
   },
