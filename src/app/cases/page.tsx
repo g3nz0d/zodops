@@ -33,13 +33,11 @@ export default function CasesPage() {
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
         Cases
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Cases
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight italic sm:text-4xl lg:whitespace-nowrap">
+        &ldquo;The work is real. The names aren&rsquo;t.&rdquo;
       </h1>
-      <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Case studies from security programs: the problem, what I did, and what
-        changed. Company details are anonymized composites; the controls and
-        failure modes are from real work.
+      <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
+        Anonymized case studies: the problem, what I did, and what changed.
       </p>
 
       <div className="mt-14">
