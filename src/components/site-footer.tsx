@@ -11,6 +11,9 @@ export function SiteFooter() {
           <a href={`mailto:${site.email}`} className="hover:text-foreground">
             {site.email}
           </a>
+          <a href="/rss.xml" className="hover:text-foreground">
+            RSS
+          </a>
           <p>{site.location}</p>
         </div>
       </div>

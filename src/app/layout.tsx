@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   title: site.name,
   description: site.description,
   metadataBase: new URL("https://zodops.io"),
+  alternates: {
+    types: {
+      "application/rss+xml": "/rss.xml",
+    },
+  },
   openGraph: {
     title: site.title,
     description: site.description,

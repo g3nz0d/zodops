@@ -1,5 +1,6 @@
 export const topicSlugs = [
   "ai-agent-security",
+  "cloud-security",
   "data-security",
   "field-notes",
   "security-automation",
@@ -17,6 +18,7 @@ export type Topic = {
 
 export const topicBadgeClassName: Record<TopicSlug, string> = {
   "ai-agent-security": "bg-red-500/10 text-red-600",
+  "cloud-security": "bg-violet-500/10 text-violet-600",
   "data-security": "bg-emerald-500/10 text-emerald-600",
   "field-notes": "bg-brand/10 text-brand",
   "security-automation": "bg-yellow-500/20 text-yellow-700",
@@ -31,6 +33,15 @@ export const topics: Topic[] = [
       "Prompt injection as an exfil path, MCP server and tool-permission trust, agent identity, and GenAI oversharing.",
     longDescription:
       "Where models, agents, and sensitive data meet: prompt injection as an exfil path, trust boundaries on MCP servers and tool permissions, agent identity, and GenAI oversharing — the Copilot or Glean search that surfaces a file a user shouldn't see.",
+  },
+  {
+    slug: "cloud-security",
+    name: "Cloud Security",
+    label: "Cloud Security",
+    description:
+      "IAM, SCPs, and the identity boundary that actually decides who can touch what, across AWS and Azure.",
+    longDescription:
+      "The identity and permission layer underneath everything else: IAM roles and policies, SCPs and guardrails, cross-account and cross-tenant access, and the gap between what a console shows and what a principal can actually do, in both AWS and Azure.",
   },
   {
     slug: "data-security",
@@ -1382,6 +1393,7 @@ export type ConfigSnippet = {
 
 export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
   "ai-agent-security": [],
+  "cloud-security": [],
   "data-security": [
     {
       title: "Service-account inventory in one line",
