@@ -20,11 +20,14 @@ export function LogoMark({ className }: { className?: string }) {
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <LogoMark className="size-[30px] shrink-0" />
-      <span className="text-[17px] font-semibold tracking-tight text-foreground">
-        ZodOps
-      </span>
-    </span>
+    // Decorative: the header link already has an accessible name.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/zodops-logo.png"
+      alt=""
+      width={435}
+      height={144}
+      className={cn("h-8 w-auto sm:h-9", className)}
+    />
   )
 }
