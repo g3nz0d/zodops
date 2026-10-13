@@ -1377,6 +1377,7 @@ export type ConfigSnippet = {
   description: string
   language: string
   code: string
+  note?: string
 }
 
 export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
@@ -1385,29 +1386,36 @@ export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
     {
       title: "Service-account inventory in one line",
       description:
-        "The query that replaces a 40-page DSPM questionnaire: who can write, from where.",
+        "Which identity each workload runs as: the first question a DSPM review should answer.",
       language: "bash",
-      code: `kubectl get deploy,cronjob -A -o json \\
+      code: `kubectl get deploy,statefulset,daemonset,cronjob -A -o json \\
   | jq -r '.items[]
-    | [.metadata.namespace, .metadata.name,
-       (.spec.template.spec.serviceAccountName // "default")]
-    | @tsv'`,
+      | (.spec.jobTemplate.spec.template.spec // .spec.template.spec) as $p
+      | [.kind, .metadata.namespace, .metadata.name,
+         ($p.serviceAccountName // "default")]
+      | @tsv'`,
     },
     {
       title: "Deny cross-account KMS decrypt (SCP)",
       description:
-        "An org-level SCP that stops roles in other accounts from decrypting prod-tagged keys, without touching any key policy.",
+        "An org-level SCP that stops roles in other accounts within your organization from decrypting prod-tagged keys, without touching any key policy.",
       language: "json",
       code: `{
-  "Sid": "DenyCrossAccountDecryptOfProdKeys",
-  "Effect": "Deny",
-  "Action": "kms:Decrypt",
-  "Resource": "*",
-  "Condition": {
-    "StringEquals": { "aws:ResourceTag/env": "prod" },
-      "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
-  }
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyCrossAccountDecryptOfProdKeys",
+      "Effect": "Deny",
+      "Action": "kms:Decrypt",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": { "aws:ResourceTag/env": "prod" },
+        "StringNotEquals": { "aws:PrincipalAccount": "111111111111" }
+      }
+    }
+  ]
 }`,
+      note: "111111111111 is a placeholder — replace it with your production account ID. The protection depends on the env=prod tag, so pair this with a rule restricting who can retag KMS keys, and test in audit mode first: legitimate cross-account patterns like centralized backup, logging, or deployment accounts can break.",
     },
   ],
   "field-notes": [],

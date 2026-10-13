@@ -68,6 +68,11 @@ export default async function TopicPage({ params }: Props) {
                 <div className="mt-3">
                   <CodeBlock code={config.code} />
                 </div>
+                {config.note ? (
+                  <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground/80 italic">
+                    {config.note}
+                  </p>
+                ) : null}
               </div>
             ))}
           </div>
