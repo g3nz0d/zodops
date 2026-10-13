@@ -35,7 +35,7 @@ npm start
 
 Add a new article by appending an object to `articles` in `src/lib/content.ts`. The writing index, topic pages, and article URLs update from that list.
 
-Case studies live in `src/lib/work.ts`. Keep `draft: true` until bracketed placeholders like `[X%]` are filled in. Drafts show in `npm run dev` (including the Work nav link) and are omitted from the production build, sitemap, and RSS feed. When you set `draft: false` on at least one study, `/work/` and the nav link appear automatically.
+Case studies live in `src/lib/work.ts`. Keep `draft: true` until bracketed placeholders like `[X%]` are filled in. Drafts show in `npm run dev` (including the Cases nav link) and are omitted from the production build, sitemap, and RSS feed. When you set `draft: false` on at least one study, `/cases/` and the nav link appear automatically.
 
 ```bash
 npm run check:placeholders

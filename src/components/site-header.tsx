@@ -8,14 +8,14 @@ import { Menu, X } from "lucide-react"
 import { GithubIcon } from "@/components/github-icon"
 import { Logo } from "@/components/logo"
 import { ctaHref, ctaLabel, nav, site } from "@/lib/site"
-import { isWorkVisible } from "@/lib/work"
+import { isCasesVisible } from "@/lib/work"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const items = nav.filter(
-    (item) => item.href !== "/work/" || isWorkVisible()
+    (item) => item.href !== "/cases/" || isCasesVisible()
   )
 
   useEffect(() => {

@@ -3,3 +3,5 @@
 /tech/devops/ /tech/security-automation/ 301
 /tech/containers/ /tech/security-automation/ 301
 /tech/software-supply-chain/ /tech/security-automation/ 301
+/work/ /cases/ 301
+/work/* /cases/:splat 301

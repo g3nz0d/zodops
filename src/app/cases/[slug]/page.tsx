@@ -13,7 +13,7 @@ import {
 } from "@/lib/work"
 import { cn } from "@/lib/utils"
 
-type Props = PageProps<"/work/[slug]">
+type Props = PageProps<"/cases/[slug]">
 
 export function generateStaticParams() {
   return caseStudies.map((study) => ({ slug: study.slug }))
@@ -28,8 +28,7 @@ export async function generateMetadata({
     return {}
   }
   const title = `${study.title} · ZodOps`
-  const description =
-    "How I paired DSPM with endpoint and inline DLP to find shadow AI usage and leaked credentials, and cut false positives by distinguishing corporate from personal AI instances."
+  const description = study.description
   return {
     title,
     description,
@@ -61,14 +60,14 @@ export default async function CaseStudyPage({ params }: Props) {
           {study.minutes} min
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {study.topics.map((slug) => {
-            const item = topicBySlug(slug)
+          {study.topics.map((topicSlug) => {
+            const item = topicBySlug(topicSlug)
             return (
               <span
-                key={slug}
+                key={topicSlug}
                 className={cn(
                   "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
-                  topicBadgeClassName[slug]
+                  topicBadgeClassName[topicSlug]
                 )}
               >
                 {item.label}

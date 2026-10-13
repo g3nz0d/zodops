@@ -40,7 +40,7 @@ export function CaseStudyCard({
         </div>
       </div>
       <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-tight text-foreground">
-        <Link href={`/work/${study.slug}/`} className="hover:text-brand">
+        <Link href={`/cases/${study.slug}/`} className="hover:text-brand">
           {study.title}
         </Link>
       </h3>
@@ -51,7 +51,7 @@ export function CaseStudyCard({
         {study.tools.join(" · ")}
       </p>
       <Link
-        href={`/work/${study.slug}/`}
+        href={`/cases/${study.slug}/`}
         className="mt-6 text-[11px] font-semibold tracking-[0.16em] text-brand uppercase hover:underline"
       >
         Read →

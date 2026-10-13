@@ -33,8 +33,8 @@ export function buildRssFeed(): string {
     </item>`
   })
 
-  const workItems = publishedCaseStudies.map((study) => {
-    const url = `${BASE_URL}/work/${study.slug}/`
+  const caseItems = publishedCaseStudies.map((study) => {
+    const url = `${BASE_URL}/cases/${study.slug}/`
     const topic = primaryTopic(study)
     return `    <item>
       <title>${escapeXml(study.title)}</title>
@@ -45,7 +45,7 @@ export function buildRssFeed(): string {
     </item>`
   })
 
-  const items = [...articleItems, ...workItems].join("\n")
+  const items = [...articleItems, ...caseItems].join("\n")
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

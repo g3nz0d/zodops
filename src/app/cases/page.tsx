@@ -2,18 +2,18 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { CaseStudyCard } from "@/components/case-study-card"
-import { isWorkVisible, visibleCaseStudies } from "@/lib/work"
+import { isCasesVisible, visibleCaseStudies } from "@/lib/work"
 
 export function generateMetadata(): Metadata {
-  if (!isWorkVisible()) {
+  if (!isCasesVisible()) {
     return {}
   }
   return {
-    title: "Work · ZodOps",
+    title: "Cases · ZodOps",
     description:
       "Anonymized case studies from enterprise security programs: AI security, data security, and cloud security.",
     openGraph: {
-      title: "Work · ZodOps",
+      title: "Cases · ZodOps",
       description:
         "Anonymized case studies from enterprise security programs: AI security, data security, and cloud security.",
       type: "website",
@@ -21,8 +21,8 @@ export function generateMetadata(): Metadata {
   }
 }
 
-export default function WorkPage() {
-  if (!isWorkVisible()) {
+export default function CasesPage() {
+  if (!isCasesVisible()) {
     notFound()
   }
 
@@ -31,14 +31,15 @@ export default function WorkPage() {
   return (
     <section className="container-page py-14 sm:py-16">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        Work
+        Cases
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        Work
+        Cases
       </h1>
       <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Case studies from real security programs: the problem, what I did, and
-        what changed. Details are anonymized; the work is real.
+        Case studies from security programs: the problem, what I did, and what
+        changed. Company details are anonymized composites; the controls and
+        failure modes are from real work.
       </p>
 
       <div className="mt-14">

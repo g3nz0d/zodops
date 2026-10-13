@@ -11,6 +11,7 @@ export type CaseStudy = {
   slug: string
   title: string
   excerpt: string
+  description: string
   subtitle: string
   topics: TopicSlug[]
   tools: string[]
@@ -25,20 +26,21 @@ export const caseStudies: CaseStudy[] = [
     slug: "finding-shadow-ai",
     title: "Finding Shadow AI Before It Found Us",
     excerpt:
-      "Employees were sending sensitive data, including AWS secret keys, to AI tools nobody had approved. I paired DSPM with endpoint and inline DLP to find it, then rebuilt policy around corporate versus personal AI instances, cutting false positives by [X%].",
+      "Employees were sending sensitive data, including AWS secret keys, to AI tools nobody had approved. I paired DSPM with endpoint and inline DLP to find it, then rebuilt policy around corporate versus personal AI instances, cutting false positives by about two-thirds.",
+    description:
+      "How I paired DSPM with endpoint and inline DLP to find shadow AI usage and leaked credentials, and cut false positives by distinguishing corporate from personal AI instances.",
     subtitle: "Case study · Data Security · AI Security",
     topics: ["data-security", "ai-agent-security"],
     tools: ["Cyera", "Microsoft Purview", "Zscaler"],
     minutes: 5,
-    draft: true,
     glance: [
       {
         label: "Environment",
-        value: "Large enterprise, [industry], [approximate number] employees",
+        value: "Large healthcare enterprise, about 20,000 employees",
       },
       {
         label: "My role",
-        value: "[Your title], [lead / one of N engineers] on the program",
+        value: "Enterprise Security Architect, lead on the program",
       },
       {
         label: "Tools",
@@ -47,7 +49,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         label: "Timeline",
-        value: "[Duration, e.g., 4 months from scoping to enforcement]",
+        value: "Four months from scoping to enforcement",
       },
     ],
     body: [
@@ -114,8 +116,8 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**Shadow AI usage was broader than expected:** [number] AI applications in use, [number] of them unsanctioned.",
-          "**Sensitive data was leaving through prompts and pastes,** including [types, e.g., customer data, internal documents].",
+          "**Shadow AI usage was broader than expected:** roughly 30 AI applications in use, most of them unsanctioned.",
+          "**Sensitive data was leaving through prompts and pastes,** including patient-adjacent records, internal protocol documents, and engineering config.",
           "**The most serious findings were credentials.** AWS secret keys and other secrets were being pasted into AI chats, usually by engineers debugging an error with logs or config files.",
         ],
       },
@@ -126,10 +128,10 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**False positives dropped [X%]** once policy distinguished the corporate AI tenant from personal accounts.",
-          "**Leaked credentials were [rotated within X hours / handled through a defined response process].**",
-          "**[Outcome for users, e.g., \"Most flagged users moved to the sanctioned AI tool after an in-the-moment coaching prompt.\"]**",
-          "**[Any business outcome, e.g., \"Gave leadership the first complete inventory of AI usage across the company.\"]**",
+          "**False positives dropped by about two-thirds** once policy distinguished the corporate AI tenant from personal accounts.",
+          "**Leaked credentials were deactivated within hours** through a defined response: confirm the IAM user, set the key inactive, then rotate and delete.",
+          "**Most flagged users moved to the sanctioned AI tool** after an in-the-moment coaching prompt instead of a ticket two days later.",
+          "**Leadership got the first complete inventory of AI usage** across the company, including which tools were approved and which were not.",
         ],
       },
       {
@@ -165,11 +167,281 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
   },
+  {
+    slug: "the-deny-still-held",
+    title: "The Deny Still Held",
+    excerpt:
+      "A weekend AdministratorAccess grant outlived the migration. The SCP stopped the role from leaving the org or killing CloudTrail. It did not stop a bucket policy from trusting an account we did not own. I treated the deny as the ceiling, then added resource control policies for the data path.",
+    description:
+      "How I used SCPs as a ceiling that still holds when IAM is wrong, then paired them with resource control policies after a bucket trusted an account outside the organization.",
+    subtitle: "Case study · Cloud Security",
+    topics: ["cloud-security"],
+    tools: ["AWS Organizations", "CloudTrail", "AWS Config", "GuardDuty"],
+    minutes: 5,
+    glance: [
+      {
+        label: "Environment",
+        value: "Multi-account AWS organization, financial services, about 8,000 employees",
+      },
+      {
+        label: "My role",
+        value: "Enterprise Security Architect, one of two engineers on the cloud program",
+      },
+      {
+        label: "Tools",
+        value:
+          "AWS Organizations (SCPs and RCPs), CloudTrail, Config, GuardDuty",
+      },
+      {
+        label: "Timeline",
+        value: "Three months from inventory to org-wide guardrails",
+      },
+    ],
+    body: [
+      {
+        type: "h2",
+        text: "The problem",
+      },
+      {
+        type: "p",
+        text: "The platform team reviewed IAM policies carefully and treated the organization-level deny as a footnote. Member accounts could still leave the organization. Security services could still be turned off in an account that had drifted. And a migration weekend left AdministratorAccess attached to a deployment role on Monday morning.",
+      },
+      {
+        type: "p",
+        text: "The organization needed a ceiling that still held when someone attached a broad IAM policy, without pretending that ceiling was the whole perimeter around the data.",
+      },
+      {
+        type: "h2",
+        text: "What made it hard",
+      },
+      {
+        type: "ul",
+        items: [
+          "**SCPs constrain principals you own.** They do not stop a bucket or KMS key policy from granting access to an account outside the organization.",
+          "**SCPs do not apply to the management account.** Identities there, including that account's root, sit outside the ceiling. Workloads had been run there \"just for bootstrap.\"",
+          "**A useful guardrail still has to leave a hole for the people who operate security tooling.** A blanket deny on CloudTrail and Config will brick the team that is supposed to watch them.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What I did",
+      },
+      {
+        type: "p",
+        text: "**Wrote the deny as a ceiling, not a room.** The guardrail SCP blocked leaving the organization, disabling CloudTrail, Config, and GuardDuty, and calling APIs in regions the company does not use. An explicit deny here overrides an allow in a member account, including that account's root user.",
+      },
+      {
+        type: "p",
+        text: "**Left a named exception for security operators.** The SCP used an ArnNotLike condition so a SecurityAdmin role could still manage the services the deny was protecting. Everyone else hit the ceiling.",
+      },
+      {
+        type: "p",
+        text: "**Paired SCPs with resource control policies on data accounts.** After we found a migration bucket that trusted an account that was not in the organization, I added RCPs so resource policies could not invite principals we do not own.",
+      },
+      {
+        type: "p",
+        text: "**Moved bootstrap work out of the management account.** The management account is where SCPs and RCPs do not apply. Anything that looked like a workload came out of it.",
+      },
+      {
+        type: "h2",
+        text: "What we found",
+      },
+      {
+        type: "ul",
+        items: [
+          "**The weekend admin grant was still attached.** The SCP had done its job: the role could not stop CloudTrail or leave the org. It could now read every bucket in the account, because nothing in the SCP enumerated every sensitive read.",
+          "**A bucket policy from the same migration trusted an external account.** The SCP never saw that grant. Identity policies constrain principals you own. Resource policies can invite principals you don't.",
+          "**The management account had more than break-glass in it.** Two CI roles and a leftover sandbox had been created there because it was convenient.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Results",
+      },
+      {
+        type: "ul",
+        items: [
+          "**Leave-org and security-tooling denials applied to every member account**, with a documented SecurityAdmin exception.",
+          "**RCPs landed on the accounts that hold customer data**, so a bucket policy can no longer silently trust an outside account.",
+          "**The AdministratorAccess grant came off the deployment role**, and the IAM review started treating the SCP as the first read, not the last.",
+          "**Leadership had a one-page picture of the data perimeter:** SCPs for identities, RCPs for resources, and a clear note that the management account is outside both.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What I'd do differently",
+      },
+      {
+        type: "p",
+        text: "**Inventory resource policies in the same week as SCPs.** We found the trusted-outside-account bucket after the identity guardrails were already in review. The data-perimeter model treats those as a set.",
+      },
+      {
+        type: "p",
+        text: "**Test the SecurityAdmin exception in a non-prod account first.** A deny that also bricks your own logging is worse than no deny. The exception is part of the design, not a hotfix.",
+      },
+      {
+        type: "h2",
+        text: "Related reading",
+      },
+      {
+        type: "links",
+        items: [
+          {
+            href: "/articles/scp-deny-is-the-perimeter/",
+            label: "The Deny Is the Perimeter",
+            note: "why the org-level deny is the ceiling, and why it still needs RCPs.",
+          },
+          {
+            href: "/articles/azure-owner-means-root/",
+            label: "Owner Means Root",
+            note: "the Azure version of standing privilege that outlives the incident.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "the-owners-who-were-not-people",
+    title: "The Owners Who Were Not People",
+    excerpt:
+      "A tenant-wide inventory of standing Owner and User Access Administrator found four assignments on one subscription. Three of them were not people. PIM could cover the human. It could not cover the pipeline, the vendor identity, or the Global Administrator setting left on from a cleanup.",
+    description:
+      "How I inventoried standing Azure Owner across an Entra tenant, left MS-PIM alone, and moved humans to PIM while tightening the identities PIM cannot cover.",
+    subtitle: "Case study · Cloud Security",
+    topics: ["cloud-security"],
+    tools: ["Azure CLI", "Microsoft Entra PIM", "Azure Lighthouse"],
+    minutes: 5,
+    glance: [
+      {
+        label: "Environment",
+        value: "Multi-subscription Azure tenant, manufacturing, about 12,000 employees",
+      },
+      {
+        label: "My role",
+        value: "Enterprise Security Architect, lead on the identity review",
+      },
+      {
+        label: "Tools",
+        value:
+          "Azure CLI, Microsoft Entra Privileged Identity Management, Azure Lighthouse",
+      },
+      {
+        label: "Timeline",
+        value: "Ten weeks from inventory to standing-access removal",
+      },
+    ],
+    body: [
+      {
+        type: "h2",
+        text: "The problem",
+      },
+      {
+        type: "p",
+        text: "Owner looks like just another Azure RBAC role. At a subscription it is root for everything underneath it, including the right to grant roles to anyone else. User Access Administrator cannot change those resources directly, but it can assign itself Owner, so it is Owner with one extra step.",
+      },
+      {
+        type: "p",
+        text: "The tenant had standing assignments of both. Nobody had a complete list. A single-subscription CLI command had been treated as the inventory.",
+      },
+      {
+        type: "h2",
+        text: "What made it hard",
+      },
+      {
+        type: "ul",
+        items: [
+          "**PIM is the right shape for people and the wrong shape for pipelines.** You cannot make a service principal or managed identity eligible for an Azure role. They cannot complete an activation flow.",
+          "**Root depends on scope.** Owner on a resource group is root for that group. Owner at the tenant root management group is root for all of Azure. Saying \"Owner means root\" without the scope misses the assignment that actually matters.",
+          "**A naive tenant-root query looks clean and is wrong.** Listing assignments at scope \"/\" only works if elevate access is already on. For everyone else it errors or returns nothing, which looks like no root assignments.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What I did",
+      },
+      {
+        type: "p",
+        text: "**Inventoried every Enabled subscription in the tenant.** I looped az account list filtered to this tenant and Enabled subscriptions, then listed Owner and User Access Administrator with --all and --include-inherited. That surfaces assignments inherited from management groups without querying tenant root.",
+      },
+      {
+        type: "p",
+        text: "**Left MS-PIM alone.** Microsoft's MS-PIM service principal holds User Access Administrator so Privileged Identity Management can manage Azure resource roles. Deleting that assignment would have broken PIM. Confirm the display name before you treat a service principal as a finding.",
+      },
+      {
+        type: "p",
+        text: "**Moved humans to just-in-time.** Standing Owner for people became PIM-eligible assignments with approval, an audit trail, and phishing-resistant MFA.",
+      },
+      {
+        type: "p",
+        text: "**Treated workload identities as a different control.** Pipeline service principals moved off client secrets onto workload identity federation, with a narrower role than Owner. Vendor Lighthouse grants were scoped and time-boxed instead of standing.",
+      },
+      {
+        type: "p",
+        text: "**Turned off leftover elevate access.** A Global Administrator had flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back. That setting is Owner for the whole tenant for as long as it stays on.",
+      },
+      {
+        type: "h2",
+        text: "What we found",
+      },
+      {
+        type: "ul",
+        items: [
+          "**Four standing Owners on a single subscription:** a platform engineer from an outage two years ago, a vendor deployment identity, a pipeline service principal with a secret in a variable group, and a Global Administrator with elevate access still on.",
+          "**Three of the four were not people.** PIM could cover one of them. The other three needed a different control.",
+          "**Lighthouse grants from a prior managed-service engagement** still had Owner at subscription scope after the engagement ended.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Results",
+      },
+      {
+        type: "ul",
+        items: [
+          "**Standing human Owner went to zero** on production subscriptions. Activations now go through PIM.",
+          "**Pipeline identities dropped from Owner to a scoped deployment role** and authenticated with federation instead of a stored secret.",
+          "**The elevate-access setting was turned off**, and sign-in to the break-glass path is monitored.",
+          "**The inventory script became a recurring control**, not a one-off cleanup. New standing Owner in an Enabled subscription shows up the next run.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What I'd do differently",
+      },
+      {
+        type: "p",
+        text: "**Start with the identities PIM cannot cover.** The human Owner was the easy conversation. The pipeline and the vendor grant were the ones that still had standing root after the first cleanup pass.",
+      },
+      {
+        type: "p",
+        text: "**Document MS-PIM before the first removal.** Someone will flag that User Access Administrator service principal. If you have not already written down why it exists, it gets deleted in the same sweep as the real findings.",
+      },
+      {
+        type: "h2",
+        text: "Related reading",
+      },
+      {
+        type: "links",
+        items: [
+          {
+            href: "/articles/azure-owner-means-root/",
+            label: "Owner Means Root",
+            note: "the full write-up on standing Owner, PIM gaps, and the identities PIM cannot cover.",
+          },
+          {
+            href: "/articles/scp-deny-is-the-perimeter/",
+            label: "The Deny Is the Perimeter",
+            note: "the AWS version of a ceiling that still holds when a standing grant appears.",
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 export const publishedCaseStudies = caseStudies.filter((study) => !study.draft)
 
-export function isWorkVisible(): boolean {
+export function isCasesVisible(): boolean {
   return (
     process.env.NODE_ENV === "development" || publishedCaseStudies.length > 0
   )
