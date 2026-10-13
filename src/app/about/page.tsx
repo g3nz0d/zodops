@@ -26,7 +26,7 @@ const aboutLines: TerminalLine[] = [
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat reasoning-in-public.log" },
   { kind: "out", text: "ai-agent-security   active research · writing in progress" },
-  { kind: "out", text: "cloud-security      new coverage · writing in progress" },
+  { kind: "out", text: "cloud-security      ongoing coverage · writing in progress" },
   { kind: "out", text: "data-security       ongoing coverage · writing in progress" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ ls ./currently/" },

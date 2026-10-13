@@ -121,6 +121,349 @@ export const principles: Principle[] = [
 
 export const articles: Article[] = [
   {
+    slug: "scp-deny-is-the-perimeter",
+    title: "The Deny Is the Perimeter",
+    excerpt:
+      "SCPs set the ceiling that still holds when an IAM policy is wrong. Paired with resource control policies, they're how you draw a real boundary around your data.",
+    topic: "cloud-security",
+    minutes: 8,
+    date: "2026-04-21",
+    body: [
+      {
+        type: "p",
+        text: "Most teams review IAM policies closely and treat the org-level deny as a footnote. That's backwards. An explicit deny in a service control policy overrides any allow in a member account, including that account's root user. When someone attaches AdministratorAccess for a weekend migration and forgets to take it off, the SCP is what still holds.",
+      },
+      {
+        type: "p",
+        text: "That insight is real. The mistake is stopping there. SCPs are the outer bound for identities inside your organization, not usually the bound that decides a breach. Effective permissions are the overlap of SCPs, IAM policies, permission boundaries, and session policies. Most SCPs are broad guardrails — deny unused regions, deny disabling CloudTrail — so for a compromised role, its IAM policy is still what decides the blast radius.",
+      },
+      {
+        type: "p",
+        text: "And SCPs alone aren't a perimeter around your data. They don't stop a bucket or key policy from granting access to an account outside the organization. AWS's data-perimeter model pairs them with resource control policies, which cap what those resource policies can grant, and with VPC endpoint policies on the network path.",
+      },
+      {
+        type: "h2",
+        text: "What it looks like in practice",
+      },
+      {
+        type: "p",
+        text: "A platform team spends a week tightening the IAM policy on a deployment role. The review is careful. Nobody opens the SCPs, because those were written two years ago and \"just deny the obvious things.\"",
+      },
+      {
+        type: "p",
+        text: "Friday afternoon, a migration stalls. Someone attaches AdministratorAccess to the same role \"for the weekend.\" The SCP still does its job: the role can't stop CloudTrail, can't leave the organization, and can't call APIs in regions you don't use. On Monday the extra policy is still there. The role can now read every S3 bucket in the account. Nothing in the SCP said otherwise, because nobody writes an SCP that enumerates every sensitive action.",
+      },
+      {
+        type: "p",
+        text: "Separately, a bucket policy from the same migration trusts an account that isn't in the organization. The SCP never sees that grant. Identity policies constrain principals you own. Resource policies can invite principals you don't.",
+      },
+      {
+        type: "h2",
+        text: "The ceiling, not the room",
+      },
+      {
+        type: "p",
+        text: "An SCP never grants access. It sets the maximum an IAM principal in a member account is allowed to have. The actual permission is the intersection: the SCP allow-list, the identity policy, any permission boundary, any session policy, and — if the call is to a resource with its own policy — that resource policy too.",
+      },
+      {
+        type: "p",
+        text: "That's why \"the deny is the perimeter\" is true in one direction and false in the other. The deny is the ceiling. It still holds when an IAM policy is wrong. It is not a substitute for the IAM policy. If your SCPs only block unused regions and a handful of break-the-glass APIs, a role with AdministratorAccess still has the run of the account.",
+      },
+      {
+        type: "p",
+        text: "Write SCPs for things you never want anyone in a member account to do. Leave the day-to-day blast radius to IAM, and review both.",
+      },
+      {
+        type: "code",
+        caption:
+          "A typical guardrail SCP. It raises the floor on catastrophic mistakes. It does not decide what a compromised role can read.",
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyLeaveOrganization",
+      "Effect": "Deny",
+      "Action": "organizations:LeaveOrganization",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyDisableSecurityLogging",
+      "Effect": "Deny",
+      "Action": [
+        "cloudtrail:StopLogging",
+        "cloudtrail:DeleteTrail",
+        "guardduty:DeleteDetector",
+        "securityhub:DisableSecurityHub"
+      ],
+      "Resource": "*"
+    }
+  ]
+}`,
+      },
+      {
+        type: "h2",
+        text: "Where SCPs stop",
+      },
+      {
+        type: "p",
+        text: "Two gaps belong in every write-up of \"the real bound,\" because they surprise people who treated the SCP as a perimeter:",
+      },
+      {
+        type: "ul",
+        items: [
+          "SCPs do not apply to the management account. Identities there, including that account's root, are outside the ceiling. That's one reason AWS tells you not to run workloads in it.",
+          "SCPs do not apply to service-linked roles. Those roles exist so AWS services can do their job in your account, and the SCP can't clip them.",
+        ],
+      },
+      {
+        type: "p",
+        text: "The third gap is the one that turns an SCP into a false perimeter: resource-based policies. A bucket policy, a KMS key policy, or an SQS queue policy can grant an outside account access even when every identity in your organization is tightly scoped. The SCP never evaluates that grant. It only evaluates principals in member accounts.",
+      },
+      {
+        type: "h2",
+        text: "Pair the deny with a resource control policy",
+      },
+      {
+        type: "p",
+        text: "Resource control policies are the other half of the identity bound. An SCP caps what principals inside the organization can do. An RCP caps what a resource in a member account can be talked into granting, including to principals outside the organization. No RCP grants access; like an SCP, it only sets a ceiling.",
+      },
+      {
+        type: "p",
+        text: "AWS's data-perimeter guidance treats three controls as a set: SCPs for your identities, RCPs for your resources, and VPC endpoint policies for the network path. Skip any one, and the other two have a hole.",
+      },
+      {
+        type: "p",
+        text: "An RCP that keeps S3 and KMS inside the organization looks like this. o-xxxxxxxxxx is a placeholder for your organization ID. The aws:PrincipalIsAWSService exception is there so AWS services can still do their job; test it against backup, logging, and deployment paths before you attach it widely.",
+      },
+      {
+        type: "code",
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "KeepDataInsideTheOrganization",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": ["s3:*", "kms:*"],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEqualsIfExists": {
+          "aws:PrincipalOrgID": "o-xxxxxxxxxx"
+        },
+        "BoolIfExists": {
+          "aws:PrincipalIsAWSService": "false"
+        }
+      }
+    }
+  ]
+}`,
+      },
+      {
+        type: "p",
+        text: "RCPs have the same honesty requirements as SCPs. They don't apply to the management account. They don't apply to service-linked roles. They don't apply to AWS managed KMS keys. And they only cover a specific list of services — S3, KMS, Secrets Manager, SQS, STS, ECR, and a growing set of others — not every resource in the account. An RCP is not a blanket \"no external access\" switch.",
+      },
+      {
+        type: "p",
+        text: "If you've already seen the deny-cross-account KMS decrypt SCP on the Data Security topic page, treat it as the identity-side half of this pair. That SCP stops roles in other accounts inside your organization from using a prod-tagged key. It does not stop the key policy itself from trusting an account outside the organization. The RCP is what closes that window.",
+      },
+      {
+        type: "h2",
+        text: "What to do",
+      },
+      {
+        type: "ul",
+        items: [
+          "Review SCPs with the same care as IAM policies. They're the ceiling that still holds when an identity policy is wrong.",
+          "Write SCPs as guardrails for things you never want a member account to do: leave the org, disable logging, use regions you don't operate in. Don't try to encode every least-privilege decision in them.",
+          "Keep treating IAM as the control that decides blast radius for a compromised role. Permission boundaries and session policies sit in that same intersection.",
+          "Add RCPs for the data stores that shouldn't be shareable outside the organization, starting with S3 and KMS.",
+          "Don't run workloads in the management account. SCPs and RCPs don't apply there.",
+          "Account for service-linked roles. Neither policy type constrains them.",
+          "Attach new SCPs and RCPs to a test account, then an OU, then wider. Watch CloudTrail for unexpected AccessDenied before you call it done.",
+          "Include VPC endpoint policies if your data path is supposed to stay on a private network. The identity bound isn't the network bound.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "The deny is the ceiling. IAM is still the room. A resource control policy is what closes the window an SCP can't see.",
+      },
+      {
+        type: "p",
+        text: "Draw the bound with all three, or don't call it a perimeter.",
+      },
+    ],
+  },
+  {
+    slug: "azure-owner-means-root",
+    title: "Owner Means Root",
+    excerpt:
+      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one click from both. The fix is removing standing access: PIM for people, tighter controls for the pipelines PIM can't cover.",
+    topic: "cloud-security",
+    minutes: 8,
+    date: "2026-06-09",
+    body: [
+      {
+        type: "p",
+        text: "Owner looks like just another Azure RBAC role. At a subscription, it isn't. It has full control of every resource underneath it, including the right to grant roles to anyone else. User Access Administrator can't change those resources directly, but it can assign itself Owner, so it's Owner with one extra step. Treating them as equivalent is correct, and it's a point a lot of teams miss.",
+      },
+      {
+        type: "p",
+        text: "The control is removing standing access. Privileged Identity Management turns a permanent assignment into a time-limited, just-in-time activation with MFA, approval, and an audit trail. That's the right shape for people.",
+      },
+      {
+        type: "p",
+        text: "It is not the whole fix. \"Root\" depends on scope. Owner doesn't control Entra ID. Contributor is privileged too. And the riskiest Owners in most tenants aren't people: they're service principals and managed identities in CI/CD pipelines, which can't activate PIM the way a person does.",
+      },
+      {
+        type: "h2",
+        text: "What it looks like in practice",
+      },
+      {
+        type: "p",
+        text: "A subscription has four standing Owners. One is a platform engineer who needed it during an outage two years ago. One is a vendor's deployment identity. One is a pipeline service principal with a secret that lives in a variable group. One is a Global Administrator who flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back.",
+      },
+      {
+        type: "p",
+        text: "None of those four people think of themselves as root. Three of them aren't even people. The Activity Log will show the role assignments if you look. Most teams don't look until something has already used them.",
+      },
+      {
+        type: "h2",
+        text: "Root depends on scope",
+      },
+      {
+        type: "p",
+        text: "Owner on a resource group is root for that group. Owner on a subscription is root for that subscription. Owner at the tenant root management group is root for all of Azure. Saying \"Owner means root\" without the scope is how you miss the assignment that actually matters.",
+      },
+      {
+        type: "p",
+        text: "The true top of the hierarchy is in Entra ID, not Azure RBAC. A Global Administrator can turn on elevate access — the \"Access management for Azure resources\" toggle — and receive User Access Administrator at tenant root scope (/). From there they can assign themselves Owner on every subscription. An article about root equivalents that skips this path is describing a smaller system than the one you run.",
+      },
+      {
+        type: "p",
+        text: "Owner still isn't AWS root. It cannot manage users, groups, or Entra roles. Those are a separate control plane, and a separate set of privileged roles. A standing Owner who also holds a privileged Entra role is a different problem than either assignment alone.",
+      },
+      {
+        type: "h2",
+        text: "Contributor is privileged too",
+      },
+      {
+        type: "p",
+        text: "Contributor can't assign roles. That's the difference people remember. What they forget is that it can often reach the data anyway. It can list and regenerate storage account keys, which is equivalent to reading the account. It can run commands on VMs. Microsoft classifies Contributor as a privileged administrator role for a reason.",
+      },
+      {
+        type: "p",
+        text: "If your PIM program only covers Owner and User Access Administrator, you've protected role assignment and left a standing path to the data.",
+      },
+      {
+        type: "h2",
+        text: "PIM for people, and only as strong as its rules",
+      },
+      {
+        type: "p",
+        text: "For human identities, standing Owner and User Access Administrator should become eligible assignments. Activation is the control: MFA strength, whether someone has to approve, how long the elevation lasts, and whether it writes an audit trail you actually read.",
+      },
+      {
+        type: "p",
+        text: "PIM requires Entra ID P2 or Entra ID Governance. Without one of those, the portal will still let you create permanent assignments, and \"we use PIM\" becomes a sentence with no mechanism behind it.",
+      },
+      {
+        type: "p",
+        text: "Even with a license, PIM is only as strong as the activation policy. An eligible Owner that activates with SMS MFA, no approval, and an eight-hour window is standing access with extra clicks. Set the rules to match the blast radius of the role, not the default.",
+      },
+      {
+        type: "h2",
+        text: "The Owners PIM can't cover",
+      },
+      {
+        type: "p",
+        text: "You can't make a service principal or managed identity eligible for an Azure role. They can't complete an activation flow. You can give them a time-limited active assignment, but the common pattern is worse: a pipeline identity with standing Owner, often authenticated with a secret rather than workload identity federation.",
+      },
+      {
+        type: "p",
+        text: "Those identities need a different set of controls, because PIM isn't available as the human-shaped one:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Scope the assignment to the resource group or resource the pipeline actually deploys, not the subscription.",
+          "Prefer a job-function role over Owner. Most pipelines need to write resources, not assign roles.",
+          "Use workload identity federation instead of a client secret.",
+          "Alert on use of that identity, not just on changes to its assignment.",
+        ],
+      },
+      {
+        type: "p",
+        text: "A first pass at the standing-Owner problem is listing who currently has it, and whether each principal is a person:",
+      },
+      {
+        type: "code",
+        caption:
+          "Active Owner assignments you can see. Eligible PIM assignments won't show up here; those live in the PIM APIs.",
+        code: `az role assignment list --all --include-inherited \\
+  --query "[?roleDefinitionName=='Owner'].{principal:principalName, type:principalType, scope:scope}" \\
+  -o table`,
+      },
+      {
+        type: "p",
+        text: "Anything with type ServicePrincipal at subscription scope is the queue. People in that same list are the PIM queue.",
+      },
+      {
+        type: "h2",
+        text: "What to pair with PIM",
+      },
+      {
+        type: "p",
+        text: "PIM is necessary and not sufficient. Three controls close gaps it doesn't:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Alert on role-assignment writes in the Activity Log, especially Owner, User Access Administrator, and Role Based Access Control Administrator. A new standing assignment is the event; an activation is expected.",
+          "Prefer Role Based Access Control Administrator with conditions over User Access Administrator when someone needs to delegate. Conditions can limit which roles a person is allowed to assign, and to whom. User Access Administrator has no such ceiling.",
+          "Keep break-glass accounts: cloud-only, excluded from the Conditional Access policies that would lock you out, unused for daily work, and monitored when they sign in.",
+        ],
+      },
+      {
+        type: "p",
+        text: "And turn elevate access off when the Global Administrator is done with it. Deactivating a PIM-eligible Global Admin role does not flip that toggle back. The User Access Administrator assignment at / stays until someone sets it to No.",
+      },
+      {
+        type: "h2",
+        text: "What to do",
+      },
+      {
+        type: "ul",
+        items: [
+          "Inventory standing Owner and User Access Administrator assignments at management group, subscription, and resource group scope. Separate people from service principals.",
+          "Treat User Access Administrator as Owner. It can become Owner in one assignment.",
+          "Include the Global Administrator elevate-access path in the same review, and turn the toggle off when it isn't in use.",
+          "Move human Owner and User Access Administrator assignments to PIM-eligible, with MFA, approval, and a short activation window.",
+          "Cover Contributor in the same program. It can't assign roles; it can still reach data and secrets.",
+          "Budget for Entra ID P2 or Entra ID Governance. Without it, PIM isn't a control you have.",
+          "For pipeline identities: narrow the scope, drop Owner if a job-function role will do, federate the identity, and alert on its use.",
+          "Replace standing User Access Administrator delegates with Role Based Access Control Administrator plus conditions.",
+          "Alert on role-assignment changes. Keep monitored break-glass accounts that Conditional Access won't lock out.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "Owner and User Access Administrator are root for everything beneath them. Global Administrator is one click from both. Contributor is the privileged role that doesn't look like one.",
+      },
+      {
+        type: "p",
+        text: "Remove standing access. PIM for people. Tighter scopes, federation, and alerts for the identities PIM can't cover.",
+      },
+    ],
+  },
+  {
     slug: "security-automation-without-babysitting",
     title: "Who Gets to Say Yes",
     excerpt:
@@ -1393,7 +1736,47 @@ export type ConfigSnippet = {
 
 export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
   "ai-agent-security": [],
-  "cloud-security": [],
+  "cloud-security": [
+    {
+      title: "Guardrail SCP (leave-org and logging)",
+      description:
+        "The ceiling, not the room: blocks catastrophic account-level actions. It does not decide what a compromised role can read.",
+      language: "json",
+      code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyLeaveOrganization",
+      "Effect": "Deny",
+      "Action": "organizations:LeaveOrganization",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyDisableSecurityLogging",
+      "Effect": "Deny",
+      "Action": [
+        "cloudtrail:StopLogging",
+        "cloudtrail:DeleteTrail",
+        "guardduty:DeleteDetector",
+        "securityhub:DisableSecurityHub"
+      ],
+      "Resource": "*"
+    }
+  ]
+}`,
+      note: "SCPs do not apply to the management account or to service-linked roles. Attach to a test account first. Pair with resource control policies if the bound you want is around the data, not just around your identities.",
+    },
+    {
+      title: "Standing Owner assignments",
+      description:
+        "Who currently holds Owner, and whether each principal is a person or a pipeline identity.",
+      language: "bash",
+      code: `az role assignment list --all --include-inherited \\
+  --query "[?roleDefinitionName=='Owner'].{principal:principalName, type:principalType, scope:scope}" \\
+  -o table`,
+      note: "This lists active assignments. Eligible PIM assignments will not appear; those live in the PIM APIs. ServicePrincipal rows at subscription scope are the pipeline queue. People in the same list are the PIM queue.",
+    },
+  ],
   "data-security": [
     {
       title: "Service-account inventory in one line",
