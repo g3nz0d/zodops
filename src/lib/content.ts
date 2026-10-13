@@ -176,7 +176,7 @@ export const articles: Article[] = [
       {
         type: "code",
         caption:
-          "A typical guardrail SCP. It raises the floor on catastrophic mistakes. It does not decide what a compromised role can read.",
+          "A typical guardrail SCP. It blocks catastrophic account-level actions, including the quiet ways to blind logging. It does not decide what a compromised role can read. Replace SecurityAdmin with a role only your security team can assume.",
         code: `{
   "Version": "2012-10-17",
   "Statement": [
@@ -187,15 +187,27 @@ export const articles: Article[] = [
       "Resource": "*"
     },
     {
-      "Sid": "DenyDisableSecurityLogging",
+      "Sid": "ProtectSecurityTooling",
       "Effect": "Deny",
       "Action": [
         "cloudtrail:StopLogging",
         "cloudtrail:DeleteTrail",
+        "cloudtrail:UpdateTrail",
+        "cloudtrail:PutEventSelectors",
+        "config:StopConfigurationRecorder",
+        "config:DeleteConfigurationRecorder",
+        "config:DeleteDeliveryChannel",
         "guardduty:DeleteDetector",
+        "guardduty:UpdateDetector",
+        "guardduty:DisassociateFromAdministratorAccount",
         "securityhub:DisableSecurityHub"
       ],
-      "Resource": "*"
+      "Resource": "*",
+      "Condition": {
+        "ArnNotLike": {
+          "aws:PrincipalArn": "arn:aws:iam::*:role/SecurityAdmin"
+        }
+      }
     }
   ]
 }`,
@@ -301,7 +313,7 @@ export const articles: Article[] = [
     slug: "azure-owner-means-root",
     title: "Owner Means Root",
     excerpt:
-      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one setting from both. The fix is removing standing access: PIM for people, tighter controls for the pipelines PIM can't cover.",
+      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one setting from both. The fix is removing standing access: PIM for people, tighter controls for the identities PIM can't cover.",
     topic: "cloud-security",
     minutes: 9,
     date: "2026-06-09",
@@ -434,25 +446,21 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "az role assignment list --all lists assignments in the current subscription and below it. It does not walk the tenant. A command that only covers one subscription will miss every other one, plus anything assigned only at a management group or at root.",
+        text: "az role assignment list --all lists assignments in the current subscription and below it. It does not walk the tenant. A command that only covers one subscription will miss every other one. Limit the loop to enabled subscriptions in the tenant you're actually signed into; az account list otherwise returns every tenant you've ever logged into, plus disabled subscriptions.",
       },
       {
         type: "p",
-        text: "Loop through the subscriptions you can see, and query root separately:",
+        text: "Don't query tenant root separately. az role assignment list --scope \"/\" only works if you've turned on elevate access, and for everyone else it errors or returns nothing, which looks like \"no root assignments.\" --include-inherited on each subscription already surfaces assignments inherited from root and management groups.",
       },
       {
         type: "code",
         caption:
-          "Active Owner and User Access Administrator assignments across subscriptions. Run this once in a test tenant before you treat the output as complete.",
-        code: String.raw`# Root and management-group assignments the subscription loop will not see.
-az role assignment list --scope "/" --include-inherited \
-  --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
-  -o table
-
-for sub in $(az account list --query "[].id" -o tsv); do
-  echo "=== $sub ==="
+          "Active Owner and User Access Administrator assignments across enabled subscriptions in the current tenant. Inherited assignments, including any at root scope, show up on each subscription. Run this once in a test tenant before you treat the output as complete.",
+        code: String.raw`TENANT=$(az account show --query tenantId -o tsv)
+for sub in $(az account list --query "[?tenantId=='$TENANT' && state=='Enabled'].id" -o tsv); do
+  echo "== $sub =="
   az role assignment list --subscription "$sub" --all --include-inherited \
-    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{role:roleDefinitionName, type:principalType, principal:principalName, scope:scope}" \
     -o table
 done`,
       },
@@ -532,7 +540,7 @@ AND
       {
         type: "ul",
         items: [
-          "Inventory standing Owner and User Access Administrator across every subscription, then at root. A single az role assignment list --all is one subscription.",
+          "Inventory standing Owner and User Access Administrator across every enabled subscription in the tenant. A single az role assignment list --all is one subscription; --include-inherited is what surfaces root-scope assignments.",
           "Check eligible PIM assignments and Azure Lighthouse delegations separately. The CLI loop will not show them.",
           "Leave the MS-PIM User Access Administrator assignment alone.",
           "Treat User Access Administrator as Owner. It can become Owner in one assignment.",
@@ -1840,9 +1848,9 @@ export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
   "ai-agent-security": [],
   "cloud-security": [
     {
-      title: "Guardrail SCP (leave-org and logging)",
+      title: "Guardrail SCP (leave-org and security tooling)",
       description:
-        "The ceiling, not the room: blocks catastrophic account-level actions. It does not decide what a compromised role can read.",
+        "The ceiling, not the room: blocks catastrophic account-level actions, including the quiet ways to blind logging. It does not decide what a compromised role can read.",
       language: "json",
       code: `{
   "Version": "2012-10-17",
@@ -1854,36 +1862,45 @@ export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
       "Resource": "*"
     },
     {
-      "Sid": "DenyDisableSecurityLogging",
+      "Sid": "ProtectSecurityTooling",
       "Effect": "Deny",
       "Action": [
         "cloudtrail:StopLogging",
         "cloudtrail:DeleteTrail",
+        "cloudtrail:UpdateTrail",
+        "cloudtrail:PutEventSelectors",
+        "config:StopConfigurationRecorder",
+        "config:DeleteConfigurationRecorder",
+        "config:DeleteDeliveryChannel",
         "guardduty:DeleteDetector",
+        "guardduty:UpdateDetector",
+        "guardduty:DisassociateFromAdministratorAccount",
         "securityhub:DisableSecurityHub"
       ],
-      "Resource": "*"
+      "Resource": "*",
+      "Condition": {
+        "ArnNotLike": {
+          "aws:PrincipalArn": "arn:aws:iam::*:role/SecurityAdmin"
+        }
+      }
     }
   ]
 }`,
-      note: "SCPs do not apply to the management account or to service-linked roles. Attach to a test account first. Pair with resource control policies if the bound you want is around the data, not just around your identities.",
+      note: "SCPs do not apply to the management account or to service-linked roles. Replace SecurityAdmin with a role only your security team can assume. Attach to a test account first. Pair with resource control policies if the boundary you want is around the data, not just your identities.",
     },
     {
       title: "Standing Owner assignments",
       description:
-        "Who currently holds Owner or User Access Administrator across every subscription you can see, not just the current one.",
+        "Who currently holds Owner or User Access Administrator across every enabled subscription in your tenant, not just the current one. Inherited assignments, including any at root scope, show up on each subscription.",
       language: "bash",
-      code: String.raw`az role assignment list --scope "/" --include-inherited \
-  --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
-  -o table
-
-for sub in $(az account list --query "[].id" -o tsv); do
-  echo "=== $sub ==="
+      code: String.raw`TENANT=$(az account show --query tenantId -o tsv)
+for sub in $(az account list --query "[?tenantId=='$TENANT' && state=='Enabled'].id" -o tsv); do
+  echo "== $sub =="
   az role assignment list --subscription "$sub" --all --include-inherited \
-    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{role:roleDefinitionName, type:principalType, principal:principalName, scope:scope}" \
     -o table
 done`,
-      note: "az role assignment list --all is still one subscription. Eligible PIM assignments and Azure Lighthouse delegations will not appear. Do not remove the MS-PIM User Access Administrator assignment; PIM needs it. Run the loop in a test tenant before you treat the output as complete.",
+      note: "az role assignment list --all covers one subscription, hence the loop. Active PIM activations appear while they're live; eligible PIM assignments and Azure Lighthouse delegations don't appear at all. Don't remove the MS-PIM User Access Administrator assignment, because PIM needs it. Run the loop in a test tenant before you treat the output as complete.",
     },
   ],
   "data-security": [
