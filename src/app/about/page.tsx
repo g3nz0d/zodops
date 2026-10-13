@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 
 import { TerminalPanel, type TerminalLine } from "@/components/terminal-panel"
-import { site } from "@/lib/site"
 
 export const metadata: Metadata = {
   description:
@@ -48,30 +47,39 @@ export default function AboutPage() {
       <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20">
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
           <p>
-            I&rsquo;m Zodi, a security architect and military veteran in{" "}
-            {site.location}. For 15+ years I&rsquo;ve designed controls for
-            cloud, DevOps, containers, and data protection on enterprise
-            accounts, where a bad control blocks thousands of engineers and a
-            missing one exposes everything they ship.
+            I&rsquo;m Zodi, a security architect and military veteran based
+            in San Diego. For 15+ years I&rsquo;ve built security controls
+            that have to work in the real world, not just on a whiteboard.
           </p>
           <p>
-            Now the same problem has a new shape. AI agents read your data,
-            call your tools, and act with their own credentials. Most of the
-            risk isn&apos;t in the model. It&apos;s in what the agent can
-            reach. That&apos;s where my focus is: agent permissions, tool and
-            MCP trust, and keeping sensitive data from flowing where it
-            shouldn&apos;t.
+            Most of that time has been spent inside enterprise cloud,
+            DevOps, container, and data-protection programs, where the
+            stakes cut both ways. A bad control slows thousands of
+            engineers. A missing one exposes everything they ship. The
+            craft is finding the line that protects the business without
+            getting in its way.
           </p>
           <p>
-            ZodOps is my working notebook. It holds implementation-level
-            write-ups on image provenance, IAM graphs, admission policy,
-            DSPM, DLP, and AI agent security. If a design can&apos;t be
-            committed to a repo, it isn&apos;t finished.
+            Today that same problem has a new shape. AI agents read your
+            data, call your tools, and act with credentials of their own.
+            The question is no longer just who has access&hellip;it&rsquo;s
+            what an agent can do with it. That&rsquo;s where I spend my time
+            now: agent permissions, tool and MCP trust, and keeping
+            sensitive data from flowing where it shouldn&rsquo;t.
           </p>
           <p>
-            Working on AI or data security, or stuck on a control that keeps
-            getting bypassed? Let&apos;s talk shop.
+            ZodOps is my working notebook. Inside are write-ups on image
+            provenance, IAM graphs, admission policy, DSPM, DLP, and AI
+            agent security. Each one aims to be practical enough to use and
+            specific enough to build on. My rule of thumb: if a design
+            can&rsquo;t be committed to a repo, it isn&rsquo;t finished.
           </p>
+          <p>
+            If you&rsquo;re building in AI or data security, or wrestling
+            with a control that keeps getting bypassed, I&rsquo;d love to
+            hear about it.
+          </p>
+          <p>Ping me and let&rsquo;s talk shop.</p>
         </div>
         <TerminalPanel
           title="~/about/zodi.sh"
