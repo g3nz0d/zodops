@@ -22,5 +22,6 @@ export const ctaHref = site.linkedin
 export const nav = [
   { href: "/articles/", label: "Articles" },
   { href: "/tech/", label: "Topics" },
+  { href: "/work/", label: "Work" },
   { href: "/about/", label: "About" },
 ] as const

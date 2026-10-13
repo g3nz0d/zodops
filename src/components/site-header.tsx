@@ -8,11 +8,15 @@ import { Menu, X } from "lucide-react"
 import { GithubIcon } from "@/components/github-icon"
 import { Logo } from "@/components/logo"
 import { ctaHref, ctaLabel, nav, site } from "@/lib/site"
+import { isWorkVisible } from "@/lib/work"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const items = nav.filter(
+    (item) => item.href !== "/work/" || isWorkVisible()
+  )
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : ""
@@ -34,8 +38,8 @@ export function SiteHeader() {
             <Logo />
           </Link>
 
-          <nav className="hidden items-center justify-center gap-8 md:flex">
-            {nav.map((item) => {
+          <nav className="hidden items-center justify-center gap-6 lg:gap-8 md:flex">
+            {items.map((item) => {
               const active =
                 pathname === item.href || pathname.startsWith(item.href)
               return (
@@ -114,7 +118,7 @@ export function SiteHeader() {
                 <X className="size-5" />
               </button>
             </div>
-            {nav.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

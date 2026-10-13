@@ -28,11 +28,20 @@ npm start
 | --- | --- |
 | Name, email, LinkedIn, location | `src/lib/site.ts` |
 | Articles and topics | `src/lib/content.ts` |
+| Case studies | `src/lib/work.ts` |
 | Home page layout | `src/app/page.tsx` |
 | Header / footer | `src/components/site-header.tsx`, `src/components/site-footer.tsx` |
 | Colors and type | `src/app/globals.css` |
 
 Add a new article by appending an object to `articles` in `src/lib/content.ts`. The writing index, topic pages, and article URLs update from that list.
+
+Case studies live in `src/lib/work.ts`. Keep `draft: true` until bracketed placeholders like `[X%]` are filled in. Drafts show in `npm run dev` (including the Work nav link) and are omitted from the production build, sitemap, and RSS feed. When you set `draft: false` on at least one study, `/work/` and the nav link appear automatically.
+
+```bash
+npm run check:placeholders
+```
+
+That check also runs as part of `npm run build`. It fails if a published (non-draft) case study still contains a bracketed placeholder.
 
 ## Host on Cloudflare Pages (with zodops.io)
 

@@ -1,5 +1,6 @@
 import { publishedArticles, topicBySlug } from "@/lib/content"
 import { site } from "@/lib/site"
+import { publishedCaseStudies, primaryTopic } from "@/lib/work"
 
 const BASE_URL = "https://zodops.io"
 
@@ -18,12 +19,11 @@ export function buildRssFeed(): string {
     ? new Date(`${newest.date}T00:00:00Z`).toUTCString()
     : new Date("2026-01-01T00:00:00Z").toUTCString()
 
-  const items = publishedArticles
-    .map((article) => {
-      const url = `${BASE_URL}/articles/${article.slug}/`
-      const topic = topicBySlug(article.topic)
-      const pubDate = new Date(`${article.date}T00:00:00Z`).toUTCString()
-      return `    <item>
+  const articleItems = publishedArticles.map((article) => {
+    const url = `${BASE_URL}/articles/${article.slug}/`
+    const topic = topicBySlug(article.topic)
+    const pubDate = new Date(`${article.date}T00:00:00Z`).toUTCString()
+    return `    <item>
       <title>${escapeXml(article.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
@@ -31,8 +31,21 @@ export function buildRssFeed(): string {
       <category>${escapeXml(topic.label)}</category>
       <description>${escapeXml(article.excerpt)}</description>
     </item>`
-    })
-    .join("\n")
+  })
+
+  const workItems = publishedCaseStudies.map((study) => {
+    const url = `${BASE_URL}/work/${study.slug}/`
+    const topic = primaryTopic(study)
+    return `    <item>
+      <title>${escapeXml(study.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <category>${escapeXml(topic.label)}</category>
+      <description>${escapeXml(study.excerpt)}</description>
+    </item>`
+  })
+
+  const items = [...articleItems, ...workItems].join("\n")
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
