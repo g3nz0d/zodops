@@ -108,7 +108,7 @@ export const articles: Article[] = [
       "Security automation that doesn't become another thing to babysit.",
     topic: "security-automation",
     minutes: 5,
-    date: "2026-10-13",
+    date: "2026-01-11",
     body: [
       {
         type: "p",
@@ -266,7 +266,7 @@ export const articles: Article[] = [
       "Shadow data isn't a tooling gap. It's an inventory gap.",
     topic: "data-security",
     minutes: 5,
-    date: "2026-10-13",
+    date: "2026-02-22",
     body: [
       {
         type: "p",
@@ -565,7 +565,7 @@ export const articles: Article[] = [
       "Prompt injection matters because of what the agent is allowed to do next. Tool permissions, output channels, and agent identity are where that gets decided — or doesn't.",
     topic: "ai-agent-security",
     minutes: 11,
-    date: "2026-10-13",
+    date: "2026-07-16",
     body: [
       {
         type: "p",
