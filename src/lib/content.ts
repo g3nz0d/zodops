@@ -166,16 +166,36 @@ export const articles: Article[] = [
   },
   {
     slug: "data-security-shadow-data-inventory",
-    title: "Shadow data isn't a tooling gap. It's an inventory gap.",
+    title: "Find It Before You Label It",
     excerpt:
-      "A DSPM dashboard that can't name every store, identity, and egress path a workload touches is measuring coverage of its own agents, not the data you're trying to protect.",
+      "Shadow data isn't a tooling gap. It's an inventory gap.",
     topic: "data-security",
-    minutes: 10,
-    date: "2026-05-07",
+    minutes: 5,
+    date: "2026-10-13",
     body: [
       {
         type: "p",
-        text: "The data finance actually cares about is rarely in the Postgres instance on the architecture diagram. It's in a debug dump on a PVC, a log sink nobody rotated, or a \"temporary\" export bucket from a migration two years ago that nobody closed the loop on. A classification tool can label every column in the database you already know about and still miss all of that, because labeling isn't the first problem. Not knowing where the data physically landed is.",
+        text: "The data that matters most is rarely where the architecture diagram says it is. It's in a debug dump on a persistent volume, a log sink nobody rotated, or a \"temporary\" export bucket from a migration two years ago that nobody went back to close.",
+      },
+      {
+        type: "p",
+        text: "A classification tool can label every column in the database you already know about and still miss all of that. Labeling isn't the first problem. Not knowing where the data physically landed is.",
+      },
+      {
+        type: "h2",
+        text: "What it looks like in practice",
+      },
+      {
+        type: "p",
+        text: "During a database migration, an engineer exports the customer table to a bucket so the new system can load it. The migration succeeds. The bucket stays. It was created under a project-wide role, its policy trusts a broad group of principals \"for now,\" and the job that wrote to it still runs on a schedule because nobody removed the CronJob.",
+      },
+      {
+        type: "p",
+        text: "Two years later, the DSPM dashboard shows strong coverage. The production database is classified, encrypted, and monitored. The export bucket either sits outside the scanner's scope or shows up as one more low-priority finding in a long queue.",
+      },
+      {
+        type: "p",
+        text: "Nothing in that chain was malicious, and the tooling did what it was configured to do. The gap was that nobody had a current map of where customer data lived, which identities could reach it, and where it could go.",
       },
       {
         type: "h2",
@@ -183,7 +203,15 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Classification without inventory is a dashboard, not a control. Before you can say what's sensitive, you have to know every place it could be: walk the workload spec — volume mounts, envFrom, projected tokens, workload-identity annotations — and the egress policy, or the absence of one. In a typical estate, that walk turns up more surprises than the classifier ever will.",
+        text: "Classification without inventory is a dashboard, not a control. Before you can say what's sensitive, you need to know every place sensitive data could be.",
+      },
+      {
+        type: "p",
+        text: "Modern DSPM tools are good at discovering cloud-native stores through provider APIs, and that's real value. But the stores that cause incidents often live where API-level discovery is weakest: volumes attached inside a cluster, log pipelines, ad-hoc exports, SaaS tools, and copies on someone's laptop.",
+      },
+      {
+        type: "p",
+        text: "In Kubernetes, the workload spec tells you most of what you need. Walk it: service accounts, volume mounts, secrets pulled in through envFrom, workload-identity annotations that map a pod to a cloud role, and the egress policy, or the absence of one. In a typical estate, that walk turns up more surprises than the classifier will.",
       },
       {
         type: "h2",
@@ -191,16 +219,78 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "A bucket's resource policy that trusts a wider set of principals than anyone realizes is as big a hole as an over-permissioned IAM role, and most teams only audit one of those two things. The question that matters isn't \"is this column labeled PII\" — it's \"which identity can reach this bucket, table, or queue, and from where.\" Map that graph first. The classification work slots in underneath it.",
+        text: "The question that matters isn't \"is this column labeled PII?\" It's \"which identity can reach this bucket, table, or queue, and from where?\"",
+      },
+      {
+        type: "p",
+        text: "Most teams audit IAM roles carefully and give resource policies far less attention. But a bucket policy that trusts a wider set of principals than anyone realizes, whether another account, a broad group, or the public, is as big a hole as an over-permissioned role. The same goes for KMS key policies: whoever can use the key can read what it protects.",
+      },
+      {
+        type: "p",
+        text: "Map the access graph first: identities, the resources they can reach, and the resource policies that grant access from the other side. Classification slots in underneath it and tells you which edges of the graph matter most.",
+      },
+      {
+        type: "h2",
+        text: "A starting inventory in three commands",
+      },
+      {
+        type: "p",
+        text: "These are a starting point, not a full audit. They run read-only against the cluster you're logged into.",
+      },
+      {
+        type: "p",
+        text: "Which identity each workload runs as, and what data it mounts:",
       },
       {
         type: "code",
-        caption: "The one-line inventory that beats a DSPM questionnaire.",
-        code: `kubectl get deploy,cronjob,statefulset -A -o json \\
+        code: `kubectl get deploy,statefulset,daemonset,cronjob -A -o json \\
   | jq -r '.items[]
-      | [.metadata.namespace, .metadata.name,
-         (.spec.template.spec.serviceAccountName // "default")]
+      | (.spec.jobTemplate.spec.template.spec // .spec.template.spec) as $p
+      | [.kind, .metadata.namespace, .metadata.name,
+         ($p.serviceAccountName // "default"),
+         ([$p.volumes[]?.persistentVolumeClaim.claimName // empty] | join(",")),
+         ([($p.volumes[]?.secret.secretName // empty),
+           ($p.containers[]?.envFrom[]?.secretRef.name // empty)] | join(","))]
       | @tsv'`,
+      },
+      {
+        type: "p",
+        text: "Columns: kind, namespace, name, service account, mounted volumes, secrets. CronJobs keep their pod spec one level deeper than Deployments, which is why the command checks both paths.",
+      },
+      {
+        type: "p",
+        text: "Which service accounts map to cloud identities:",
+      },
+      {
+        type: "code",
+        code: `kubectl get serviceaccounts -A -o json \\
+  | jq -r '.items[]
+      | (.metadata.annotations // {}) as $a
+      | ($a["eks.amazonaws.com/role-arn"]
+         // $a["iam.gke.io/gcp-service-account"]
+         // $a["azure.workload.identity/client-id"]) as $cloud
+      | select($cloud)
+      | [.metadata.namespace, .metadata.name, $cloud] | @tsv'`,
+      },
+      {
+        type: "p",
+        text: "Every line is a bridge from the cluster into your cloud account. Those cloud roles are where your bucket and database access actually lives.",
+      },
+      {
+        type: "p",
+        text: "Which namespaces have no egress policy at all:",
+      },
+      {
+        type: "code",
+        code: `comm -23 \\
+  <(kubectl get ns -o jsonpath='{range .items[*]}{.metadata.name}{"\\n"}{end}' | sort) \\
+  <(kubectl get networkpolicy -A -o json \\
+      | jq -r '.items[] | select(.spec.policyTypes[]? == "Egress") | .metadata.namespace' \\
+      | sort -u)`,
+      },
+      {
+        type: "p",
+        text: "A namespace on this list can send data anywhere its network allows. Having an egress policy doesn't guarantee it's tight, and policies only take effect if your network plugin enforces them, but having none is a clear signal.",
       },
       {
         type: "h2",
@@ -208,20 +298,44 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Bind the exfil control to an identity and a destination — the job's service account, the bucket it's writing to — not to a hopeful regex running against a sample of traffic. Alert on first-seen principal or first-seen destination instead of volume thresholds; a slow, quiet copy evades anything that's only watching for spikes.",
+        text: "Bind exfiltration controls to an identity and a destination, such as the job's service account and the bucket it's allowed to write to, rather than to a hopeful regex running against a sample of traffic.",
+      },
+      {
+        type: "p",
+        text: "Alert on the first time a principal touches a sensitive store, or the first time data flows to a new destination. Volume thresholds still catch the loud cases. But a slow, quiet copy stays under any threshold, and \"never seen before\" is much harder to stay under.",
+      },
+      {
+        type: "p",
+        text: "Finally, give people a legitimate path. Operations teams have real reasons to export data in bulk. If there's no sanctioned way to do it, they'll invent one, and that's how the export bucket in the scenario got created.",
+      },
+      {
+        type: "h2",
+        text: "What to do",
       },
       {
         type: "ul",
         items: [
-          "Walk the workload spec before you buy a classifier: volume mounts, envFrom, projected tokens, and egress policy (or its absence).",
-          "Treat bucket and KMS resource policies as part of the access graph, not a footnote to IAM.",
-          "Alert on first-seen principal or first-seen destination. Volume thresholds miss the slow, quiet exfil.",
-          "Give operations a legal path for bulk export — time-boxed, logged, reviewed — or they'll find an illegal one.",
+          "Inventory before you classify. Walk workload specs, service accounts, mounts, secrets, and egress before buying or tuning a classifier.",
+          "Include what API discovery misses: in-cluster volumes, log pipelines, ad-hoc exports, and SaaS copies.",
+          "Treat bucket and KMS policies as part of the access graph, not a footnote to IAM. Check for cross-account, broad-group, and public trust.",
+          "Map workload identities to cloud roles, so you can answer which pod can reach which data store.",
+          "Flag namespaces with no egress policy, and confirm your network plugin actually enforces the ones you have.",
+          "Alert on first-seen principals and first-seen destinations, alongside volume thresholds.",
+          "Give operations a sanctioned bulk-export path: time-boxed, logged, reviewed, and cleaned up automatically.",
+          "Put an expiry on \"temporary\" buckets, exports, and access grants, so they don't become permanent by default.",
         ],
       },
       {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
         type: "p",
-        text: "A DSPM score that goes up while you still can't answer which service account can walk the customer table out of the cluster measured something. It wasn't exposure.",
+        text: "A DSPM score can go up while you still can't answer a simple question: which service account could walk the customer table out of the cluster tonight?",
+      },
+      {
+        type: "p",
+        text: "If you can answer that, the score means something. If you can't, it measured something else.",
       },
     ],
   },
