@@ -301,9 +301,9 @@ export const articles: Article[] = [
     slug: "azure-owner-means-root",
     title: "Owner Means Root",
     excerpt:
-      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one click from both. The fix is removing standing access: PIM for people, tighter controls for the pipelines PIM can't cover.",
+      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one setting from both. The fix is removing standing access: PIM for people, tighter controls for the pipelines PIM can't cover.",
     topic: "cloud-security",
-    minutes: 8,
+    minutes: 9,
     date: "2026-06-09",
     body: [
       {
@@ -312,11 +312,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The control is removing standing access. Privileged Identity Management turns a permanent assignment into a time-limited, just-in-time activation with MFA, approval, and an audit trail. That's the right shape for people.",
+        text: "The control is removing standing access. Privileged Identity Management turns a permanent assignment into a time-limited, just-in-time activation with approval, an audit trail, and — if you set it that way — phishing-resistant MFA. That's the right shape for people.",
       },
       {
         type: "p",
-        text: "It is not the whole fix. \"Root\" depends on scope. Owner doesn't control Entra ID. Contributor is privileged too. And the riskiest Owners in most tenants aren't people: they're service principals and managed identities in CI/CD pipelines, which can't activate PIM the way a person does.",
+        text: "It is not the whole fix. \"Root\" depends on scope. Owner doesn't control Entra ID, but several Entra roles can still reach Azure Owner. Contributor is privileged too, and on a compute resource it can become Owner. And the riskiest Owners in most tenants aren't people: they're service principals and managed identities in CI/CD pipelines, which can't be made PIM-eligible.",
       },
       {
         type: "h2",
@@ -324,11 +324,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "A subscription has four standing Owners. One is a platform engineer who needed it during an outage two years ago. One is a vendor's deployment identity. One is a pipeline service principal with a secret that lives in a variable group. One is a Global Administrator who flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back.",
+        text: "A subscription has four standing Owners. One is a platform engineer who needed it during an outage two years ago. One is a vendor's deployment identity — which may not even live in your tenant. One is a pipeline service principal with a secret that lives in a variable group. One is a Global Administrator who flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back.",
       },
       {
         type: "p",
-        text: "None of those four people think of themselves as root. Three of them aren't even people. The Activity Log will show the role assignments if you look. Most teams don't look until something has already used them.",
+        text: "None of those four think of themselves as root. Three of them aren't even people. The Activity Log will show some of the assignments if you look. A single-subscription CLI command will miss most of the rest.",
       },
       {
         type: "h2",
@@ -340,11 +340,31 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The true top of the hierarchy is in Entra ID, not Azure RBAC. A Global Administrator can turn on elevate access — the \"Access management for Azure resources\" toggle — and receive User Access Administrator at tenant root scope (/). From there they can assign themselves Owner on every subscription. An article about root equivalents that skips this path is describing a smaller system than the one you run.",
+        text: "The true top of the hierarchy is in Entra ID, not Azure RBAC. A Global Administrator can turn on elevate access — the \"Access management for Azure resources\" setting — and receive User Access Administrator at tenant root scope (/). From there they can assign themselves Owner on every subscription. That is one setting, not a click you can shrug off. An article about root equivalents that skips this path is describing a smaller system than the one you run.",
       },
       {
         type: "p",
-        text: "Owner still isn't AWS root. It cannot manage users, groups, or Entra roles. Those are a separate control plane, and a separate set of privileged roles. A standing Owner who also holds a privileged Entra role is a different problem than either assignment alone.",
+        text: "Owner still isn't AWS root. It cannot manage users, groups, or Entra roles. Those are a separate control plane. A standing Owner who also holds a privileged Entra role is a different problem than either assignment alone.",
+      },
+      {
+        type: "h2",
+        text: "Entra roles that reach Azure Owner",
+      },
+      {
+        type: "p",
+        text: "You don't need Owner in Azure to become Owner in Azure.",
+      },
+      {
+        type: "p",
+        text: "Privileged Role Administrator can grant Global Administrator. Global Administrator can elevate access. Elevate access is User Access Administrator at /. User Access Administrator can assign Owner. That chain is four steps, and the first one never touches Azure RBAC.",
+      },
+      {
+        type: "p",
+        text: "Application Administrator, Cloud Application Administrator, and anyone who owns an app registration can add a credential — a secret, a certificate, or a federated credential — to a service principal that already holds Owner. After that, they are Owner. They never received an Azure role assignment of their own.",
+      },
+      {
+        type: "p",
+        text: "If you only inventory Azure RBAC, you will miss both paths.",
       },
       {
         type: "h2",
@@ -352,11 +372,19 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Contributor can't assign roles. That's the difference people remember. What they forget is that it can often reach the data anyway. It can list and regenerate storage account keys, which is equivalent to reading the account. It can run commands on VMs. Microsoft classifies Contributor as a privileged administrator role for a reason.",
+        text: "Contributor can't assign roles. That's the difference people remember. Microsoft still classifies it as a privileged administrator role, and for good reason.",
       },
       {
         type: "p",
-        text: "If your PIM program only covers Owner and User Access Administrator, you've protected role assignment and left a standing path to the data.",
+        text: "It can list and regenerate storage account keys. That is data-plane access only when shared-key authorization is enabled on the account. Disable Allow storage account key access and listing the keys no longer opens the account; Microsoft Entra authorization is what remains. If shared-key is still on, Contributor on the storage account is a reader of everything in it.",
+      },
+      {
+        type: "p",
+        text: "Contributor can also become Owner. If a VM's managed identity holds Owner, anyone who can run commands on that VM — Contributor includes Microsoft.Compute/virtualMachines/runCommand/action — can request a token for that identity and act as Owner. The same pattern applies to Function Apps, Logic Apps, and Automation accounts: control of the compute is control of whatever identity it presents.",
+      },
+      {
+        type: "p",
+        text: "If your PIM program only covers Owner and User Access Administrator, you've protected role assignment and left standing paths to both the data and the Owner token.",
       },
       {
         type: "h2",
@@ -364,7 +392,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "For human identities, standing Owner and User Access Administrator should become eligible assignments. Activation is the control: MFA strength, whether someone has to approve, how long the elevation lasts, and whether it writes an audit trail you actually read.",
+        text: "For human identities, standing Owner and User Access Administrator should become eligible assignments. Activation is the control: whether someone has to approve, how long the elevation lasts, whether it writes an audit trail you actually read, and what kind of MFA it demands.",
+      },
+      {
+        type: "p",
+        text: "\"Require MFA\" is not enough for a role that is root. PIM activation can be tied to a Conditional Access authentication context that requires phishing-resistant MFA — FIDO2, Windows Hello for Business, or certificate-based MFA — rather than a text message. That is the bar that matches the blast radius.",
       },
       {
         type: "p",
@@ -372,7 +404,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Even with a license, PIM is only as strong as the activation policy. An eligible Owner that activates with SMS MFA, no approval, and an eight-hour window is standing access with extra clicks. Set the rules to match the blast radius of the role, not the default.",
+        text: "Even with a license, an eligible Owner that activates with SMS, no approval, and an eight-hour window is standing access with extra clicks. Set the rules to match the role, not the default.",
       },
       {
         type: "h2",
@@ -380,11 +412,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "You can't make a service principal or managed identity eligible for an Azure role. They can't complete an activation flow. You can give them a time-limited active assignment, but the common pattern is worse: a pipeline identity with standing Owner, often authenticated with a secret rather than workload identity federation.",
+        text: "You can't make a service principal or managed identity eligible for an Azure role. They can't complete an activation flow. The common pattern is worse than that limitation: a pipeline identity with standing Owner, often authenticated with a client secret rather than workload identity federation.",
       },
       {
         type: "p",
-        text: "Those identities need a different set of controls, because PIM isn't available as the human-shaped one:",
+        text: "Those identities need a different set of controls:",
       },
       {
         type: "ul",
@@ -393,23 +425,63 @@ export const articles: Article[] = [
           "Prefer a job-function role over Owner. Most pipelines need to write resources, not assign roles.",
           "Use workload identity federation instead of a client secret.",
           "Alert on use of that identity, not just on changes to its assignment.",
+          "Put Conditional Access for workload identities in front of the service principals you can. That feature requires Microsoft Entra Workload Identities Premium, and it does not cover managed identities. It can block token requests from outside known IP ranges or from a risky service principal. It cannot require MFA, because a workload can't perform it.",
         ],
       },
       {
+        type: "h2",
+        text: "Inventory the tenant, not the subscription",
+      },
+      {
         type: "p",
-        text: "A first pass at the standing-Owner problem is listing who currently has it, and whether each principal is a person:",
+        text: "az role assignment list --all lists assignments in the current subscription and below it. It does not walk the tenant. A command that only covers one subscription will miss every other one, plus anything assigned only at a management group or at root.",
+      },
+      {
+        type: "p",
+        text: "Loop through the subscriptions you can see, and query root separately:",
       },
       {
         type: "code",
         caption:
-          "Active Owner assignments you can see. Eligible PIM assignments won't show up here; those live in the PIM APIs.",
-        code: `az role assignment list --all --include-inherited \\
-  --query "[?roleDefinitionName=='Owner'].{principal:principalName, type:principalType, scope:scope}" \\
-  -o table`,
+          "Active Owner and User Access Administrator assignments across subscriptions. Run this once in a test tenant before you treat the output as complete.",
+        code: String.raw`# Root and management-group assignments the subscription loop will not see.
+az role assignment list --scope "/" --include-inherited \
+  --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+  -o table
+
+for sub in $(az account list --query "[].id" -o tsv); do
+  echo "=== $sub ==="
+  az role assignment list --subscription "$sub" --all --include-inherited \
+    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+    -o table
+done`,
       },
       {
         type: "p",
-        text: "Anything with type ServicePrincipal at subscription scope is the queue. People in that same list are the PIM queue.",
+        text: "Two things this will never show, even when the loop is right:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Eligible PIM assignments. Those live in the PIM APIs, not in az role assignment list. A person who is eligible for Owner will look clean here and still be one activation away from root.",
+          "Azure Lighthouse delegations. Role assignments granted to a service provider's tenant do not appear as ordinary assignments in the customer's tenant. The vendor's deployment identity in the scenario above can be exactly this.",
+        ],
+      },
+      {
+        type: "p",
+        text: "For Lighthouse, list the delegations separately. This command is the documented check; confirm it against a subscription you know is delegated before you trust an empty result:",
+      },
+      {
+        type: "code",
+        code: `az managedservices assignment list -o table`,
+      },
+      {
+        type: "p",
+        text: "One row you should expect, and should not remove: Microsoft's MS-PIM service principal holds User Access Administrator so Privileged Identity Management can manage Azure resource roles. Delete that assignment and PIM stops working on those roles. Confirm the display name before you treat a User Access Administrator service principal as a finding.",
+      },
+      {
+        type: "p",
+        text: "People in the Owner list are the PIM queue. ServicePrincipal rows at subscription scope, other than MS-PIM, are the pipeline queue.",
       },
       {
         type: "h2",
@@ -417,19 +489,41 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "PIM is necessary and not sufficient. Three controls close gaps it doesn't:",
-      },
-      {
-        type: "ul",
-        items: [
-          "Alert on role-assignment writes in the Activity Log, especially Owner, User Access Administrator, and Role Based Access Control Administrator. A new standing assignment is the event; an activation is expected.",
-          "Prefer Role Based Access Control Administrator with conditions over User Access Administrator when someone needs to delegate. Conditions can limit which roles a person is allowed to assign, and to whom. User Access Administrator has no such ceiling.",
-          "Keep break-glass accounts: cloud-only, excluded from the Conditional Access policies that would lock you out, unused for daily work, and monitored when they sign in.",
-        ],
+        text: "PIM is necessary and not sufficient.",
       },
       {
         type: "p",
-        text: "And turn elevate access off when the Global Administrator is done with it. Deactivating a PIM-eligible Global Admin role does not flip that toggle back. The User Access Administrator assignment at / stays until someone sets it to No.",
+        text: "Alert on role-assignment writes in the Activity Log, especially Owner, User Access Administrator, and Role Based Access Control Administrator. A new standing assignment is the event. An activation is expected.",
+      },
+      {
+        type: "p",
+        text: "Prefer Role Based Access Control Administrator with conditions over User Access Administrator when someone needs to delegate. User Access Administrator has no ceiling. A condition can, for example, let a platform lead assign any role except Owner, User Access Administrator, and Role Based Access Control Administrator — the three that recreate the problem:",
+      },
+      {
+        type: "code",
+        caption:
+          "ABAC condition on a Role Based Access Control Administrator assignment. Role IDs are Owner, User Access Administrator, and Role Based Access Control Administrator.",
+        code: `((!(ActionMatches{'Microsoft.Authorization/roleAssignments/write'})) OR
+  (@Request[Microsoft.Authorization/roleAssignments:RoleDefinitionId]
+    ForAnyOfAllValues:GuidNotEquals
+    {8e3af657-a8ff-443c-a75c-2fe8c4bcb635,
+     18d7d88d-d35e-4fb5-a5c3-7773c20a72d9,
+     f58310d9-a9f6-439a-9e8d-f62e7b41a168}))
+AND
+((!(ActionMatches{'Microsoft.Authorization/roleAssignments/delete'})) OR
+  (@Resource[Microsoft.Authorization/roleAssignments:RoleDefinitionId]
+    ForAnyOfAllValues:GuidNotEquals
+    {8e3af657-a8ff-443c-a75c-2fe8c4bcb635,
+     18d7d88d-d35e-4fb5-a5c3-7773c20a72d9,
+     f58310d9-a9f6-439a-9e8d-f62e7b41a168}))`,
+      },
+      {
+        type: "p",
+        text: "Keep break-glass accounts: cloud-only, excluded from the Conditional Access policies that would lock you out, unused for daily work, and monitored when they sign in.",
+      },
+      {
+        type: "p",
+        text: "And clean up leftover elevate access. Deactivating a PIM-eligible Global Administrator role does not flip the setting back. The User Access Administrator assignment at / stays until someone sets Access management for Azure resources to No. Microsoft Entra ID > Manage > Properties shows a banner when users still have elevated access — \"You have X users with elevated access\" — with a link to remove them. The same events land in Microsoft Entra audit logs under the Azure RBAC (Elevated Access) service, and Microsoft Sentinel ships an Azure RBAC (Elevate Access) analytics rule template that watches for them. Use all three: the banner for leftovers, the audit log for history, the Sentinel rule for the next time someone flips the setting.",
       },
       {
         type: "h2",
@@ -438,15 +532,19 @@ export const articles: Article[] = [
       {
         type: "ul",
         items: [
-          "Inventory standing Owner and User Access Administrator assignments at management group, subscription, and resource group scope. Separate people from service principals.",
+          "Inventory standing Owner and User Access Administrator across every subscription, then at root. A single az role assignment list --all is one subscription.",
+          "Check eligible PIM assignments and Azure Lighthouse delegations separately. The CLI loop will not show them.",
+          "Leave the MS-PIM User Access Administrator assignment alone.",
           "Treat User Access Administrator as Owner. It can become Owner in one assignment.",
-          "Include the Global Administrator elevate-access path in the same review, and turn the toggle off when it isn't in use.",
-          "Move human Owner and User Access Administrator assignments to PIM-eligible, with MFA, approval, and a short activation window.",
-          "Cover Contributor in the same program. It can't assign roles; it can still reach data and secrets.",
-          "Budget for Entra ID P2 or Entra ID Governance. Without it, PIM isn't a control you have.",
+          "Include the Global Administrator elevate-access path, and the Entra roles that reach it: Privileged Role Administrator, Application Administrator, Cloud Application Administrator, and app-registration owners.",
+          "Move human Owner and User Access Administrator assignments to PIM-eligible. Require approval, a short window, and phishing-resistant MFA through a Conditional Access authentication context.",
+          "Cover Contributor in the same program, including the managed-identity path on VMs, Function Apps, Logic Apps, and Automation accounts.",
+          "Disable shared-key authorization on storage accounts where you can, so listing keys is no longer data access.",
+          "Budget for Entra ID P2 or Entra ID Governance, and for Workload Identities Premium if you want Conditional Access on service principals.",
           "For pipeline identities: narrow the scope, drop Owner if a job-function role will do, federate the identity, and alert on its use.",
-          "Replace standing User Access Administrator delegates with Role Based Access Control Administrator plus conditions.",
-          "Alert on role-assignment changes. Keep monitored break-glass accounts that Conditional Access won't lock out.",
+          "Replace standing User Access Administrator delegates with Role Based Access Control Administrator plus conditions that exclude Owner, User Access Administrator, and Role Based Access Control Administrator.",
+          "Alert on role-assignment changes. Use the Entra properties banner, the Elevated Access audit log, and the Sentinel rule template to catch leftover and future elevate-access.",
+          "Keep monitored break-glass accounts that Conditional Access will not lock out.",
         ],
       },
       {
@@ -455,11 +553,15 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Owner and User Access Administrator are root for everything beneath them. Global Administrator is one click from both. Contributor is the privileged role that doesn't look like one.",
+        text: "Owner and User Access Administrator are root for everything beneath them. Global Administrator is one setting from both. Contributor is the privileged role that doesn't look like one, and several Entra roles never need an Azure assignment to get there.",
       },
       {
         type: "p",
         text: "Remove standing access. PIM for people. Tighter scopes, federation, and alerts for the identities PIM can't cover.",
+      },
+      {
+        type: "p",
+        text: "Sources: Elevate access to manage all Azure subscriptions and management groups; Eligible and time-bound role assignments in Azure RBAC; List Azure role assignments using Azure CLI; Azure built-in roles; Troubleshoot access to Azure resources denied in PIM. All Microsoft Learn.",
       },
     ],
   },
@@ -1769,12 +1871,19 @@ export const configsByTopic: Record<TopicSlug, ConfigSnippet[]> = {
     {
       title: "Standing Owner assignments",
       description:
-        "Who currently holds Owner, and whether each principal is a person or a pipeline identity.",
+        "Who currently holds Owner or User Access Administrator across every subscription you can see, not just the current one.",
       language: "bash",
-      code: `az role assignment list --all --include-inherited \\
-  --query "[?roleDefinitionName=='Owner'].{principal:principalName, type:principalType, scope:scope}" \\
-  -o table`,
-      note: "This lists active assignments. Eligible PIM assignments will not appear; those live in the PIM APIs. ServicePrincipal rows at subscription scope are the pipeline queue. People in the same list are the PIM queue.",
+      code: String.raw`az role assignment list --scope "/" --include-inherited \
+  --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+  -o table
+
+for sub in $(az account list --query "[].id" -o tsv); do
+  echo "=== $sub ==="
+  az role assignment list --subscription "$sub" --all --include-inherited \
+    --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator'].{principal:principalName, type:principalType, role:roleDefinitionName, scope:scope}" \
+    -o table
+done`,
+      note: "az role assignment list --all is still one subscription. Eligible PIM assignments and Azure Lighthouse delegations will not appear. Do not remove the MS-PIM User Access Administrator assignment; PIM needs it. Run the loop in a test tenant before you treat the output as complete.",
     },
   ],
   "data-security": [
