@@ -77,7 +77,3 @@ npm run build
 ```
 
 Static files land in `out/`. Any static host (S3, Cloudflare Pages, nginx) can serve that folder. GitLab CI moves `out/` to `public/` because Pages expects that name.
-
-## Contact form
-
-The contact page opens a `mailto:` draft to the address in `src/lib/site.ts`. A static host cannot send email by itself. If you want the form to post without a mail client, plug in [Formspree](https://formspree.io) or a similar endpoint later.
