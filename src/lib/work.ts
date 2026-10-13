@@ -171,7 +171,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "the-deny-still-held",
     title: "The Deny Still Held",
     excerpt:
-      "A weekend AdministratorAccess grant outlived the migration. The SCP stopped the role from leaving the org or killing CloudTrail. It did not stop a bucket policy from trusting an account we did not own. I treated the deny as the ceiling, then added resource control policies for the data path.",
+      "A weekend AdministratorAccess grant outlived the migration. The SCP kept the role from leaving the org or turning off CloudTrail. It couldn't stop a bucket policy from trusting an account we didn't own. I treated the deny as the ceiling, then added resource control policies for the data path.",
     description:
       "How I used SCPs as a ceiling that still holds when IAM is wrong, then paired them with resource control policies after a bucket trusted an account outside the organization.",
     subtitle: "Case study · Cloud Security",
@@ -217,9 +217,9 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**SCPs constrain principals you own.** They do not stop a bucket or KMS key policy from granting access to an account outside the organization.",
-          "**SCPs do not apply to the management account.** Identities there, including that account's root, sit outside the ceiling. Workloads had been run there \"just for bootstrap.\"",
-          "**A useful guardrail still has to leave a hole for the people who operate security tooling.** A blanket deny on CloudTrail and Config will brick the team that is supposed to watch them.",
+          "**SCPs only constrain principals in member accounts.** They don't stop a bucket or KMS key policy from granting access to an account outside the organization.",
+          "**SCPs don't apply to the management account.** Identities there, including that account's root user, sit outside the ceiling. Workloads had been run there \"just for bootstrap.\"",
+          "**A useful guardrail still has to leave a path for the people who operate security tooling.** A blanket deny on CloudTrail, Config, and GuardDuty changes would lock out the team responsible for running them.",
         ],
       },
       {
@@ -228,7 +228,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "**Wrote the deny as a ceiling, not a room.** The guardrail SCP blocked leaving the organization, disabling CloudTrail, Config, and GuardDuty, and calling APIs in regions the company does not use. An explicit deny here overrides an allow in a member account, including that account's root user.",
+        text: "**Wrote the deny as a ceiling, not a room.** The guardrail SCP kept security logging and detection on: no one in a member account could stop or delete CloudTrail, turn off Config, or disable GuardDuty. It also blocked leaving the organization. An explicit deny in an SCP overrides any allow in a member account, including that account's root user.",
+      },
+      {
+        type: "p",
+        text: "**Denied the regions the company doesn't use.** A region deny has to exempt global services such as IAM, Organizations, and CloudFront, which run through a single region, or it breaks them in every account.",
       },
       {
         type: "p",
@@ -236,11 +240,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "**Paired SCPs with resource control policies on data accounts.** After we found a migration bucket that trusted an account that was not in the organization, I added RCPs so resource policies could not invite principals we do not own.",
+        text: "**Paired SCPs with resource control policies on data accounts.** After we found a migration bucket that trusted an account outside the organization, I added RCPs so resource policies on supported services couldn't grant access to principals outside the organization.",
       },
       {
         type: "p",
-        text: "**Moved bootstrap work out of the management account.** The management account is where SCPs and RCPs do not apply. Anything that looked like a workload came out of it.",
+        text: "**Moved bootstrap work out of the management account.** SCPs and RCPs don't apply to the management account, so anything that looked like a workload came out of it.",
       },
       {
         type: "h2",
@@ -249,7 +253,7 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**The weekend admin grant was still attached.** The SCP had done its job: the role could not stop CloudTrail or leave the org. It could now read every bucket in the account, because nothing in the SCP enumerated every sensitive read.",
+          "**The weekend admin grant was still attached.** The SCP had done its job: the role couldn't stop CloudTrail or leave the org. But it could read any bucket in the account whose own policy didn't block it, because SCPs are guardrails, not a list of every sensitive read.",
           "**A bucket policy from the same migration trusted an external account.** The SCP never saw that grant. Identity policies constrain principals you own. Resource policies can invite principals you don't.",
           "**The management account had more than break-glass in it.** Two CI roles and a leftover sandbox had been created there because it was convenient.",
         ],
@@ -261,8 +265,8 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**Leave-org and security-tooling denials applied to every member account**, with a documented SecurityAdmin exception.",
-          "**RCPs landed on the accounts that hold customer data**, so a bucket policy can no longer silently trust an outside account.",
+          "**Leave-org, security-tooling, and region denials applied to every member account**, with a documented SecurityAdmin exception.",
+          "**RCPs landed on the accounts that hold customer data**, so a bucket policy can no longer quietly grant access outside the organization.",
           "**The AdministratorAccess grant came off the deployment role**, and the IAM review started treating the SCP as the first read, not the last.",
           "**Leadership had a one-page picture of the data perimeter:** SCPs for identities, RCPs for resources, and a clear note that the management account is outside both.",
         ],
@@ -277,7 +281,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "**Test the SecurityAdmin exception in a non-prod account first.** A deny that also bricks your own logging is worse than no deny. The exception is part of the design, not a hotfix.",
+        text: "**Test the SecurityAdmin exception in a non-prod account first.** A deny that locks your own security team out of logging is worse than no deny. The exception is part of the design, not a hotfix.",
       },
       {
         type: "h2",
