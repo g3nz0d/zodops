@@ -19,13 +19,13 @@ export function ArticleCard({
         className
       )}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-col items-start gap-2">
         <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
           {topic.label} · {article.minutes} min
         </p>
         <span
           className={cn(
-            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
+            "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
             topicBadgeClassName[article.topic]
           )}
         >
