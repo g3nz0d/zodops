@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 import { site } from "@/lib/site"
 
 export function CtaBanner() {
@@ -8,28 +6,29 @@ export function CtaBanner() {
       <div className="flex flex-col gap-8 rounded-2xl border border-brand bg-navy px-7 py-10 sm:px-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <div className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-[2rem]">
-            Built, broken, documented.
+            Looking for my next security problem.
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-white/70">
-            Thirteen years across cloud, containers, and data protection. I write
-            up the designs that survived contact with production — and the ones
-            that did not.
+            I&apos;m open to AI security, data security, and customer-facing
+            technical roles: solutions architecture, customer success
+            engineering, and forward-deployed work. If you&apos;re building in
+            that space, let&apos;s talk.
           </p>
         </div>
-        <div className="flex shrink-0 flex-col items-start gap-3 lg:items-end">
-          <Link
-            href="/about/"
-            className="inline-flex h-10 items-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-medium text-white hover:bg-white/16"
-          >
-            Read the background
-          </Link>
+        <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:w-auto sm:items-start lg:flex-row lg:items-center">
           <a
             href={site.linkedin}
-            className="text-sm text-white/55 transition-colors hover:text-white"
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-brand px-4 text-sm font-medium text-white outline-none hover:bg-brand/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Connect on LinkedIn
+          </a>
+          <a
+            href={`mailto:${site.email}`}
+            className="inline-flex h-10 items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-medium text-white outline-none hover:bg-white/16 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            Email me
           </a>
         </div>
       </div>

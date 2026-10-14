@@ -41,14 +41,16 @@ export function SiteFooter() {
             <RssIcon />
             <span className="text-[13px] font-bold tracking-tight">RSS</span>
           </a>
-          <Link
-            href={ctaHref}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="inline-flex h-9 items-center rounded-md bg-brand px-3.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
-          >
-            {ctaLabel}
-          </Link>
+          {!isHome ? (
+            <Link
+              href={ctaHref}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex h-9 items-center rounded-md bg-brand px-3.5 text-[11px] font-semibold tracking-[0.14em] text-white uppercase hover:bg-brand/90"
+            >
+              {ctaLabel}
+            </Link>
+          ) : null}
         </div>
       </div>
     </footer>
