@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { GithubIcon } from "@/components/github-icon"
 import { LogoMark } from "@/components/logo"
@@ -6,17 +9,22 @@ import { RssIcon } from "@/components/rss-icon"
 import { ctaHref, ctaLabel, site } from "@/lib/site"
 
 export function SiteFooter() {
+  const pathname = usePathname()
+  const isHome = pathname === "/"
+
   return (
     <footer className="border-t border-border">
       <div className="container-page flex justify-end py-6">
         <div className="flex flex-wrap items-center justify-end gap-2.5">
-          <Link
-            href="/"
-            aria-label="ZodOps home"
-            className="inline-flex size-9 items-center justify-center rounded-md border border-brand hover:bg-brand/5"
-          >
-            <LogoMark className="size-5" />
-          </Link>
+          {!isHome ? (
+            <Link
+              href="/"
+              aria-label="ZodOps home"
+              className="inline-flex size-9 items-center justify-center rounded-md border border-brand hover:bg-brand/5"
+            >
+              <LogoMark className="size-5" />
+            </Link>
+          ) : null}
           <a
             href={site.github}
             target="_blank"
