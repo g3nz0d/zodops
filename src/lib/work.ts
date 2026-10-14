@@ -116,7 +116,7 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**Shadow AI usage was broader than expected:** roughly 30 AI applications in use, most of them unsanctioned.",
+          "**Shadow AI usage was broader than expected:** 8 AI applications in use, most of them unsanctioned.",
           "**Sensitive data was leaving through prompts and pastes,** including patient-adjacent records, internal protocol documents, and engineering config.",
           "**The most serious findings were credentials.** AWS secret keys and other secrets were being pasted into AI chats, usually by engineers debugging an error with logs or config files.",
         ],

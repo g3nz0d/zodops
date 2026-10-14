@@ -8,7 +8,7 @@ export const site = {
   email: "hello@zodops.io",
   linkedin: "https://www.linkedin.com/in/ztagedini",
   github: "https://github.com/g3nz0d",
-  years: "15+",
+  years: "13",
   domains: 5,
   book: {
     title: "It's Halloween Once Again",

@@ -65,7 +65,7 @@ export function SiteHeader() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="GitHub"
-              className="inline-flex size-9 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted"
+              className="inline-flex size-9 items-center justify-center rounded-md border border-brand text-brand hover:bg-brand/5"
             >
               <GithubIcon />
             </a>
@@ -134,7 +134,7 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="GitHub"
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-border text-foreground hover:bg-muted"
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-brand text-brand hover:bg-brand/5"
                 onClick={() => setOpen(false)}
               >
                 <GithubIcon />

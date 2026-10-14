@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const aboutLines: TerminalLine[] = [
   { kind: "cmd", text: "$ whoami --history" },
-  { kind: "out", text: "15y+    security architecture · cloud & data protection" },
+  { kind: "out", text: "13y     security architecture · cloud & data protection" },
   { kind: "out", text: "core    cloud security, data security, security automation" },
   { kind: "out", text: "scope   enterprise accounts, large environments" },
   { kind: "out", text: "focus   AI & agent security" },
@@ -30,7 +30,8 @@ const aboutLines: TerminalLine[] = [
   { kind: "out", text: "data-security       ongoing coverage · writing in progress" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ ls ./currently/" },
-  { kind: "out", text: "studying/   Azure certifications" },
+  { kind: "out", text: "studying/   Azure Admin Associate Certification" },
+  { kind: "out", text: "studying/   AWS Certified Solutions Architect" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat reach.txt" },
   { kind: "out", text: "→  linkedin.com/in/ztagedini" },
@@ -53,7 +54,7 @@ export default function AboutPage() {
         <div className="space-y-5 text-[16.5px] leading-[1.75] text-foreground/85">
           <p>
             I&rsquo;m Zodi, a security architect and military veteran based
-            in San Diego. For 15+ years I&rsquo;ve built security controls
+            in San Diego. For 13 years I&rsquo;ve built security controls
             that have to work in the real world, not just on a whiteboard.
           </p>
           <p>

@@ -1,8 +1,9 @@
 import Link from "next/link"
 
 import { ProfileAvatar } from "@/components/profile-avatar"
-import { publishedArticles, topics } from "@/lib/content"
+import { publishedArticles, topicBadgeClassName, topics } from "@/lib/content"
 import { site } from "@/lib/site"
+import { cn } from "@/lib/utils"
 
 const stats = [
   { value: site.years, label: "Years" },
@@ -42,7 +43,7 @@ export function HeroIntro() {
           </p>
         </div>
         <p className="text-2xl font-bold tracking-tight text-brand sm:text-3xl xl:whitespace-nowrap">
-          Fifteen years in. I still verify before I trust.
+          Thirteen years in. I still verify before I trust.
         </p>
         <p className="max-w-[38rem] text-lg leading-relaxed text-muted-foreground sm:text-xl xl:whitespace-nowrap">
           Learned the hard way — written down so you don&apos;t have to.
@@ -52,7 +53,10 @@ export function HeroIntro() {
             <li key={topic.slug}>
               <Link
                 href={`/tech/${topic.slug}/`}
-                className="rounded-full bg-[#eceff3] px-2.5 py-1 text-[10px] font-medium tracking-[0.08em] whitespace-nowrap text-muted-foreground uppercase transition-colors hover:bg-[#e3e7ec] hover:text-foreground sm:text-[11px]"
+                className={cn(
+                  "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] whitespace-nowrap uppercase sm:text-[11px]",
+                  topicBadgeClassName[topic.slug]
+                )}
               >
                 {topic.name}
               </Link>

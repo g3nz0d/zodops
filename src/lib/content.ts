@@ -115,7 +115,7 @@ export const principles: Principle[] = [
   },
   {
     label: "Say what's still uncertain",
-    text: "Fifteen-plus years gives me certainty in most of this work — not all of it. Where I'm reasoning through something newer, like AI security or DSPM/DLP, I say so outright instead of letting the line blur. Those posts are marked Field Notes.",
+    text: "Thirteen years gives me certainty in most of this work — not all of it. Where I'm reasoning through something newer, like AI security or DSPM/DLP, I say so outright instead of letting the line blur. Those posts are marked Field Notes.",
   },
 ]
 
