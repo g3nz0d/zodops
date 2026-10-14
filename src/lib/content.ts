@@ -136,7 +136,7 @@ export const articles: Article[] = [
       "Every employee who leaves gets an offboarding. The AI agent your team stood up in March never will. Protection that depends on where data sits can't keep up with something whose job is to move it.",
     topic: "ai-agent-security",
     minutes: 7,
-    date: "2026-10-14",
+    date: "2026-08-03",
     body: [
       {
         type: "p",
@@ -1365,7 +1365,7 @@ AND
       "When an agent remembers what matters to you, it can also remember what an attacker told it. Persistent memory needs the same governance as any other place sensitive data lives.",
     topic: "ai-agent-security",
     minutes: 5,
-    date: "2026-10-13",
+    date: "2026-04-06",
     body: [
       {
         type: "p",
