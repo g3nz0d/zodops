@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react"
 
 import { GithubIcon } from "@/components/github-icon"
 import { Logo } from "@/components/logo"
+import { RssIcon } from "@/components/rss-icon"
 import { ctaHref, ctaLabel, nav, site } from "@/lib/site"
 import { isCasesVisible } from "@/lib/work"
 import { cn } from "@/lib/utils"
@@ -68,6 +69,13 @@ export function SiteHeader() {
               className="inline-flex size-9 items-center justify-center rounded-md border border-brand text-brand hover:bg-brand/5"
             >
               <GithubIcon />
+            </a>
+            <a
+              href="/rss.xml"
+              aria-label="Subscribe via RSS"
+              className="inline-flex size-9 items-center justify-center rounded-md bg-[#f26522] text-white hover:bg-[#e05a1c]"
+            >
+              <RssIcon />
             </a>
             <Link
               href={ctaHref}
@@ -138,6 +146,14 @@ export function SiteHeader() {
                 onClick={() => setOpen(false)}
               >
                 <GithubIcon />
+              </a>
+              <a
+                href="/rss.xml"
+                aria-label="Subscribe via RSS"
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-[#f26522] text-white hover:bg-[#e05a1c]"
+                onClick={() => setOpen(false)}
+              >
+                <RssIcon />
               </a>
               <Link
                 href={ctaHref}
