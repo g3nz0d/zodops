@@ -77,7 +77,12 @@ export type Block =
   | { type: "h2"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "code"; caption?: string; code: string }
-  | { type: "table"; headers: string[]; rows: string[][] }
+  | {
+      type: "table"
+      headers: string[]
+      rows: string[][]
+      compact?: boolean
+    }
 
 export type Article = {
   slug: string
@@ -263,9 +268,10 @@ export const articles: Article[] = [
           "Agent",
           "What it can reach today",
           "Who owns it",
-          "What would have to happen for that access to end",
+          "How to Sever Access",
         ],
-        rows: [["", "", "", ""]],
+        rows: [],
+        compact: true,
       },
       {
         type: "p",

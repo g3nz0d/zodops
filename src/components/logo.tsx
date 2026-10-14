@@ -10,36 +10,19 @@ export function LogoMark({ className }: { className?: string }) {
       aria-hidden
     >
       <g
-        stroke="#12161C"
+        stroke="#5B9FF0"
         strokeWidth="1.7"
         strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <line x1="14.4" y1="16.6" x2="9.1" y2="8.4" />
-        <line x1="14.4" y1="16.6" x2="24.1" y2="7.8" />
-        <line x1="14.4" y1="16.6" x2="25.6" y2="16.1" />
-        <line x1="14.4" y1="16.6" x2="7.2" y2="24.6" />
-        <line x1="14.4" y1="16.6" x2="24.2" y2="25.6" />
+        <path d="M22.4 17.8H9.8a5.6 5.6 0 1 1 5.37-7.2h1.43a3.6 3.6 0 1 1 0 7.2Z" />
+        <path d="M12.2 17.8v5.1" />
+        <path d="M16 17.8v7.2" />
+        <path d="M19.8 17.8v5.1" />
       </g>
-      <circle
-        cx="24.1"
-        cy="7.8"
-        r="3.35"
-        fill="#fff"
-        stroke="#12161C"
-        strokeWidth="1.6"
-      />
-      <circle
-        cx="7.2"
-        cy="24.6"
-        r="3.35"
-        fill="#fff"
-        stroke="#12161C"
-        strokeWidth="1.6"
-      />
-      <circle cx="14.4" cy="16.6" r="2.65" fill="#12161C" />
-      <circle cx="9.1" cy="8.4" r="2.15" fill="#2F6FED" />
-      <circle cx="25.6" cy="16.1" r="2.15" fill="#2F6FED" />
-      <circle cx="24.2" cy="25.6" r="2.15" fill="#2F6FED" />
+      <circle cx="12.2" cy="23.6" r="1.2" fill="#5B9FF0" />
+      <circle cx="16" cy="25.7" r="1.2" fill="#5B9FF0" />
+      <circle cx="19.8" cy="23.6" r="1.2" fill="#5B9FF0" />
     </svg>
   )
 }
