@@ -121,6 +121,187 @@ export const principles: Principle[] = [
 
 export const articles: Article[] = [
   {
+    slug: "no-last-day",
+    title: "No Last Day",
+    excerpt:
+      "Every employee who leaves gets an offboarding. The AI agent your team stood up in March never will. Protection that depends on where data sits can't keep up with something whose job is to move it.",
+    topic: "ai-agent-security",
+    minutes: 7,
+    date: "2026-10-14",
+    body: [
+      {
+        type: "p",
+        text: "The last thing a company does for someone who leaves is forget them, carefully.",
+      },
+      {
+        type: "p",
+        text: "It takes about a day. A badge is deactivated. A laptop is wiped and boxed. Somebody works down thirty systems and revokes them one at a time: the CRM, the shared drive, the repository, the analytics workspace nobody remembered until a report broke on Tuesday. The manager signs. An auditor can pull that record three years later and see the precise minute a person stopped being able to reach anything.",
+      },
+      {
+        type: "p",
+        text: "We call it \"offboarding\" and treat it as paperwork. It isn't. It's the one moment an organization admits out loud that trust has a shelf life: that the access someone earned over four years was never really theirs, and that the safest state for a credential is revoked.",
+      },
+      {
+        type: "p",
+        text: "That admission is load-bearing. Nearly every control you own sits on top of it.",
+      },
+      {
+        type: "p",
+        text: "And it has no idea what to do with the agent your team stood up in March. The agent arrived without a start date.",
+      },
+      {
+        type: "h2",
+        text: "It started narrow",
+      },
+      {
+        type: "p",
+        text: "One task, one system, a two-week pilot.",
+      },
+      {
+        type: "p",
+        text: "Then it needed the ticketing system, because its answers were thin without context. Then someone wired in the document store. Then a second team pointed it at their warehouse, and a third asked for the data lake. Each request was small, reasonable, and approved by someone with the authority to approve it.",
+      },
+      {
+        type: "p",
+        text: "Six months on, it reaches across applications, drives, repositories, and internal knowledge no single employee has ever been cleared for at once. No interview. No manager. It has never appeared on a quarterly access review, because reviews are generated from a directory of people, and it isn't a person.",
+      },
+      {
+        type: "p",
+        text: "You've probably sat in a version of this meeting. Somebody asks what the agent can actually reach, and the room goes quiet. Not because the answer is alarming, but because the four people who each connected one system have never been in the same room at once. Eventually someone offers that it's read-only, as though that settled something.",
+      },
+      {
+        type: "h2",
+        text: "Nothing it does looks wrong",
+      },
+      {
+        type: "p",
+        text: "The agent isn't a rogue actor. It authenticates cleanly. It queries tables it has legitimate rights to read. Pull the logs after an incident and you'll find nothing anomalous. Every line is clean.",
+      },
+      {
+        type: "p",
+        text: "The exposure isn't in any single request. It's in the assembly.",
+      },
+      {
+        type: "p",
+        text: "A support ticket here. A customer record there. A spreadsheet somebody dropped in a shared folder in 2023 and never thought about again. Individually approved, every one. Collectively, a portrait of a named human being that no reviewer would have authorized if asked directly.",
+      },
+      {
+        type: "p",
+        text: "Your controls evaluate requests. The risk lives in the composite. Nobody is checking the composite, because until recently nothing could assemble one fast enough to matter.",
+      },
+      {
+        type: "p",
+        text: "Notice what that does to your boundaries. Perimeter defense assumes the threat is outside; this one is inside and was invited. Segmentation assumes data stays put; moving it between places is the agent's function. Role-based access assumes a stable job description; this one changes every time an engineer adds a tool.",
+      },
+      {
+        type: "h2",
+        text: "Isn't that what agent identity is for?",
+      },
+      {
+        type: "p",
+        text: "It's a fair objection, and the one I'd raise too. Give the agent its own principal. Issue credentials just in time. Scope every token narrowly. That's real, mature work, and every team running agents in production should be doing it.",
+      },
+      {
+        type: "p",
+        text: "It still doesn't reach the problem.",
+      },
+      {
+        type: "p",
+        text: "Just-in-time access constrains how long a credential lives, not what gets assembled while it's alive. An agent with a fifteen-minute token composes the same portrait it would have composed with a permanent one, only faster. Shortening the window shrinks the blast radius of a stolen credential. It does nothing about one used exactly as intended.",
+      },
+      {
+        type: "p",
+        text: "Scoping hits a harder wall. It defends against the combinations you anticipated, and you deployed an agent precisely because you can't anticipate them all. Scope tightly anyway; it limits what's on the table. But no scope tells you what the pieces add up to once they're combined.",
+      },
+      {
+        type: "p",
+        text: "Agent identity is necessary. It isn't sufficient. And the other half is the part that gets missed.",
+      },
+      {
+        type: "h2",
+        text: "The input was protected. The output handed it back.",
+      },
+      {
+        type: "p",
+        text: "Teams who take this seriously start upstream, masking or tokenizing sensitive fields before anything is embedded, indexed, or handed to a model. Correct instinct, hard to execute, and only half the surface.",
+      },
+      {
+        type: "p",
+        text: "Protected data has a way of coming back out the other side. Not as a raw value, but as an inference. A model that never saw a salary field but brackets it within five thousand dollars. A summary that reconstitutes an identity from four harmless attributes. An answer confirming a record exists to someone with no business knowing it does.",
+      },
+      {
+        type: "h2",
+        text: "Protect the data, not the room",
+      },
+      {
+        type: "p",
+        text: "Every control that failed here failed the same way: it defended a location. A network, a perimeter, a platform, a role. Each describes where data sits or who stands beside it. An agent's defining property is that the location keeps changing.",
+      },
+      {
+        type: "p",
+        text: "So protection has to stop being a property of the environment and start being a property of the data. In practice, that means three things working together:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Protect sensitive fields at the source. Tokenize or mask them before anything is copied, embedded, or indexed, so the value is protected wherever it travels.",
+          "Govern real values with one policy. Decide once who, and what, may see the real value, and enforce that decision the same way in every system the agent touches.",
+          "Inspect the answer on the way out. Tokenizing the obvious fields doesn't stop four harmless ones from reassembling a person. Check what the agent returns, not just what it was given.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "One thing to do this week",
+      },
+      {
+        type: "p",
+        text: "List every AI agent running in your organization. Beside each, write down:",
+      },
+      {
+        type: "table",
+        headers: [
+          "Agent",
+          "What it can reach today",
+          "Who owns it",
+          "What would have to happen for that access to end",
+        ],
+        rows: [["", "", "", ""]],
+      },
+      {
+        type: "p",
+        text: "Most teams can't complete the first column. That isn't a failure of the exercise. That is the finding.",
+      },
+      {
+        type: "p",
+        text: "Three years from now, someone will ask what that agent could reach in 2026. There will be no badge record to pull. No revocation date, no signature at the bottom of a form, no line in any log where its access ended, because it never did.",
+      },
+      {
+        type: "p",
+        text: "Every employee who has ever worked for you got a last day.",
+      },
+      {
+        type: "p",
+        text: "This one doesn't.",
+      },
+      {
+        type: "p",
+        text: "So the protection can't have one either.",
+      },
+      {
+        type: "p",
+        text: "That's the whole reason to push it down into the data: protected at the field level, governed by one policy enforced identically in every system the agent will ever touch, and inspected again on the way out so nothing reassembles itself into an answer.",
+      },
+      {
+        type: "p",
+        text: "Protection with no expiry, for a worker with no last day.",
+      },
+      {
+        type: "p",
+        text: "Build it now, and three years from now the audit will be a short conversation: It could reach everything. It never mattered.",
+      },
+    ],
+  },
+  {
     slug: "scp-deny-is-the-perimeter",
     title: "The Deny Is the Perimeter",
     excerpt:
