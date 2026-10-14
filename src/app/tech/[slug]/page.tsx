@@ -2,10 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { ArticleCard } from "@/components/article-card"
-import { CodeBlock } from "@/components/code-block"
 import {
   articlesByTopic,
-  configsForTopic,
   getTopic,
   topicSlugs,
 } from "@/lib/content"
@@ -37,7 +35,6 @@ export default async function TopicPage({ params }: Props) {
   }
 
   const posts = articlesByTopic(topic.slug)
-  const configs = configsForTopic(topic.slug)
 
   return (
     <section className="container-page py-14 sm:py-16">
@@ -51,35 +48,7 @@ export default async function TopicPage({ params }: Props) {
         {topic.longDescription}
       </p>
 
-      {configs.length > 0 ? (
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold tracking-tight">
-            Reference configs
-          </h2>
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            {configs.map((config) => (
-              <div key={config.title} className="min-w-0">
-                <h3 className="text-[15px] font-semibold text-foreground">
-                  {config.title}
-                </h3>
-                <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-                  {config.description}
-                </p>
-                <div className="mt-3">
-                  <CodeBlock code={config.code} />
-                </div>
-                {config.note ? (
-                  <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground/80 italic">
-                    {config.note}
-                  </p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      <div className="mt-14">
+      <div className="mt-10">
         <h2 className="text-xl font-semibold tracking-tight">
           Articles on {topic.name}
         </h2>

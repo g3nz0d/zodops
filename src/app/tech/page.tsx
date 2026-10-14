@@ -20,8 +20,7 @@ export default function TechPage() {
         &ldquo;Choose your front line.&rdquo;
       </h1>
       <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
-        Each topic pairs deep write-ups with battle-tested configs and
-        playbooks.
+        Each topic pairs deep write-ups with battle-tested playbooks.
       </p>
       <div className="mt-10 max-w-2xl space-y-4">
         {lead ? <TopicCard topic={lead} featured /> : null}
