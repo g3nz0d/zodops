@@ -103,24 +103,28 @@ export type Principle = {
 
 export const principles: Principle[] = [
   {
-    label: "Evidence over claims",
-    text: "I don't trust a claim — mine or a vendor's — until it's checked against a primary source or tested by hand. I hold what I publish here to the same bar.",
+    label: "Evidence over assertion",
+    text: "Every claim gets verified before it's trusted: vendor datasheets, threat intel, and my own assumptions. If I can't trace it to a primary source or reproduce it myself, it doesn't drive a decision. Everything I publish here meets the same bar.",
   },
   {
-    label: "Compliance is a floor, not a target",
-    text: "A control that satisfies an auditor without reducing real exposure isn't one I'll ship. I weigh decisions by actual risk, not checklist language.",
+    label: "Compliance is the floor, not the finish line",
+    text: "Passing an audit and reducing risk are different outcomes. I rank controls by the exposure they remove, not the checkbox they satisfy. When an environment is compliant but still vulnerable, I say so plainly to the people who own the risk.",
   },
   {
-    label: "Assume it's already inside",
-    text: "Perimeter defenses eventually fail. I build assuming something inside is already compromised, and design for what limits the damage once that's true — not just what keeps it out.",
+    label: "Assume breach. Engineer for containment.",
+    text: "Perimeters fail, so I plan for the day after. I design for least privilege, segmentation, and detection, so that anything that gets in can't move far, can't stay long, and can't go unnoticed.",
   },
   {
     label: "Criteria before tools",
-    text: "Before I trust a new tool or platform, I build the evaluation criteria first — coverage, false-positive rate, integration cost — then apply it. Tools change. The discipline doesn't.",
+    text: "I define success before I look at a product: coverage, detection quality, the cost of false positives, integration effort, and who owns it after go-live. Vendors change every budget cycle. A sound evaluation framework doesn't.",
   },
   {
-    label: "Say what's still uncertain",
-    text: "Thirteen years gives me certainty in most of this work — not all of it. Where I'm reasoning through something newer, like AI security or DSPM/DLP, I say so outright instead of letting the line blur. Those posts are marked Field Notes.",
+    label: "Name the uncertainty",
+    text: "After 13 years, most of this work is pattern recognition, but not all of it. Where the ground is still moving, in AI security, agentic systems, and DSPM/DLP, I say so explicitly and label that work as Field Notes. Being precise about what I don't know is part of the job.",
+  },
+  {
+    label: "Permissions are the attack surface",
+    text: "The model isn't the risk. What it's allowed to reach is. I start every AI and data security review with identity and access: who and what can touch sensitive data, and why.",
   },
 ]
 
