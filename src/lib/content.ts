@@ -32,6 +32,14 @@ export const topicBorderClassName: Record<TopicSlug, string> = {
   "security-automation": "border-yellow-500",
 }
 
+export const topicSurfaceClassName: Record<TopicSlug, string> = {
+  "ai-agent-security": "bg-red-500/10 hover:bg-red-500/16",
+  "cloud-security": "bg-violet-500/10 hover:bg-violet-500/16",
+  "data-security": "bg-emerald-500/10 hover:bg-emerald-500/16",
+  "field-notes": "bg-brand/10 hover:bg-brand/16",
+  "security-automation": "bg-yellow-500/15 hover:bg-yellow-500/25",
+}
+
 export const topics: Topic[] = [
   {
     slug: "ai-agent-security",
