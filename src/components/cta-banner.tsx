@@ -10,12 +10,15 @@ export function CtaBanner() {
           </h2>
           <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-white/70">
             <p>
-              Thirteen years securing cloud and data. Lately, I&apos;ve been
-              hunting shadow AI with DSPM, DLP, and CASB tools: writing the
-              policies that catch secret keys pasted into chatbots, separating
-              sanctioned AI from the rest, and closing gaps in MCP servers
-              before they turned into leaks. No slideware. Just hands in the
-              logs and fixes in production.
+              Thirteen years securing cloud and data. Lately, hunting shadow AI
+              with DSPM, DLP, and CASB tools: catching secret keys pasted into
+              chatbots, separating sanctioned AI from the rest, and closing MCP
+              server gaps before they leak. No slideware. Just hands in the
+              configs and logs.
+            </p>
+            <p>
+              Now I&apos;m looking for a new team building what&apos;s next in
+              AI security.
             </p>
             <p>Ping me. Let&apos;s talk shop.</p>
           </div>
