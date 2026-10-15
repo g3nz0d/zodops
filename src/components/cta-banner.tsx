@@ -17,12 +17,6 @@ export function CtaBanner() {
               before they turned into leaks. No slideware. Just hands in the
               logs and fixes in production.
             </p>
-            <p>
-              Next up: securing what AI agents can reach and do, as a solutions
-              architect, customer success engineer, or forward-deployed
-              engineer who&apos;s already done the work your customers are
-              about to need.
-            </p>
             <p>Ping me. Let&apos;s talk shop.</p>
           </div>
         </div>
