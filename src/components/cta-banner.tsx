@@ -6,14 +6,25 @@ export function CtaBanner() {
       <div className="flex flex-col gap-8 rounded-2xl border border-brand bg-navy px-7 py-10 sm:px-10 sm:py-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <div className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-[2rem]">
-            Looking for my next security problem.
+            Building something bold in AI security? Save me a seat.
           </h2>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/70">
-            I&apos;m open to AI security, data security, and customer-facing
-            technical roles: solutions architecture, customer success
-            engineering, and forward-deployed work. If you&apos;re building in
-            that space, let&apos;s talk.
-          </p>
+          <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-white/70">
+            <p>
+              Thirteen years securing cloud and data. Lately, I&apos;ve been
+              hunting shadow AI with DSPM, DLP, and CASB tools: writing the
+              policies that catch secret keys pasted into chatbots, separating
+              sanctioned AI from the rest, and closing gaps in MCP servers
+              before they turned into leaks. No slideware. Just hands in the
+              logs and fixes in production.
+            </p>
+            <p>
+              Next up: securing what AI agents can reach and do, as a solutions
+              architect, customer success engineer, or forward-deployed
+              engineer who&apos;s already done the work your customers are
+              about to need.
+            </p>
+            <p>Ping me. Let&apos;s talk shop.</p>
+          </div>
         </div>
         <div className="flex shrink-0 items-start lg:items-end">
           <a
