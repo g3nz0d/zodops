@@ -1,6 +1,7 @@
 import Link from "next/link"
 
-import { articlesByTopic, type Topic } from "@/lib/content"
+import { articlesByTopic, topicBorderClassName, type Topic } from "@/lib/content"
+import { cn } from "@/lib/utils"
 
 function countLabel(count: number): string {
   if (count === 0) {
@@ -22,7 +23,10 @@ export function TopicCard({
     return (
       <Link
         href={`/tech/${topic.slug}/`}
-        className="flex flex-col gap-4 rounded-2xl border border-brand bg-[#f3f5f7] p-7 transition-colors hover:bg-[#ebeef1] sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:p-10"
+        className={cn(
+          "flex flex-col gap-4 rounded-2xl border bg-[#f3f5f7] p-7 transition-colors hover:bg-[#ebeef1] sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:p-10",
+          topicBorderClassName[topic.slug]
+        )}
       >
         <div className="min-w-0">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-brand uppercase">
@@ -45,7 +49,10 @@ export function TopicCard({
   return (
     <Link
       href={`/tech/${topic.slug}/`}
-      className="flex min-h-[148px] flex-col rounded-xl border border-brand bg-[#f3f5f7] p-6 transition-colors hover:bg-[#ebeef1]"
+      className={cn(
+        "flex min-h-[148px] flex-col rounded-xl border bg-[#f3f5f7] p-6 transition-colors hover:bg-[#ebeef1]",
+        topicBorderClassName[topic.slug]
+      )}
     >
       <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
         {topic.name}

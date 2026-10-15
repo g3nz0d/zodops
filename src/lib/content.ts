@@ -24,6 +24,14 @@ export const topicBadgeClassName: Record<TopicSlug, string> = {
   "security-automation": "bg-yellow-500/20 text-yellow-700",
 }
 
+export const topicBorderClassName: Record<TopicSlug, string> = {
+  "ai-agent-security": "border-red-500",
+  "cloud-security": "border-violet-500",
+  "data-security": "border-emerald-500",
+  "field-notes": "border-brand",
+  "security-automation": "border-yellow-500",
+}
+
 export const topics: Topic[] = [
   {
     slug: "ai-agent-security",
