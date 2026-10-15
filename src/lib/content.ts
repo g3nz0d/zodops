@@ -34,15 +34,15 @@ export const topicBorderClassName: Record<TopicSlug, string> = {
 
 export const topicHoverClassName: Record<TopicSlug, string> = {
   "ai-agent-security":
-    "hover:!bg-red-50 focus-visible:!bg-red-50 active:!bg-red-100",
+    "hover:!bg-red-100 focus-visible:!bg-red-100 active:!bg-red-200",
   "cloud-security":
-    "hover:!bg-violet-50 focus-visible:!bg-violet-50 active:!bg-violet-100",
+    "hover:!bg-violet-100 focus-visible:!bg-violet-100 active:!bg-violet-200",
   "data-security":
-    "hover:!bg-emerald-50 focus-visible:!bg-emerald-50 active:!bg-emerald-100",
+    "hover:!bg-emerald-100 focus-visible:!bg-emerald-100 active:!bg-emerald-200",
   "field-notes":
-    "hover:!bg-[#e8f0fe] focus-visible:!bg-[#e8f0fe] active:!bg-[#d6e4fd]",
+    "hover:!bg-[#d6e4fd] focus-visible:!bg-[#d6e4fd] active:!bg-[#c4d7fc]",
   "security-automation":
-    "hover:!bg-yellow-50 focus-visible:!bg-yellow-50 active:!bg-yellow-100",
+    "hover:!bg-yellow-100 focus-visible:!bg-yellow-100 active:!bg-yellow-200",
 }
 
 export const topics: Topic[] = [
