@@ -17,30 +17,30 @@ export type Topic = {
 }
 
 export const topicBadgeClassName: Record<TopicSlug, string> = {
-  "ai-agent-security": "bg-red-500/10 text-red-600",
+  "ai-agent-security": "bg-red-700/10 text-red-700",
   "cloud-security": "bg-violet-500/10 text-violet-600",
   "data-security": "bg-emerald-500/10 text-emerald-600",
-  "field-notes": "bg-amber-500/15 text-amber-700",
+  "field-notes": "bg-rose-500/10 text-rose-600",
   "security-automation": "bg-yellow-500/20 text-yellow-700",
 }
 
 export const topicBorderClassName: Record<TopicSlug, string> = {
-  "ai-agent-security": "border-red-500",
+  "ai-agent-security": "border-red-700",
   "cloud-security": "border-violet-500",
   "data-security": "border-emerald-500",
-  "field-notes": "border-amber-500",
+  "field-notes": "border-rose-500",
   "security-automation": "border-yellow-500",
 }
 
 export const topicHoverClassName: Record<TopicSlug, string> = {
   "ai-agent-security":
-    "hover:!bg-red-100 focus-visible:!bg-red-100 active:!bg-red-200",
+    "hover:!bg-red-200 focus-visible:!bg-red-200 active:!bg-red-300",
   "cloud-security":
     "hover:!bg-violet-100 focus-visible:!bg-violet-100 active:!bg-violet-200",
   "data-security":
     "hover:!bg-emerald-100 focus-visible:!bg-emerald-100 active:!bg-emerald-200",
   "field-notes":
-    "hover:!bg-amber-100 focus-visible:!bg-amber-100 active:!bg-amber-200",
+    "hover:!bg-rose-100 focus-visible:!bg-rose-100 active:!bg-rose-200",
   "security-automation":
     "hover:!bg-yellow-100 focus-visible:!bg-yellow-100 active:!bg-yellow-200",
 }
