@@ -20,7 +20,7 @@ export const topicBadgeClassName: Record<TopicSlug, string> = {
   "ai-agent-security": "bg-red-500/10 text-red-600",
   "cloud-security": "bg-violet-500/10 text-violet-600",
   "data-security": "bg-emerald-500/10 text-emerald-600",
-  "field-notes": "bg-teal-500/10 text-teal-700",
+  "field-notes": "bg-amber-500/15 text-amber-700",
   "security-automation": "bg-yellow-500/20 text-yellow-700",
 }
 
@@ -28,7 +28,7 @@ export const topicBorderClassName: Record<TopicSlug, string> = {
   "ai-agent-security": "border-red-500",
   "cloud-security": "border-violet-500",
   "data-security": "border-emerald-500",
-  "field-notes": "border-teal-500",
+  "field-notes": "border-amber-500",
   "security-automation": "border-yellow-500",
 }
 
@@ -40,7 +40,7 @@ export const topicHoverClassName: Record<TopicSlug, string> = {
   "data-security":
     "hover:!bg-emerald-100 focus-visible:!bg-emerald-100 active:!bg-emerald-200",
   "field-notes":
-    "hover:!bg-teal-100 focus-visible:!bg-teal-100 active:!bg-teal-200",
+    "hover:!bg-amber-100 focus-visible:!bg-amber-100 active:!bg-amber-200",
   "security-automation":
     "hover:!bg-yellow-100 focus-visible:!bg-yellow-100 active:!bg-yellow-200",
 }
