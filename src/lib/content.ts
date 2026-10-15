@@ -32,6 +32,19 @@ export const topicBorderClassName: Record<TopicSlug, string> = {
   "security-automation": "border-yellow-500",
 }
 
+export const topicHoverClassName: Record<TopicSlug, string> = {
+  "ai-agent-security":
+    "hover:!bg-red-50 focus-visible:!bg-red-50 active:!bg-red-100",
+  "cloud-security":
+    "hover:!bg-violet-50 focus-visible:!bg-violet-50 active:!bg-violet-100",
+  "data-security":
+    "hover:!bg-emerald-50 focus-visible:!bg-emerald-50 active:!bg-emerald-100",
+  "field-notes":
+    "hover:!bg-[#e8f0fe] focus-visible:!bg-[#e8f0fe] active:!bg-[#d6e4fd]",
+  "security-automation":
+    "hover:!bg-yellow-50 focus-visible:!bg-yellow-50 active:!bg-yellow-100",
+}
+
 export const topics: Topic[] = [
   {
     slug: "ai-agent-security",
