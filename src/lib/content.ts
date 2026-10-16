@@ -151,6 +151,306 @@ export const principles: Principle[] = [
 
 export const articles: Article[] = [
   {
+    slug: "the-package-doesnt-exist-yet",
+    title: "The Package Doesn't Exist Yet",
+    excerpt:
+      "AI coding tools invent software names. Attackers can claim them first. The fix is a policy and architecture decision, not a coding one.",
+    topic: "field-notes",
+    minutes: 8,
+    date: "2026-10-15",
+    fieldNotes: true,
+    draft: true,
+    body: [
+      {
+        type: "p",
+        text: "The short version: AI coding tools sometimes recommend software packages that don't exist. Attackers can register those names and fill them with malware. Checking that a package exists doesn't stop this. Checking how new it is does. The controls are cheap, work on any tech stack, and belong to the security team as much as to engineering.",
+      },
+      {
+        type: "h2",
+        text: "The setup",
+      },
+      {
+        type: "p",
+        text: "Modern software is mostly assembled, not written. A typical application pulls in hundreds of open-source building blocks, called packages, from public libraries such as PyPI (Python) and npm (JavaScript). Anyone can publish to those libraries, and names are first come, first served.",
+      },
+      {
+        type: "p",
+        text: "AI coding assistants now sit in the middle of that process. Ask one for help and it will often say \"install this package.\" Sometimes the package it names has never existed. The model invented it because the name sounded right.",
+      },
+      {
+        type: "p",
+        text: "If an AI keeps recommending a name nobody owns, an attacker can register it, put malicious code inside, and wait for the next person, or the next AI agent, to follow the advice. The industry calls this slopsquatting: AI \"slop\" plus typosquatting.",
+      },
+      {
+        type: "h2",
+        text: "How big the gap is",
+      },
+      {
+        type: "p",
+        text: "The baseline study (USENIX Security 2025) had 16 AI models write 576,000 pieces of code and checked every package they recommended.",
+      },
+      {
+        type: "table",
+        compact: true,
+        headers: ["Finding", "Result"],
+        rows: [
+          [
+            "Recommended packages that didn't exist",
+            "19.7%, about 1 in 5",
+          ],
+          ["Unique made-up names", "205,474"],
+          ["Commercial models", "5.2% made up"],
+          ["Open-source models", "21.7% made up"],
+          [
+            "Made-up names returned in all 10 repeats of the same question",
+            "43%",
+          ],
+          [
+            "Made-up names within 1–2 characters of a real package",
+            "13.4%",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "A 2026 follow-up tested five current models from Anthropic, OpenAI, Google and DeepSeek. Rates fell to 4.6–6.1%, not to zero. It also found 127 names that all five models invent identically. After disclosure to PyPI and npm, 53 could still be registered by anyone.",
+      },
+      {
+        type: "p",
+        text: "Five percent sounds small. Across a development team accepting hundreds of AI suggestions a week, it's routine.",
+      },
+      {
+        type: "h2",
+        text: "Why it's a real risk, not a curiosity",
+      },
+      {
+        type: "p",
+        text: "It's predictable. Nearly half of invented names come back every time the same question is asked. An attacker can ask an AI the common questions, collect the fake names, and register them in advance.",
+      },
+      {
+        type: "p",
+        text: "It evades typo defenses. Existing tools look for near-misses of popular names. Only 13.4% of invented names are near-misses. The rest look new and plausible.",
+      },
+      {
+        type: "p",
+        text: "It's been demonstrated. In 2023 a researcher noticed AI tools recommending huggingface-cli, which didn't exist. He registered it as an empty placeholder. It drew more than 15,000 downloads in three months, and a project at Alibaba told its users to install it. It was harmless only because it was empty.",
+      },
+      {
+        type: "p",
+        text: "Installing is executing. Packages can run code the moment they're installed, with whatever access that machine has. On a developer laptop, that can be cloud credentials. On a build server, it can be the keys that ship to production.",
+      },
+      {
+        type: "h2",
+        text: "Why AI agents raise the stakes",
+      },
+      {
+        type: "p",
+        text: "When a person copies an install command, there's a moment where they might stop and check. Coding agents remove that moment. An agent that hits a \"missing package\" error will often install what it thinks is missing on its own, in the same loop.",
+      },
+      {
+        type: "p",
+        text: "The trust decision used to belong to a person. Now it belongs to a tool call. That makes this an agent permissions problem as much as a supply-chain problem.",
+      },
+      {
+        type: "h2",
+        text: "Where I've seen the pieces of this",
+      },
+      {
+        type: "p",
+        text: "I haven't responded to a slopsquatting incident. But the two conditions that make it dangerous are ones I've measured firsthand.",
+      },
+      {
+        type: "p",
+        text: "In a recent program, I used Cyera (DSPM), Microsoft Purview and Zscaler (DLP) to find shadow AI usage across an enterprise. Two findings from that work apply directly here:",
+      },
+      {
+        type: "ul",
+        items: [
+          "AI adoption was ahead of AI governance. Employees were already using AI tools, both the sanctioned corporate service and personal accounts, before security had a full picture of which tools or what data. Developer AI assistants follow the same curve. If an organization can't yet say which AI tools its people use, it can't say which AI tools are recommending packages to its engineers either.",
+          "Secrets were already where they shouldn't be. The DLP work surfaced employees pasting sensitive data, including AWS secret keys, into AI tools. That matters for slopsquatting because a malicious package's install script runs with whatever access the machine has. A hallucinated package is only as damaging as the credentials it can reach, and that program showed those credentials are often closer to hand than anyone assumes.",
+        ],
+      },
+      {
+        type: "p",
+        text: "One lesson carries over directly: the first round of results was dominated by false positives from people using the approved AI tool correctly. Separating corporate from personal AI use, rather than blocking by destination, is what made the policy usable. Dependency controls will hit the same wall if they treat every new package as a threat. The rollout section below is built around avoiding that.",
+      },
+      {
+        type: "p",
+        text: "Full case study: Finding Shadow AI Before It Found Us.",
+      },
+      {
+        type: "h2",
+        text: "The control that doesn't work, and the one that does",
+      },
+      {
+        type: "p",
+        text: "The obvious control is \"verify the package exists before installing.\" But once an attacker registers the name, it does exist. The check passes.",
+      },
+      {
+        type: "p",
+        text: "The useful signal is age. A squatted name was registered recently. The package a project actually needs has usually existed for years. That one fact separates most real dependencies from attacker-registered ones, and every major package ecosystem can now enforce it.",
+      },
+      {
+        type: "h2",
+        text: "The remedy: three layers",
+      },
+      {
+        type: "p",
+        text: "The specific tools depend on the tech stack. The approach doesn't. Only the bottom layer changes from one environment to the next.",
+      },
+      {
+        type: "p",
+        text: "Layer 1: Policy (the same everywhere)",
+      },
+      {
+        type: "table",
+        compact: true,
+        headers: ["Policy", "What it prevents"],
+        rows: [
+          [
+            "Nothing installs if it was published in the last 7 days",
+            "Freshly squatted names and hijacked updates of real packages",
+          ],
+          [
+            "Adding a new dependency requires review; updating an existing one doesn't",
+            "Unvetted names entering the codebase",
+          ],
+          [
+            "AI agents can request packages but not install them",
+            "Agents acting on their own hallucinations",
+          ],
+          [
+            "Build servers and agent sessions hold no long-lived secrets",
+            "A bad package finding anything worth stealing",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "Layer 2: One choke point (same idea, different product)",
+      },
+      {
+        type: "p",
+        text: "Route all installs through a single company-controlled registry proxy, so policy is enforced in one place instead of on every laptop. Options by environment:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Vendor-neutral: JFrog Artifactory, Sonatype Nexus",
+          "AWS: CodeArtifact",
+          "Azure: Azure Artifacts",
+          "GitHub: GitHub Packages, plus dependency review on pull requests",
+        ],
+      },
+      {
+        type: "p",
+        text: "The proxy is also where allowlists, malware scanning and audit logs live.",
+      },
+      {
+        type: "p",
+        text: "Layer 3: Enforcement (stack-specific)",
+      },
+      {
+        type: "p",
+        text: "Each package manager has its own setting for the waiting period. npm, pnpm and uv all support one now; pip added relative durations in 2026. Build pipelines then flag any pull request that adds a dependency that doesn't exist or is less than a month old.",
+      },
+      {
+        type: "h2",
+        text: "Rolling it out without stalling engineering",
+      },
+      {
+        type: "p",
+        text: "Security controls on developer workflow fail in the first two weeks if they block real work. The same rollout principles apply here:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Start in report-only mode. Flag new and young dependencies for two sprints without blocking. Measure how often legitimate work would have been stopped.",
+          "Write the exception path first. Teams will sometimes need a package published yesterday, such as an urgent security patch. Give them a documented, time-boxed way to request it before launch, not in a Slack thread during an incident.",
+          "Start with the highest-value environments. Build servers and AI agent sessions first. They hold the most access and have the least human oversight.",
+          "Then enforce. Turn on blocking once false positives are understood and the exception path is working.",
+        ],
+      },
+      {
+        type: "p",
+        text: "The trade-off to own: a 7-day waiting period also delays legitimate security fixes by up to a week. That's why the exception path isn't optional. Name it up front rather than letting someone discover it during an incident.",
+      },
+      {
+        type: "h2",
+        text: "If a bad package already got in",
+      },
+      {
+        type: "p",
+        text: "The response is standard incident handling and doesn't depend on the stack:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Find it. Search lockfiles and build logs across all repositories for the package name.",
+          "Contain it. Remove it and block the name at the registry proxy.",
+          "Rotate first. Treat every credential on any machine that installed it as compromised. Install scripts run with that machine's access, so this step matters most.",
+          "Check for spread. Review outbound connections and cloud activity from those machines and credentials since the install.",
+          "Close the gap. Identify which control was missing and fix that, not just the one package.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "How to tell if it's working",
+      },
+      {
+        type: "table",
+        compact: true,
+        headers: ["Metric", "What good looks like"],
+        rows: [
+          [
+            "Share of installs routed through the proxy",
+            "Approaching 100% for build servers and agents",
+          ],
+          ["New dependencies added without review", "Zero"],
+          [
+            "Exception requests per month, and time to approve",
+            "Low and fast; a growing queue means the policy is too tight",
+          ],
+          [
+            "AI agent sessions with direct install permission",
+            "Zero",
+          ],
+          [
+            "Long-lived secrets present in build and agent environments",
+            "Trending to zero",
+          ],
+        ],
+      },
+      {
+        type: "h2",
+        text: "Where this fits in the frameworks",
+      },
+      {
+        type: "p",
+        text: "This maps to two entries in the OWASP Top 10 for LLM Applications (2025):",
+      },
+      {
+        type: "ul",
+        items: [
+          "LLM09: Misinformation covers this attack directly. It lists \"unsafe code generation,\" including suggestions of non-existent libraries, and one of its example scenarios is attackers finding commonly hallucinated package names and publishing malicious packages under them.",
+          "LLM06: Excessive Agency covers the agent side: too much functionality, permission or autonomy. One of its listed mitigations is requiring human approval for high-impact actions, which is exactly what \"agents request, people approve\" does for package installs.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Note what it isn't: LLM03: Supply Chain is about the components used to build an AI application, such as models, datasets and adapters, not the packages an AI recommends in its output. The damage from slopsquatting is a classic software supply-chain compromise, but in the OWASP LLM list it sits under LLM09. Mapping it correctly helps it land in an existing risk register instead of becoming a one-off concern.",
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "The model will keep inventing names. Better models shrink the rate but haven't eliminated it, and the names they share are a target list attackers can use against everyone. The goal isn't to make the AI stop. It's to make sure a name nobody has vetted can't run on the way in: a waiting period, review of new dependencies, one choke point, and no AI agent installing software on its own.",
+      },
+    ],
+  },
+  {
     slug: "no-last-day",
     title: "No Last Day",
     excerpt:
@@ -2065,6 +2365,10 @@ export const publishedArticles = articles
 
 export function getArticle(slug: string): Article | undefined {
   return articles.find((article) => article.slug === slug)
+}
+
+export function canViewArticle(article: Article): boolean {
+  return !article.draft || process.env.NODE_ENV === "development"
 }
 
 export function articlesByTopic(slug: TopicSlug): Article[] {

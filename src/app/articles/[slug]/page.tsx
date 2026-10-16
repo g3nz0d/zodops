@@ -6,6 +6,8 @@ import { ArticleBody } from "@/components/article-body"
 import { ArticleCard } from "@/components/article-card"
 import { ArticleToc } from "@/components/article-toc"
 import {
+  articles,
+  canViewArticle,
   formatDate,
   getArticle,
   publishedArticles,
@@ -17,7 +19,7 @@ import { cn } from "@/lib/utils"
 type Props = PageProps<"/articles/[slug]">
 
 export function generateStaticParams() {
-  return publishedArticles.map((article) => ({ slug: article.slug }))
+  return articles.map((article) => ({ slug: article.slug }))
 }
 
 export async function generateMetadata({
@@ -25,7 +27,7 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const { slug } = await params
   const article = getArticle(slug)
-  if (!article) {
+  if (!article || !canViewArticle(article)) {
     return {}
   }
   return {
@@ -36,7 +38,7 @@ export async function generateMetadata({
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params
   const article = getArticle(slug)
-  if (!article) {
+  if (!article || !canViewArticle(article)) {
     notFound()
   }
 
