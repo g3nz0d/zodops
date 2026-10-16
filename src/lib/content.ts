@@ -157,7 +157,7 @@ export const articles: Article[] = [
       "AI coding tools invent software names. Attackers can claim them first. The fix is a policy and architecture decision, not a coding one.",
     topic: "field-notes",
     minutes: 8,
-    date: "2026-10-15",
+    date: "2026-07-28",
     fieldNotes: true,
     draft: true,
     body: [
