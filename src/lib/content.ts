@@ -159,7 +159,6 @@ export const articles: Article[] = [
     minutes: 8,
     date: "2026-07-28",
     fieldNotes: true,
-    draft: true,
     body: [
       {
         type: "p",
