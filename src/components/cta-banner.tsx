@@ -26,7 +26,7 @@ export function CtaBanner() {
         <div className="flex w-full shrink-0 flex-col gap-2.5 sm:w-auto lg:min-w-[13.5rem]">
           <a
             href={`mailto:${site.email}`}
-            className="inline-flex h-10 items-center justify-center rounded-md border border-white/35 px-4 text-sm font-medium text-white outline-none hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-brand px-4 text-sm font-medium text-white outline-none hover:bg-brand/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Email me
           </a>
