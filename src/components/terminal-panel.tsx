@@ -1,5 +1,6 @@
 import { site } from "@/lib/site"
 import { publishedArticles } from "@/lib/content"
+import { cn } from "@/lib/utils"
 
 export type TerminalLineKind = "cmd" | "dim" | "ok" | "warn" | "err" | "out" | "blank"
 
@@ -46,13 +47,19 @@ export function TerminalPanel({
   showStats?: boolean
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-brand bg-white shadow-[0_12px_40px_-18px_rgba(15,23,42,0.28)]">
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border border-brand shadow-[0_12px_40px_-18px_rgba(15,23,42,0.28)]",
+        showStats ? "bg-white" : "bg-navy"
+      )}
+    >
       <div className="bg-navy px-4 pt-4 pb-5 sm:px-6 sm:pt-5 sm:pb-6">
         <div className="mb-4 flex items-center gap-2">
           <span className="size-[10px] rounded-full bg-[#ff5f57]" />
           <span className="size-[10px] rounded-full bg-[#febc2e]" />
           <span className="size-[10px] rounded-full bg-[#28c840]" />
-          <span className="ml-2 font-mono text-[11px] tracking-[0.12em] text-white/50 uppercase">
+          <TerminalPromptIcon />
+          <span className="font-mono text-[11px] tracking-[0.12em] text-white/50 uppercase">
             {title}
           </span>
         </div>
@@ -72,6 +79,25 @@ export function TerminalPanel({
         </div>
       ) : null}
     </div>
+  )
+}
+
+function TerminalPromptIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="ml-1.5 size-3.5 shrink-0 text-[#7ddea0]"
+      aria-hidden
+    >
+      <path
+        d="M3.2 4.2 7.1 8 3.2 11.8M8.4 12.4H13"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 
