@@ -1,3 +1,7 @@
+import {
+  anatomyStackLabel,
+  publishedAnatomies,
+} from "@/lib/anatomy"
 import { publishedArticles, topicBySlug } from "@/lib/content"
 import { site } from "@/lib/site"
 import { publishedCaseStudies, primaryTopic } from "@/lib/work"
@@ -45,7 +49,20 @@ export function buildRssFeed(): string {
     </item>`
   })
 
-  const items = [...articleItems, ...caseItems].join("\n")
+  const anatomyItems = publishedAnatomies.map((item) => {
+    const url = `${BASE_URL}/anatomy/${item.slug}/`
+    const pubDate = new Date(`${item.date}T00:00:00Z`).toUTCString()
+    return `    <item>
+      <title>${escapeXml(item.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <category>${escapeXml(anatomyStackLabel[item.stack])}</category>
+      <description>${escapeXml(item.excerpt)}</description>
+    </item>`
+  })
+
+  const items = [...articleItems, ...caseItems, ...anatomyItems].join("\n")
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

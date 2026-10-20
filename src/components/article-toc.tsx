@@ -6,9 +6,11 @@ import { slugifyHeading } from "@/lib/content"
 export function ArticleToc({
   blocks,
   topic,
+  label = "In this article",
 }: {
   blocks: Block[]
   topic: Topic
+  label?: string
 }) {
   const headings = blocks.filter(
     (block): block is { type: "h2"; text: string } => block.type === "h2"
@@ -20,7 +22,7 @@ export function ArticleToc({
         {headings.length > 0 ? (
           <>
             <p className="text-[11px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-              In this article
+              {label}
             </p>
             <nav className="mt-3 space-y-2.5">
               {headings.map((heading) => (

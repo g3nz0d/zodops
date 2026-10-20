@@ -1,7 +1,9 @@
 export function GlanceBox({
   rows,
+  caption = "Case study summary: environment, role, tools, and timeline",
 }: {
   rows: { label: string; value: string }[]
+  caption?: string
 }) {
   return (
     <div className="overflow-hidden rounded-xl border border-brand">
@@ -9,9 +11,7 @@ export function GlanceBox({
         At a glance
       </p>
       <table className="w-full border-collapse text-left text-[13.5px]">
-        <caption className="sr-only">
-          Case study summary: environment, role, tools, and timeline
-        </caption>
+        <caption className="sr-only">{caption}</caption>
         <tbody>
           {rows.map((row) => (
             <tr

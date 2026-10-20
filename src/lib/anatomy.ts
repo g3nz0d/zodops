@@ -1,0 +1,244 @@
+import { type Block, type TopicSlug, topicBySlug } from "@/lib/content"
+
+export const anatomyStacks = [
+  "mcp",
+  "terraform",
+  "kubernetes",
+  "iam",
+  "ci",
+] as const
+
+export type AnatomyStack = (typeof anatomyStacks)[number]
+
+export const anatomyStackLabel: Record<AnatomyStack, string> = {
+  mcp: "MCP",
+  terraform: "Terraform",
+  kubernetes: "Kubernetes",
+  iam: "IAM",
+  ci: "CI",
+}
+
+export type Anatomy = {
+  slug: string
+  title: string
+  excerpt: string
+  description: string
+  stack: AnatomyStack
+  topics: TopicSlug[]
+  minutes: number
+  date: string
+  draft?: boolean
+  glance: { label: string; value: string }[]
+  body: Block[]
+  related?: { href: string; label: string; note: string }[]
+}
+
+export const anatomies: Anatomy[] = [
+  {
+    slug: "mcp-service-account-in-env",
+    title: "The Key in the Env Block",
+    excerpt:
+      "You reviewed the system prompt. You did not review the access key the MCP server loads on start. That key is the permission grant.",
+    description:
+      "A teardown of a typical MCP server config: long-lived keys in the environment, tools that run as a shared service account, and the tighter version.",
+    stack: "mcp",
+    topics: ["ai-agent-security"],
+    minutes: 5,
+    date: "2026-10-20",
+    glance: [
+      {
+        label: "System",
+        value: "Internal MCP server in front of tickets and customer data",
+      },
+      {
+        label: "Stack",
+        value: "MCP, Docker Compose, AWS IAM",
+      },
+      {
+        label: "The miss",
+        value:
+          "Long-lived keys in the environment. Every tool call runs as one shared account.",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text: "The short version: teams review what the model is told to do. They skip the credentials the MCP server uses to do it. Those credentials are the permission grant. The prompt is commentary.",
+      },
+      {
+        type: "h2",
+        text: "The config",
+      },
+      {
+        type: "p",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same three lines in Cursor, Claude Desktop, and the compose file that wraps the same server for a shared host.",
+      },
+      {
+        type: "code",
+        caption: "mcp.json — what the agent host actually loads",
+        code: `{
+  "mcpServers": {
+    "acme-support": {
+      "command": "npx",
+      "args": ["-y", "@acme/mcp-support"],
+      "env": {
+        "AWS_ACCESS_KEY_ID": "AKIAIOSFODNN7EXAMPLE",
+        "AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "SALESFORCE_TOKEN": "00Dxx0000000001!AQoAQ...",
+        "SLACK_BOT_TOKEN": "xoxb-0000-0000-example"
+      }
+    }
+  }
+}`,
+      },
+      {
+        type: "p",
+        text: "The container version is the same grant with a restart policy. The keys did not get safer because they moved into Compose.",
+      },
+      {
+        type: "code",
+        caption: "docker-compose.yml — same server, same identity",
+        code: `services:
+  acme-mcp:
+    image: ghcr.io/acme/mcp-support:1.4.2
+    restart: unless-stopped
+    environment:
+      AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+      AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      SALESFORCE_TOKEN: 00Dxx0000000001!AQoAQ...
+      SLACK_BOT_TOKEN: xoxb-0000-0000-example
+    command: >
+      mcp-server
+      --tools tickets,customers,sql,slack`,
+      },
+      {
+        type: "h2",
+        text: "Three lines that matter",
+      },
+      {
+        type: "ul",
+        items: [
+          "The access key. It is a long-lived principal. It does not expire with the session, the user, or the ticket the agent is reading. Rotate it and the next checkout still has a copy in someone else's mcp.json.",
+          "The tool list. tickets, customers, sql, slack is not a support agent. It is read, join, and send on one process. SQL is a general-purpose query surface sitting behind a model that will call whatever the last document told it to call.",
+          "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as acme-support. A prompt that says \"only look up the current requester\" is not an authorization check.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What it actually grants",
+      },
+      {
+        type: "p",
+        text: "Whatever IAM and Salesforce attached to those secrets. In the rollouts I have reviewed, that is usually: read on the ticket store, read on customer records, and post to a Slack workspace. Sometimes write. Nobody mapped it because the server \"just needed to work for the pilot.\"",
+      },
+      {
+        type: "p",
+        text: "The model did not create that reach. It made it callable in one turn, from a ticket body, a pasted stack trace, or a page the agent was told to summarize.",
+      },
+      {
+        type: "ul",
+        items: [
+          "A fooled agent can do anything this account can do, not anything the current user can do.",
+          "The key lives on laptops and in the compose file. Laptop compromise and repo history are now the same as compromising the integration.",
+          "There is no offboarding. The engineer who stood this up in March can leave. The key will not.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The tighter version",
+      },
+      {
+        type: "p",
+        text: "Take the keys out of the file. Give the process an identity that can be scoped, rotated, and attributed. Split the tools. Do not let the model send or query freely.",
+      },
+      {
+        type: "code",
+        caption: "docker-compose.yml — identity on the workload, tools cut down",
+        code: `services:
+  acme-mcp:
+    image: ghcr.io/acme/mcp-support:1.4.2@sha256:4f2c…pinned
+    restart: unless-stopped
+    environment:
+      AWS_ROLE_ARN: arn:aws:iam::123456789012:role/mcp-support-readonly
+      # Tokens issued per session, audience-bound, not pasted here.
+      TICKET_AUDIENCE: tickets.acme.internal
+    command: >
+      mcp-server
+      --tools ticket_status,requester_account
+      --confirm slack_post`,
+      },
+      {
+        type: "ul",
+        items: [
+          "No long-lived access keys. The task role is read-only on the two APIs the job needs. IRSA, an instance profile, or a cloud identity federation — pick the one your host already has.",
+          "Two tools, named for the use case. ticket_status and requester_account. Not sql. Not \"customers.\" The join lives in your code, not in a prompt.",
+          "slack_post exists, and it waits. High-impact actions require a human in the same loop.",
+          "Pin the image digest. Treat the MCP server like any other dependency you would not float on latest.",
+        ],
+      },
+      {
+        type: "p",
+        text: "On a desktop host, the same rules apply. The env block should hold a role to assume or a socket to a local broker, not AKIA. If the only way the server works is a pasted production key, it is not ready to sit behind an agent.",
+      },
+      {
+        type: "h2",
+        text: "How to tell you are looking at this",
+      },
+      {
+        type: "ul",
+        items: [
+          "mcp.json or Compose has AWS_ACCESS_KEY_ID, a Salesforce token, or a Slack bot token in plain env.",
+          "The tool list includes sql, query, or exec, or more than one system in a single server.",
+          "You cannot name the IAM principal, its last rotation, or who is allowed to mint a new key.",
+          "The same server is used by more than one person, and every call looks like the same account in the logs — if there are logs.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "Do not approve the agent until you can approve this file. The model will do what the tools allow. The tools will do what this identity allows. Start there.",
+      },
+    ],
+    related: [
+      {
+        href: "/articles/mcp-tool-permissions-and-prompt-injection/",
+        label: "Assume Your Agent Is Fooled",
+        note: "Why tool permissions and identity are the control, not the system prompt.",
+      },
+      {
+        href: "/articles/no-last-day/",
+        label: "No Last Day",
+        note: "The agent and the key both skip offboarding.",
+      },
+    ],
+  },
+]
+
+export const publishedAnatomies = anatomies
+  .filter((item) => !item.draft)
+  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+
+export function isAnatomyVisible(): boolean {
+  return (
+    process.env.NODE_ENV === "development" || publishedAnatomies.length > 0
+  )
+}
+
+export function visibleAnatomies(): Anatomy[] {
+  return process.env.NODE_ENV === "development" ? anatomies : publishedAnatomies
+}
+
+export function getAnatomy(slug: string): Anatomy | undefined {
+  return anatomies.find((item) => item.slug === slug)
+}
+
+export function canViewAnatomy(item: Anatomy): boolean {
+  return !item.draft || process.env.NODE_ENV === "development"
+}
+
+export function primaryAnatomyTopic(item: Anatomy) {
+  return topicBySlug(item.topics[0] ?? "ai-agent-security")
+}

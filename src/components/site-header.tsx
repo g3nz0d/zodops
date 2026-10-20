@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react"
 import { GithubIcon } from "@/components/github-icon"
 import { Logo } from "@/components/logo"
 import { RssIcon } from "@/components/rss-icon"
+import { isAnatomyVisible } from "@/lib/anatomy"
 import { ctaHref, ctaLabel, nav, site } from "@/lib/site"
 import { isCasesVisible } from "@/lib/work"
 import { cn } from "@/lib/utils"
@@ -15,9 +16,11 @@ import { cn } from "@/lib/utils"
 export function SiteHeader() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const items = nav.filter(
-    (item) => item.href !== "/cases/" || isCasesVisible()
-  )
+  const items = nav.filter((item) => {
+    if (item.href === "/cases/") return isCasesVisible()
+    if (item.href === "/anatomy/") return isAnatomyVisible()
+    return true
+  })
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : ""
