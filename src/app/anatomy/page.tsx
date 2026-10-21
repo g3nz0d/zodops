@@ -36,11 +36,12 @@ export default function AnatomyPage() {
       <h1 className="mt-3 text-3xl font-semibold tracking-tight italic sm:text-4xl lg:whitespace-nowrap">
         &ldquo;The config is the permission grant.&rdquo;
       </h1>
-      <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
-        Teardowns of real configurations. What they grant, and the line you
-        would change.
-        <br />
-        Not tutorials.
+      <p className="mt-3 max-w-3xl text-[16px] leading-relaxed text-muted-foreground">
+        <span className="block lg:whitespace-nowrap">
+          Teardowns of real configurations. What they grant, and the line you
+          would change.
+        </span>
+        <span className="block">Not tutorials.</span>
       </p>
 
       <div className="mt-14">
