@@ -57,7 +57,7 @@ export const anatomies: Anatomy[] = [
       {
         label: "The miss",
         value:
-          "Long-lived keys in the environment. Every tool call runs as one shared account.",
+          "A long-lived AWS access key in the environment. Every tool call runs as one shared account.",
       },
     ],
     body: [
@@ -75,7 +75,8 @@ export const anatomies: Anatomy[] = [
       },
       {
         type: "code",
-        caption: "mcp.json — what the agent host actually loads",
+        caption:
+          "mcp.json / claude_desktop_config.json — what the agent host actually loads",
         code: `{
   "mcpServers": {
     "acme-support": {
@@ -118,7 +119,7 @@ export const anatomies: Anatomy[] = [
       {
         type: "ul",
         items: [
-          "The access key. It is a long-lived principal. It does not expire with the session, the user, or the ticket the agent is reading. Rotate it and the next checkout still has a copy in someone else's mcp.json.",
+          "The access key. It is a long-lived principal. It does not expire with the session, the user, or the ticket the agent is reading. Every copy on every laptop and in repo history works until you rotate, and rotating breaks every one of them, so nobody does. The Salesforce value next to it is a session token — it expires — but it is still sitting beside a key that does not.",
           "The tool list. tickets, customers, sql, slack is not a support agent. It is read, join, and send on one process. SQL is a general-purpose query surface sitting behind a model that will call whatever the last document told it to call.",
           "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as acme-support. A prompt that says \"only look up the current requester\" is not an authorization check.",
         ],
@@ -159,26 +160,28 @@ export const anatomies: Anatomy[] = [
     image: ghcr.io/acme/mcp-support:1.4.2@sha256:4f2c…pinned
     restart: unless-stopped
     environment:
-      AWS_ROLE_ARN: arn:aws:iam::123456789012:role/mcp-support-readonly
-      # Tokens issued per session, audience-bound, not pasted here.
+      # No AWS_* vars. On EC2 the instance profile supplies credentials.
+      # ECS: task role. EKS: IRSA or Pod Identity.
+      # Off AWS: IAM Roles Anywhere or an SSO profile — not a pasted key.
       TICKET_AUDIENCE: tickets.acme.internal
     command: >
       mcp-server
-      --tools ticket_status,requester_account
+      --tools ticket_status,requester_account,slack_post
       --confirm slack_post`,
       },
       {
         type: "ul",
         items: [
-          "No long-lived access keys. The task role is read-only on the two APIs the job needs. IRSA, an instance profile, or a cloud identity federation — pick the one your host already has.",
-          "Two tools, named for the use case. ticket_status and requester_account. Not sql. Not \"customers.\" The join lives in your code, not in a prompt.",
-          "slack_post exists, and it waits. High-impact actions require a human in the same loop.",
+          "No long-lived access keys. Map the host to the identity it already has: EC2 → instance profile, ECS → task role, EKS → IRSA or Pod Identity. Off AWS, IAM Roles Anywhere or SSO profiles. The role is read-only on the two APIs the job needs.",
+          "Two read tools, named for the use case. ticket_status and requester_account. Not sql. Not \"customers.\" The join lives in your code, not in a prompt.",
+          "slack_post is in the tool list, and --confirm gates it. High-impact actions require a human in the same loop.",
+          "Slack and Salesforce secrets do not come back as env. Pull a bot token from a secrets manager with rotation, or issue a per-session OAuth token for the user who opened the chat. Do not paste either one into the file.",
           "Pin the image digest. Treat the MCP server like any other dependency you would not float on latest.",
         ],
       },
       {
         type: "p",
-        text: "On a desktop host, the same rules apply. The env block should hold a role to assume or a socket to a local broker, not AKIA. If the only way the server works is a pasted production key, it is not ready to sit behind an agent.",
+        text: "On a laptop the same rule holds. The env block should not contain AKIA. If the only way the server works is a pasted production key, it is not ready to sit behind an agent.",
       },
       {
         type: "h2",
@@ -187,7 +190,8 @@ export const anatomies: Anatomy[] = [
       {
         type: "ul",
         items: [
-          "mcp.json or Compose has AWS_ACCESS_KEY_ID, a Salesforce token, or a Slack bot token in plain env.",
+          "mcp.json, claude_desktop_config.json, or Compose has AWS_ACCESS_KEY_ID, a Salesforce token, or a Slack bot token in plain env.",
+          "The command is npx -y @something/mcp-…. That flag fetches whatever latest is today, the same unpinned-dependency problem as an unpinned image tag.",
           "The tool list includes sql, query, or exec, or more than one system in a single server.",
           "You cannot name the IAM principal, its last rotation, or who is allowed to mint a new key.",
           "The same server is used by more than one person, and every call looks like the same account in the logs — if there are logs.",
