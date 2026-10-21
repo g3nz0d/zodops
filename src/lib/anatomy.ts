@@ -390,7 +390,7 @@ networks:
       },
       {
         type: "p",
-        text: "An Entra app registration holds the grant. The MCP server is how the agent calls Graph. The launch file hands the server a client id, a tenant id, and a secret, then asks for `https://graph.microsoft.com/.default`. That scope means: every application permission an admin already consented on this app. The permission list is the door. The yaml is how the process knocks.",
+        text: "An Entra app registration holds the grant. The MCP server is how the agent calls Graph. The launch file hands the server a client id, a tenant id, and a secret, then asks for `https://graph.microsoft.com/.default`. That scope means: every application permission an admin already consented on this app. The permission list is the door. The file is how the process knocks.",
       },
       {
         type: "h2",
@@ -461,6 +461,7 @@ Site grants: none — .All does not use them`,
         items: [
           "A fooled agent can read anything this app can read, not anything the current user can read.",
           "`Files.Read.All` is every SharePoint library and every user's OneDrive. The personal drives are the worse exposure. That is where the real files sit.",
+          "A Purview sensitivity label can still stop the app. Encrypted files need usage rights or a super-user grant. Labeling reaches app-only access. Sharing does not.",
           "The secret and the consent outlive the engineer who clicked Grant admin consent in March.",
         ],
       },
@@ -508,7 +509,7 @@ Site grants: none — .All does not use them`,
       },
       {
         type: "p",
-        text: "Take `.All` off the app. Use `Sites.Selected`. Grant that app read on the one site the job needs. Take the secret out of the file. Do not let the model search or send freely.",
+        text: "Take `.All` off the app. Use `Sites.Selected`. An admin — not this app — then grants read on the one site. That call needs `Sites.FullControl.All`. Take the secret out of the file. Do not let the model search or send freely.",
       },
       {
         type: "code",
@@ -548,7 +549,7 @@ Files.Read.All: removed`,
       {
         type: "code",
         caption:
-          "mcp.json — secret out of the file, tools cut down, site pinned",
+          "mcp.json — no secret, site pinned. Auth is not in this file.",
         changedLines: [5, 10],
         changedNote: "marks what changed from the launch file above.",
         code: `{
@@ -567,10 +568,13 @@ Files.Read.All: removed`,
 }`,
       },
       {
+        type: "p",
+        text: "This file no longer authenticates the server. On Azure, the process uses a managed identity or a federated credential — the Entra equivalent of the workload role in The Key in the Env Block. That does not work on a laptop. For a local server, use a certificate credential, ideally non-exportable and stored in a key store, or move the server onto a host that can use a managed identity. A missing `CLIENT_SECRET` is not a complete fix if nothing replaced it.",
+      },
+      {
         type: "ul",
         items: [
           "`Sites.Selected` with no site grant is no SharePoint access. That is the point. You add the site on purpose, with `roles: [\"read\"]`. Finance, HR, and the 2019 dump are not in the crawl. If the job is one library or one file, `Lists.SelectedOperations.Selected` and `Files.SelectedOperations.Selected` go tighter than a whole site. Same rule: consent grants nothing until you add the resource permission.",
-          "A client secret does not belong in `mcp.json`. On a host in Azure, use a federated credential or a managed identity — the Entra equivalent of the workload role in The Key in the Env Block. On a laptop the file still has to authenticate: a certificate credential, ideally non-exportable and stored in a key store, or move the server off the laptop onto a host that can use a managed identity.",
           "Pin the package. `npx -y @platform/mcp-graph` fetches whatever `latest` is today.",
           "`SITE_ID` in env is hygiene. It only holds if the server refuses other sites. Graph enforces `Sites.Selected`. A prompt that says \"only the support site\" is not a control.",
           "If a job really needs mail, do not put application `Mail.Read` on the tenant. Exchange Online RBAC for Applications can limit an app to a set of mailboxes. Removal is still the default.",
