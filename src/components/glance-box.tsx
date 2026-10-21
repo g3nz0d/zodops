@@ -1,3 +1,5 @@
+import { InlineCopy } from "@/components/inline-copy"
+
 export function GlanceBox({
   rows,
   caption = "Case study summary: environment, role, tools, and timeline",
@@ -25,7 +27,7 @@ export function GlanceBox({
                 {row.label}
               </th>
               <td className="block px-4 pt-0 pb-3 leading-relaxed text-foreground/85 sm:table-cell sm:border-b sm:border-border sm:py-3 sm:group-last:border-b-0">
-                {row.value}
+                <InlineCopy text={row.value} />
               </td>
             </tr>
           ))}

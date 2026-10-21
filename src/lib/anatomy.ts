@@ -145,8 +145,8 @@ networks:
         type: "ul",
         items: [
           "The access key. It is a long-lived principal. It does not expire with the session, the user, or the ticket the agent is reading. Every copy on every laptop and in repo history works until you rotate, and rotating breaks every one of them, so nobody does. The Salesforce value next to it is a session token — it expires — but it is still sitting beside a key that does not.",
-          "The tool list. tickets, customers, sql, slack is not a support agent. It is read, join, and send on one process. SQL is a general-purpose query surface sitting behind a model that will call whatever the last document told it to call.",
-          "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as itsm-mcp. A prompt that says \"only look up the current requester\" is not an authorization check.",
+          "The tool list. `tickets,customers,sql,slack` is not a support agent. It is read, join, and send on one process. `sql` is a general-purpose query surface sitting behind a model that will call whatever the last document told it to call.",
+          "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as `itsm-mcp`. A prompt that says \"only look up the current requester\" is not an authorization check.",
         ],
       },
       {
@@ -175,18 +175,18 @@ networks:
       },
       {
         type: "p",
-        text: "Compose is not IAM. It is how ops starts this container next to the other internal services. mcp.json is the same process on a laptop. Neither file grants AWS permission. They only decide how the process boots and what it is handed at start.",
+        text: "Compose is not IAM. It is how ops starts this container next to the other internal services. `mcp.json` is the same process on a laptop. Neither file grants AWS permission. They only decide how the process boots and what it is handed at start.",
       },
       {
         type: "p",
-        text: "The AWS grant is already IAM. The broken version created an IAM user, minted a long-lived access key, and pasted AKIA into the env block. IAM did the grant. The file just copied it onto every host and into git. \"Do it in IAM\" is the right instinct. The miss is that the grant was then duplicated as a secret that never expires.",
+        text: "The AWS grant is already IAM. The broken version created an IAM user, minted a long-lived access key, and pasted `AKIA` into the env block. IAM did the grant. The file just copied it onto every host and into git. \"Do it in IAM\" is the right instinct. The miss is that the grant was then duplicated as a secret that never expires.",
       },
       {
         type: "table",
         headers: ["Piece", "Where it lives", "What it decides"],
         rows: [
           [
-            "mcp.json / Compose",
+            "`mcp.json` / Compose",
             "Laptop or the shared-host repo",
             "How the process starts, which tools it exposes, what sits in env",
           ],
@@ -238,7 +238,7 @@ networks:
       },
       {
         type: "p",
-        text: "IAM still cannot name ticket_status instead of sql, require a human on slack_post, or pin the image. Those stay in the launch file. That is why the tighter compose exists, and why it no longer carries AWS_ACCESS_KEY_ID.",
+        text: "IAM still cannot name `ticket_status` instead of `sql`, require a human on `slack_post`, or pin the image. Those stay in the launch file. That is why the tighter compose exists, and why it no longer carries `AWS_ACCESS_KEY_ID`.",
       },
       {
         type: "h2",
@@ -252,6 +252,7 @@ networks:
         type: "code",
         caption: "docker-compose.yml — identity on the workload, tools cut down",
         changedLines: [3, 6, 11, 12, 13, 15, 16, 17, 24, 25, 26],
+        changedNote: "marks what changed from the compose file above.",
         code: `services:
   itsm-mcp:
     image: ************.dkr.ecr.us-east-1.amazonaws.com/platform/mcp-itsm:1.4.2@sha256:4f2c••••••••••••••••••••••••••••••••••••••••••••••••••••••••
@@ -294,16 +295,16 @@ networks:
       {
         type: "ul",
         items: [
-          "No AWS_ACCESS_KEY_ID. The host already has the role. Off AWS, IAM Roles Anywhere or an SSO profile — still not a pasted key.",
-          "Two read tools, named for the use case. ticket_status and requester_account. Not sql. Not \"customers.\" The join lives in your code, not in a prompt.",
-          "slack_post is in the tool list, and --confirm gates it. High-impact actions require a human in the same loop.",
+          "No `AWS_ACCESS_KEY_ID`. The host already has the role. Off AWS, IAM Roles Anywhere or an SSO profile — still not a pasted key.",
+          "Two read tools, named for the use case. `ticket_status` and `requester_account`. Not `sql`. Not \"customers.\" The join lives in your code, not in a prompt.",
+          "`slack_post` is in the tool list, and `--confirm` gates it. High-impact actions require a human in the same loop.",
           "Slack and Salesforce secrets do not come back as env. Pull a bot token from a secrets manager with rotation, or issue a per-session OAuth token for the user who opened the chat. Do not paste either one into the file.",
-          "Pin the image digest. Treat the MCP server like any other dependency you would not float on latest.",
+          "Pin the image digest. Treat the MCP server like any other dependency you would not float on `latest`.",
         ],
       },
       {
         type: "p",
-        text: "On a laptop the same rule holds. The env block should not contain AKIA. If the only way the server works is a pasted production key, it is not ready to sit behind an agent.",
+        text: "On a laptop the same rule holds. The env block should not contain `AKIA`. If the only way the server works is a pasted production key, it is not ready to sit behind an agent.",
       },
       {
         type: "h2",
@@ -312,9 +313,9 @@ networks:
       {
         type: "ul",
         items: [
-          "mcp.json, claude_desktop_config.json, or Compose has AWS_ACCESS_KEY_ID, a Salesforce token, or a Slack bot token in plain env.",
-          "The command is npx -y @something/mcp-…. That flag fetches whatever latest is today, the same unpinned-dependency problem as an unpinned image tag.",
-          "The tool list includes sql, query, or exec, or more than one system in a single server.",
+          "`mcp.json`, `claude_desktop_config.json`, or Compose has `AWS_ACCESS_KEY_ID`, a Salesforce token, or a Slack bot token in plain env.",
+          "The command is `npx -y @something/mcp-…`. That flag fetches whatever `latest` is today, the same unpinned-dependency problem as an unpinned image tag.",
+          "The tool list includes `sql`, `query`, or `exec`, or more than one system in a single server.",
           "You cannot name the IAM principal, its last rotation, or who is allowed to mint a new key.",
           "The same server is used by more than one person, and every call looks like the same account in the logs — if there are logs.",
         ],
@@ -330,6 +331,11 @@ networks:
     ],
     related: [
       {
+        href: "/anatomy/github-oidc-org-can-assume-prod/",
+        label: "The Org Can Assume Prod",
+        note: "You moved the grant onto a role. CI is often who is allowed to become it.",
+      },
+      {
         href: "/articles/mcp-tool-permissions-and-prompt-injection/",
         label: "Assume Your Agent Is Fooled",
         note: "Why tool permissions and identity are the control, not the system prompt.",
@@ -338,6 +344,305 @@ networks:
         href: "/articles/no-last-day/",
         label: "No Last Day",
         note: "The agent and the key both skip offboarding.",
+      },
+    ],
+  },
+  {
+    slug: "github-oidc-org-can-assume-prod",
+    title: "The Org Can Assume Prod",
+    excerpt:
+      "You took the access key out of the pipeline. The trust policy still says any repo in the org can become the prod role. That is the same grant with a nicer name.",
+    description:
+      "A teardown of a typical GitHub Actions OIDC setup: a deploy workflow that can assume prod, a trust policy scoped to the whole org, and the tighter version.",
+    stack: "ci",
+    topics: ["cloud-security"],
+    minutes: 7,
+    date: "2026-10-21",
+    glance: [
+      {
+        label: "System",
+        value: "GitHub Actions deploy job that assumes an AWS role",
+      },
+      {
+        label: "Stack",
+        value: "GitHub Actions, OIDC, AWS IAM",
+      },
+      {
+        label: "The miss",
+        value:
+          "The trust policy allows `repo:corp/*`. Any repo in the org can assume prod.",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text: "The short version: teams stop pasting `AKIA` into GitHub Secrets and call it done. The deploy role is still one shared principal. The trust policy decides who is allowed to become it. Most of the ones I review say the whole org.",
+      },
+      {
+        type: "h2",
+        text: "What you are looking at",
+      },
+      {
+        type: "p",
+        text: "A deploy job still needs AWS credentials. The safer pattern is OIDC: GitHub mints a short-lived signed token for that one run. AWS checks the signature, then issues temporary credentials for a role. No long-lived key sits in Secrets. That part is right.",
+      },
+      {
+        type: "p",
+        text: "Two files make it work. The workflow is how the job knocks. The IAM trust policy is the door. IAM still decides what the role can do once someone is through. This teardown is about the door.",
+      },
+      {
+        type: "h2",
+        text: "The config",
+      },
+      {
+        type: "p",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same pair: a workflow that assumes a role named `prod-deploy`, and a trust policy that will hand that role to any repository under the org.",
+      },
+      {
+        type: "code",
+        caption: ".github/workflows/deploy.yml — the job that knocks",
+        code: `name: deploy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assume prod
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::************:role/prod-deploy
+          aws-region: us-east-1
+
+      - name: Deploy
+        run: ./scripts/deploy.sh`,
+      },
+      {
+        type: "code",
+        caption: "prod-deploy trust policy — the door",
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::************:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:corp/*"
+        }
+      }
+    }
+  ]
+}`,
+      },
+      {
+        type: "h2",
+        text: "Three lines that matter",
+      },
+      {
+        type: "p",
+        text: "GitHub puts an identity into the token. That field is called `sub`. It looks like `repo:org/repo:environment:production`, or `repo:org/repo:ref:refs/heads/main`, or `repo:org/repo:pull_request`. The trust policy matches on `sub`. Whatever matches can become the role.",
+      },
+      {
+        type: "ul",
+        items: [
+          "`repo:corp/*`. Every repository in the org. A new sandbox, a leftover demo, a contractor experiment, an old workflow nobody owns. If the job names the role ARN, it gets in.",
+          "`on: push` and `on: pull_request` with no branch filter. Combined with a wide `sub`, a pull request is prod. So is a push to any branch in any repo.",
+          "`id-token: write` at the workflow root. The job is allowed to ask GitHub for the token. That is required for OIDC. It is not a scope. The trust policy is the scope, and this one does not have one.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What it actually grants",
+      },
+      {
+        type: "p",
+        text: "Whatever `prod-deploy` can do in AWS. In the rollouts I have reviewed, that is often deploy to the prod account, and sometimes close to admin because \"the pipeline has to be able to create resources.\" The workflow did not create that reach. The role did. The trust policy made it callable from the whole org.",
+      },
+      {
+        type: "ul",
+        items: [
+          "A low-value repo in the same org can assume prod. You do not need to compromise `platform`. You need any repo that can run Actions.",
+          "A pull request can become the role. The attacker writes a workflow, or edits this one, and asks GitHub for a token.",
+          "There is no offboarding for the door. The engineer who added `role-to-assume` in March can leave. Every repo they still have in the org can keep knocking.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Where these files sit",
+      },
+      {
+        type: "p",
+        text: "The workflow is not IAM. It lives in the repo and starts the job. The trust policy is IAM. It decides who may assume the role. The role policy is also IAM. It decides what the role can call after it has been assumed. A GitHub Environment is the approval gate in GitHub — reviewers, wait timer, which branch may use it. None of those replace the others.",
+      },
+      {
+        type: "table",
+        headers: ["Piece", "Where it lives", "What it decides"],
+        rows: [
+          [
+            "`deploy.yml`",
+            "The repo, under `.github/workflows/`",
+            "When the job runs, and that it may request an OIDC token",
+          ],
+          [
+            "Trust policy",
+            "IAM, on the `prod-deploy` role",
+            "Which GitHub identity is allowed to assume the role",
+          ],
+          [
+            "Role policy",
+            "IAM, on the same role",
+            "Which AWS APIs the job can call once it is in",
+          ],
+          [
+            "GitHub Environment",
+            "The repo's Environments settings",
+            "Whether a human has to approve before that job starts",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "\"We use OIDC\" is the same sentence as \"we use a role\" in the MCP teardown. It names the mechanism. It does not name who is allowed. If `sub` is `repo:corp/*`, you moved the photocopier from a secret to a trust condition.",
+      },
+      {
+        type: "h2",
+        text: "The tighter version",
+      },
+      {
+        type: "p",
+        text: "Pin `sub` to one repository and one GitHub Environment. Put required reviewers on that environment. The workflow only runs from `main`, and only that job may request a token.",
+      },
+      {
+        type: "code",
+        caption:
+          "prod-deploy trust policy — one repo, one environment, no wildcard",
+        changedLines: [11, 12, 13],
+        changedNote: "marks what changed from the trust policy above.",
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::************:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": "repo:corp/platform:environment:production"
+        }
+      }
+    }
+  ]
+}`,
+      },
+      {
+        type: "code",
+        caption:
+          ".github/workflows/deploy.yml — main only, token on this job, environment set",
+        changedLines: [5, 9, 14, 15, 16, 17],
+        changedNote: "marks what changed from the workflow above.",
+        code: `name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assume prod
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::************:role/prod-deploy
+          aws-region: us-east-1
+
+      - name: Deploy
+        run: ./scripts/deploy.sh`,
+      },
+      {
+        type: "ul",
+        items: [
+          "`StringEquals` on `sub`, not `StringLike` on `repo:corp/*`. The token must be `repo:corp/platform:environment:production`. A sandbox repo does not match. A pull request does not match. A job that forgot `environment: production` does not match.",
+          "`environment: production` on the job, with required reviewers on that Environment in GitHub. The trust policy checks the claim. The Environment is what makes a human see the run before it starts.",
+          "`on: push` is `main` only. No `pull_request`. `workflow_dispatch` is fine if the Environment still requires approval.",
+          "`id-token: write` sits on this job, not on the whole workflow. Other jobs in the file cannot ask GitHub for a token.",
+          "The role policy is still the blast radius. This door can be tight and the role can still be admin. Do not approve one without the other.",
+        ],
+      },
+      {
+        type: "p",
+        text: "If you use reusable workflows, also pin `token.actions.githubusercontent.com:job_workflow_ref` to the workflow file you intend. A called workflow from another repo is a second identity. Do not let `*` cover it.",
+      },
+      {
+        type: "h2",
+        text: "How to tell you are looking at this",
+      },
+      {
+        type: "ul",
+        items: [
+          "The trust policy has `StringLike` and `repo:org/*`, or `repo:org/repo:*`, or no `sub` condition at all.",
+          "The workflow has `role-to-assume` and `on: pull_request`, or `on: push` with no branch.",
+          "You cannot name which repository is allowed to assume `prod-deploy`, or who is allowed to add a new one.",
+          "More than one repo in the org already copies the same `role-to-assume` ARN.",
+          "The GitHub Environment is missing, or it exists and has no required reviewers.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "Do not approve the pipeline until you can approve the trust policy. OIDC removed the key. It did not name who is allowed. `repo:corp/*` means the org can assume prod. Start there.",
+      },
+    ],
+    related: [
+      {
+        href: "/anatomy/mcp-service-account-in-env/",
+        label: "The Key in the Env Block",
+        note: "The same miss one step earlier: a long-lived key in the launch file.",
+      },
+      {
+        href: "/articles/no-last-day/",
+        label: "No Last Day",
+        note: "The workflow and the trust condition both skip offboarding.",
+      },
+      {
+        href: "/articles/scp-deny-is-the-perimeter/",
+        label: "The Deny Is the Perimeter",
+        note: "A tight door still sits under whatever the role — and the SCP — allow.",
       },
     ],
   },

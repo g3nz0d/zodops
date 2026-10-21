@@ -1,4 +1,5 @@
 import { CodeBlock } from "@/components/code-block"
+import { InlineCopy } from "@/components/inline-copy"
 import { TableBlock } from "@/components/table-block"
 import type { Block } from "@/lib/content"
 import { slugifyHeading } from "@/lib/content"
@@ -13,7 +14,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
               key={index}
               className="text-[16.5px] leading-[1.75] text-foreground/85"
             >
-              {block.text}
+              <InlineCopy text={block.text} />
             </p>
           )
         }
@@ -36,7 +37,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
             >
               {block.items.map((item) => (
                 <li key={item} className="list-disc marker:text-brand">
-                  {item}
+                  <InlineCopy text={item} />
                 </li>
               ))}
             </ul>
@@ -49,6 +50,7 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
               caption={block.caption}
               code={block.code}
               changedLines={block.changedLines}
+              changedNote={block.changedNote}
             />
           )
         }

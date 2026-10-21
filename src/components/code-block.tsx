@@ -2,10 +2,12 @@ export function CodeBlock({
   caption,
   code,
   changedLines,
+  changedNote,
 }: {
   caption?: string
   code: string
   changedLines?: number[]
+  changedNote?: string
 }) {
   const changed = new Set(changedLines ?? [])
   const lines = code.split("\n")
@@ -14,8 +16,8 @@ export function CodeBlock({
     <div>
       {changed.size > 0 ? (
         <p className="mb-2 text-[13.5px] leading-relaxed text-muted-foreground">
-          <span className="font-medium text-[#ED7014]">Orange</span> marks
-          what changed from the config above.
+          <span className="font-medium text-[#ED7014]">Orange</span>{" "}
+          {changedNote ?? "marks what changed from the config above."}
         </p>
       ) : null}
       <figure className="overflow-hidden rounded-xl border border-brand bg-navy">

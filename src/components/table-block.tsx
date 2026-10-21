@@ -1,3 +1,4 @@
+import { InlineCopy } from "@/components/inline-copy"
 import { cn } from "@/lib/utils"
 
 export function TableBlock({
@@ -55,7 +56,7 @@ export function TableBlock({
                         : "border-b border-border px-4 py-3 leading-relaxed text-foreground/85"
                     }
                   >
-                    {cell}
+                    <InlineCopy text={cell} />
                   </td>
                 ))}
               </tr>

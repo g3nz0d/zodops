@@ -102,6 +102,7 @@ export type Block =
       caption?: string
       code: string
       changedLines?: number[]
+      changedNote?: string
     }
   | {
       type: "table"
