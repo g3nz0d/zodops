@@ -38,7 +38,9 @@ export default function AnatomyPage() {
       </h1>
       <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-muted-foreground">
         Teardowns of real configurations. What they grant, and the line you
-        would change. Not tutorials.
+        would change.
+        <br />
+        Not tutorials.
       </p>
 
       <div className="mt-14">
