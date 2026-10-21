@@ -458,14 +458,14 @@ jobs:
       },
       {
         type: "p",
-        text: "GitHub puts an identity into the token. That field is called `sub`. It looks like `repo:org/repo:environment:production`, or `repo:org/repo:ref:refs/heads/main`, or `repo:org/repo:pull_request`. The trust policy matches on `sub`. Whatever matches can become the role.",
+        text: "GitHub puts an identity into the token. That field is called `sub`. The default looks like `repo:org/repo:environment:production`, or `repo:org/repo:ref:refs/heads/main`, or `repo:org/repo:pull_request`. The trust policy matches on `sub`. Whatever matches can become the role. The role ARN is not a secret. Naming it is a very low bar.",
       },
       {
         type: "ul",
         items: [
-          "`repo:corp/*`. Every repository in the org. A new sandbox, a leftover demo, a contractor experiment, an old workflow nobody owns. If the job names the role ARN, it gets in.",
-          "`on: push` and `on: pull_request` with no branch filter. Combined with a wide `sub`, a pull request is prod. So is a push to any branch in any repo.",
-          "`id-token: write` at the workflow root. The job is allowed to ask GitHub for the token. That is required for OIDC. It is not a scope. The trust policy is the scope, and this one does not have one.",
+          "`repo:corp/*`. Every repository in the org. A new sandbox, a leftover demo, a contractor experiment, an old workflow nobody owns.",
+          "The attacker is not a stranger on a fork. Fork pull requests do not get an OIDC token. The people who can do this already have write access to some repo in the org — or they compromised an action or dependency that runs in one. That is still a large group.",
+          "The workflow triggers are not the door. Anyone who can push a branch can add their own workflow file with whatever `on:` they want. `on: pull_request` is sloppy. It is not what lets them in.",
         ],
       },
       {
@@ -479,9 +479,8 @@ jobs:
       {
         type: "ul",
         items: [
-          "A low-value repo in the same org can assume prod. You do not need to compromise `platform`. You need any repo that can run Actions.",
-          "A pull request can become the role. The attacker writes a workflow, or edits this one, and asks GitHub for a token.",
-          "There is no offboarding for the door. The engineer who added `role-to-assume` in March can leave. Every repo they still have in the org can keep knocking.",
+          "Write access to any repo in the org — or a compromised action running in one — is enough to assume prod. You do not need to compromise `platform`.",
+          "The repos and workflows people create outlive them. The engineer who added `role-to-assume` in March can leave. Nothing removes those repos' ability to assume the role.",
         ],
       },
       {
@@ -499,7 +498,7 @@ jobs:
           [
             "`deploy.yml`",
             "The repo, under `.github/workflows/`",
-            "When the job runs, and that it may request an OIDC token",
+            "When the job is supposed to run. Hygiene, not a security boundary",
           ],
           [
             "Trust policy",
@@ -514,13 +513,13 @@ jobs:
           [
             "GitHub Environment",
             "The repo's Environments settings",
-            "Whether a human has to approve before that job starts",
+            "Required reviewers, and which branches may use it",
           ],
         ],
       },
       {
         type: "p",
-        text: "\"We use OIDC\" is the same sentence as \"we use a role\" in the MCP teardown. It names the mechanism. It does not name who is allowed. If `sub` is `repo:corp/*`, you moved the photocopier from a secret to a trust condition.",
+        text: "\"We use OIDC\" names the mechanism. It does not name who is allowed. If `sub` is `repo:corp/*`, the long-lived key is gone, but the grant is still a copy: any workflow in the org that names the role can assume it.",
       },
       {
         type: "h2",
@@ -528,7 +527,7 @@ jobs:
       },
       {
         type: "p",
-        text: "Pin `sub` to one repository and one GitHub Environment. Put required reviewers on that environment. The workflow only runs from `main`, and only that job may request a token.",
+        text: "Pin `sub` to one repository and one GitHub Environment. On that Environment, require reviewers and restrict deployment branches to `main`. The `on:` filter in the workflow is hygiene. It does not hold the door.",
       },
       {
         type: "code",
@@ -558,7 +557,7 @@ jobs:
       {
         type: "code",
         caption:
-          ".github/workflows/deploy.yml — main only, token on this job, environment set",
+          ".github/workflows/deploy.yml — Environment set; the trigger filter is hygiene",
         changedLines: [5, 9, 14, 15, 16, 17],
         changedNote: "marks what changed from the workflow above.",
         code: `name: deploy
@@ -594,16 +593,21 @@ jobs:
       {
         type: "ul",
         items: [
-          "`StringEquals` on `sub`, not `StringLike` on `repo:corp/*`. The token must be `repo:corp/platform:environment:production`. A sandbox repo does not match. A pull request does not match. A job that forgot `environment: production` does not match.",
+          "`StringEquals` on `sub`, not `StringLike` on `repo:corp/*`. The token must be `repo:corp/platform:environment:production`. A sandbox repo does not match. A job that forgot `environment: production` does not match.",
           "`environment: production` on the job, with required reviewers on that Environment in GitHub. The trust policy checks the claim. The Environment is what makes a human see the run before it starts.",
-          "`on: push` is `main` only. No `pull_request`. `workflow_dispatch` is fine if the Environment still requires approval.",
-          "`id-token: write` sits on this job, not on the whole workflow. Other jobs in the file cannot ask GitHub for a token.",
+          "Restrict deployment branches to `main` on that Environment. Without that rule, someone can push a branch whose workflow declares `environment: production`, and the only thing stopping them is a reviewer clicking approve.",
+          "`on: push` limited to `main` is hygiene. Anyone who can push a branch can add a different workflow file. Do not treat the trigger as a security control.",
+          "`id-token: write` on this job, not the whole workflow, is defense in depth. An attacker with write on the repo can edit the file. The trust policy and the Environment rules are what stop them.",
           "The role policy is still the blast radius. This door can be tight and the role can still be admin. Do not approve one without the other.",
         ],
       },
       {
         type: "p",
-        text: "If you use reusable workflows, also pin `token.actions.githubusercontent.com:job_workflow_ref` to the workflow file you intend. A called workflow from another repo is a second identity. Do not let `*` cover it.",
+        text: "`sub` is the caller — the repo whose job ran. A reusable workflow from another repo does not change that. AWS now evaluates GitHub claims as their own condition keys, including `job_workflow_ref`, `repository_id`, and `environment`. You still have to evaluate `sub`; IAM requires it. If you want only a shared deploy workflow to assume the role, pin `job_workflow_ref` to that file and keep `sub` scoped to the repos that may call it.",
+      },
+      {
+        type: "p",
+        text: "If this org customized the OIDC subject template, or the repo uses immutable subject claims — the default for repositories created after 15 July 2026 — the `sub` string will not look like the example. Read the token you actually get. Putting `repository_id` in the template, or as its own condition key, means a renamed or recreated repo does not inherit the grant.",
       },
       {
         type: "h2",
@@ -613,10 +617,9 @@ jobs:
         type: "ul",
         items: [
           "The trust policy has `StringLike` and `repo:org/*`, or `repo:org/repo:*`, or no `sub` condition at all.",
-          "The workflow has `role-to-assume` and `on: pull_request`, or `on: push` with no branch.",
           "You cannot name which repository is allowed to assume `prod-deploy`, or who is allowed to add a new one.",
-          "More than one repo in the org already copies the same `role-to-assume` ARN.",
-          "The GitHub Environment is missing, or it exists and has no required reviewers.",
+          "More than one repo in the org already copies the same `role-to-assume` ARN. The ARN is not a secret.",
+          "The GitHub Environment is missing, has no required reviewers, or does not restrict deployment branches to `main`.",
         ],
       },
       {
