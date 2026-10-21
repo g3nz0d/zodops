@@ -43,7 +43,7 @@ export const anatomies: Anatomy[] = [
       "A teardown of a typical MCP server config: long-lived keys in the environment, tools that run as a shared service account, and the tighter version.",
     stack: "mcp",
     topics: ["ai-agent-security"],
-    minutes: 5,
+    minutes: 6,
     date: "2026-10-20",
     glance: [
       {
@@ -71,7 +71,7 @@ export const anatomies: Anatomy[] = [
       },
       {
         type: "p",
-        text: "This is a composite, not a dump from one tenant. I keep seeing the same three lines in Cursor, Claude Desktop, and the compose file that wraps the same server for a shared host.",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same three lines in Cursor, Claude Desktop, and the compose file that starts the same server on a shared host. That yaml is a launch file in a repo. It is not an AWS resource, and it is not where the permission grant belongs.",
       },
       {
         type: "code",
@@ -171,11 +171,82 @@ networks:
       },
       {
         type: "h2",
+        text: "Where this file sits",
+      },
+      {
+        type: "p",
+        text: "Compose is not IAM. It is how ops starts this container next to the other internal services. mcp.json is the same process on a laptop. Neither file grants AWS permission. They only decide how the process boots and what it is handed at start.",
+      },
+      {
+        type: "p",
+        text: "The AWS grant is already IAM. The broken version created an IAM user, minted a long-lived access key, and pasted AKIA into the env block. IAM did the grant. The file just copied it onto every host and into git. \"Do it in IAM\" is the right instinct. The miss is that the grant was then duplicated as a secret that never expires.",
+      },
+      {
+        type: "table",
+        headers: ["Piece", "Where it lives", "What it decides"],
+        rows: [
+          [
+            "mcp.json / Compose",
+            "Laptop or the shared-host repo",
+            "How the process starts, which tools it exposes, what sits in env",
+          ],
+          [
+            "IAM role",
+            "AWS, attached to the instance, task, or pod",
+            "Which AWS APIs the process can call, including fetching secrets",
+          ],
+          [
+            "Salesforce / Slack tokens",
+            "Secrets Manager, then those vendors",
+            "What the ticket and Slack APIs allow once the process has a token",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "Create a role. Scope it. Attach it to the compute that runs the container — instance profile on EC2, task role on ECS, IRSA or Pod Identity on EKS. The process asks the metadata service and gets a short-lived credential. Compose never sees a key. You rotate, attribute, and revoke in IAM.",
+      },
+      {
+        type: "code",
+        caption:
+          "prod-itsm-mcp — IAM role policy. Attach this to the host. Do not mint a user key.",
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadItsmSecretsOnly",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:************:secret:prod/itsm-mcp/slack-bot-••••••",
+        "arn:aws:secretsmanager:us-east-1:************:secret:prod/itsm-mcp/salesforce-••••••"
+      ]
+    },
+    {
+      "Sid": "DecryptThoseSecrets",
+      "Effect": "Allow",
+      "Action": "kms:Decrypt",
+      "Resource": "arn:aws:kms:us-east-1:************:key/••••••••-••••-••••-••••-••••••••••••",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "secretsmanager.us-east-1.amazonaws.com"
+        }
+      }
+    }
+  ]
+}`,
+      },
+      {
+        type: "p",
+        text: "IAM still cannot name ticket_status instead of sql, require a human on slack_post, or pin the image. Those stay in the launch file. That is why the tighter compose exists, and why it no longer carries AWS_ACCESS_KEY_ID.",
+      },
+      {
+        type: "h2",
         text: "The tighter version",
       },
       {
         type: "p",
-        text: "Take the keys out of the file. Give the process an identity that can be scoped, rotated, and attributed. Split the tools. Do not let the model send or query freely.",
+        text: "The identity is the role above. This file only starts the process, names the tools, and points at secret ARNs. Split the tools. Do not let the model send or query freely.",
       },
       {
         type: "code",
@@ -223,7 +294,7 @@ networks:
       {
         type: "ul",
         items: [
-          "No long-lived access keys. Map the host to the identity it already has: EC2 → instance profile, ECS → task role, EKS → IRSA or Pod Identity. Off AWS, IAM Roles Anywhere or SSO profiles. The role is read-only on the two APIs the job needs.",
+          "No AWS_ACCESS_KEY_ID. The host already has the role. Off AWS, IAM Roles Anywhere or an SSO profile — still not a pasted key.",
           "Two read tools, named for the use case. ticket_status and requester_account. Not sql. Not \"customers.\" The join lives in your code, not in a prompt.",
           "slack_post is in the tool list, and --confirm gates it. High-impact actions require a human in the same loop.",
           "Slack and Salesforce secrets do not come back as env. Pull a bot token from a secrets manager with rotation, or issue a per-session OAuth token for the user who opened the chat. Do not paste either one into the file.",
@@ -254,7 +325,7 @@ networks:
       },
       {
         type: "p",
-        text: "Do not approve the agent until you can approve this file. The model will do what the tools allow. The tools will do what this identity allows. Start there.",
+        text: "Do not approve the agent until you can approve the role and the launch file. The model will do what the tools allow. The tools will do what that identity allows. Start there.",
       },
     ],
     related: [
