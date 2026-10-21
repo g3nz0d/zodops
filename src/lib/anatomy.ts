@@ -331,6 +331,11 @@ networks:
     ],
     related: [
       {
+        href: "/anatomy/sites-read-all-is-the-index/",
+        label: "Sites.Read.All Is the Index",
+        note: "The same miss on Microsoft Graph: the agent crawls the tenant, not the site.",
+      },
+      {
         href: "/anatomy/github-oidc-org-can-assume-prod/",
         label: "The Org Can Assume Prod",
         note: "You moved the grant onto a role. CI is often who is allowed to become it.",
@@ -344,6 +349,267 @@ networks:
         href: "/articles/no-last-day/",
         label: "No Last Day",
         note: "The agent and the key both skip offboarding.",
+      },
+    ],
+  },
+  {
+    slug: "sites-read-all-is-the-index",
+    title: "Sites.Read.All Is the Index",
+    excerpt:
+      "You connected the agent to SharePoint. You did not review the Graph permission the app was granted. Application Sites.Read.All is a tenant crawl, not a search box.",
+    description:
+      "A teardown of a typical SharePoint MCP config: an Entra app with application Sites.Read.All, a client secret in the env block, and the tighter version.",
+    stack: "mcp",
+    topics: ["ai-agent-security", "data-security"],
+    minutes: 7,
+    date: "2026-10-21",
+    glance: [
+      {
+        label: "System",
+        value:
+          "Internal agent with an MCP server in front of SharePoint and files",
+      },
+      {
+        label: "Stack",
+        value: "MCP, Microsoft Graph, Entra ID",
+      },
+      {
+        label: "The miss",
+        value:
+          "Application `Sites.Read.All` and `Files.Read.All`. The agent reads the tenant, not the site the user opened.",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text: "The short version: teams review what the model is allowed to say. They skip the Graph permission the MCP server uses to fetch. Application `Sites.Read.All` is not \"the agent can search SharePoint.\" It is a tenant crawl. Prompt injection is how someone asks.",
+      },
+      {
+        type: "h2",
+        text: "What you are looking at",
+      },
+      {
+        type: "p",
+        text: "An Entra app registration holds the grant. The MCP server is how the agent calls Graph. The launch file hands the server a client id, a tenant id, and a secret, then asks for `https://graph.microsoft.com/.default`. That scope means: every application permission an admin already consented on this app. The permission list is the door. The yaml is how the process knocks.",
+      },
+      {
+        type: "h2",
+        text: "The config",
+      },
+      {
+        type: "p",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same pair in Cursor, Claude Desktop, and Copilot Studio connectors: a SharePoint MCP server with a client secret in env, and an Entra app that has application `Sites.Read.All` with admin consent.",
+      },
+      {
+        type: "code",
+        caption:
+          "mcp.json / claude_desktop_config.json — the job that knocks",
+        code: `{
+  "mcpServers": {
+    "sharepoint": {
+      "command": "npx",
+      "args": ["-y", "@platform/mcp-graph"],
+      "env": {
+        "TENANT_ID": "••••••••-••••-••••-••••-••••••••••••",
+        "CLIENT_ID": "••••••••-••••-••••-••••-••••••••••••",
+        "CLIENT_SECRET": "••••••••••••••••••••••••••••••••",
+        "GRAPH_SCOPE": "https://graph.microsoft.com/.default"
+      }
+    }
+  }
+}`,
+      },
+      {
+        type: "code",
+        caption:
+          "prod-graph-mcp — Entra API permissions. Application. Admin consent granted.",
+        code: `Microsoft Graph
+  Sites.Read.All          Application
+  Files.Read.All          Application
+  Mail.Read               Application
+
+Grant type: client credentials
+Admin consent: granted 2026-03-12
+Site grants: none — .All does not need them`,
+      },
+      {
+        type: "h2",
+        text: "Three lines that matter",
+      },
+      {
+        type: "p",
+        text: "Application permissions have no user on the token. Graph evaluates the app, not the person who opened the chat. `Sites.Read.All` plus `Files.Read.All` is read on every site collection and every file the tenant will hand to an app. `Mail.Read` next to them is the same pattern on the mailbox store.",
+      },
+      {
+        type: "ul",
+        items: [
+          "`Sites.Read.All` as Application, with admin consent. That is the crawl. The agent can list and read sites the current user has never opened, including sites no one meant to put behind a chatbot.",
+          "`.default` and a client secret. The server is not doing delegated-on-behalf-of. It is the app. The secret in `mcp.json` is a long-lived photocopy of that principal — the same miss as `AKIA` in the env block.",
+          "The attacker is not a stranger on the internet. It is anyone who can put a document, a page, or a ticket in front of the agent — or anyone who can invoke this MCP server. Hidden text in a SharePoint page the agent was told to summarize is enough.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What it actually grants",
+      },
+      {
+        type: "p",
+        text: "Whatever those application permissions cover, on every site and file Graph will return for this tenant. In the rollouts I have reviewed, that includes the support knowledge base the pilot needed, and also finance, HR, M&A, and the site somebody shared to \"Everyone except external users\" in 2019 and never opened again.",
+      },
+      {
+        type: "ul",
+        items: [
+          "A fooled agent can read anything this app can read, not anything the current user can read.",
+          "SharePoint oversharing is a second grant. Switching the app to delegated does not fix a site that is already visible to the whole tenant. The user token inherits that.",
+          "The secret and the consent outlive the engineer who clicked Grant admin consent in March.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Where these files sit",
+      },
+      {
+        type: "p",
+        text: "`mcp.json` is not Entra. It is the launch file. The API permission list is the Graph grant. A `Sites.Selected` site permission is the per-site grant that `.All` skips. SharePoint sharing is who can already see the files. None of those replace the others.",
+      },
+      {
+        type: "table",
+        headers: ["Piece", "Where it lives", "What it decides"],
+        rows: [
+          [
+            "`mcp.json`",
+            "Laptop or the agent host",
+            "How the process starts, which tools it exposes, what sits in env",
+          ],
+          [
+            "Entra API permissions",
+            "The app registration, after admin consent",
+            "Which Graph APIs the app may call, and whether a user is on the token",
+          ],
+          [
+            "Site permission",
+            "`POST /sites/{id}/permissions`, only if the app has `Sites.Selected`",
+            "Which site collections that app may actually touch",
+          ],
+          [
+            "SharePoint sharing",
+            "Each site, library, and file",
+            "Who can already see the content — including Everyone except external users",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "\"We connected SharePoint\" names the mechanism. It does not name the crawl. If the app has application `Sites.Read.All`, the agent is not searching a site. It is reading the tenant.",
+      },
+      {
+        type: "h2",
+        text: "The tighter version",
+      },
+      {
+        type: "p",
+        text: "Take `.All` off the app. Use `Sites.Selected`. Grant that app read on the one site the job needs. Take the secret out of the file. Do not let the model search or send freely.",
+      },
+      {
+        type: "code",
+        caption:
+          "prod-graph-mcp — Entra API permissions. Application. One scope.",
+        changedLines: [2, 6, 7, 8],
+        changedNote: "marks what changed from the permission list above.",
+        code: `Microsoft Graph
+  Sites.Selected          Application
+
+Grant type: client credentials
+Admin consent: granted
+Site grants: required — Sites.Selected allows nothing until you add them
+Mail.Read: removed
+Files.Read.All: removed`,
+      },
+      {
+        type: "code",
+        caption:
+          "POST /sites/{support-kb}/permissions — the one site this app may read",
+        code: `{
+  "roles": ["read"],
+  "grantedToIdentities": [
+    {
+      "application": {
+        "id": "••••••••-••••-••••-••••-••••••••••••",
+        "displayName": "prod-graph-mcp"
+      }
+    }
+  ]
+}`,
+      },
+      {
+        type: "code",
+        caption:
+          "mcp.json — secret out of the file, tools cut down, site pinned",
+        changedLines: [5, 10],
+        changedNote: "marks what changed from the launch file above.",
+        code: `{
+  "mcpServers": {
+    "sharepoint": {
+      "command": "npx",
+      "args": ["@platform/mcp-graph@1.4.2"],
+      "env": {
+        "TENANT_ID": "••••••••-••••-••••-••••-••••••••••••",
+        "CLIENT_ID": "••••••••-••••-••••-••••-••••••••••••",
+        "GRAPH_SCOPE": "https://graph.microsoft.com/.default",
+        "SITE_ID": "••••.sharepoint.com,••••••••-••••-••••-••••-••••••••••••,••••••••-••••-••••-••••-••••••••••••"
+      }
+    }
+  }
+}`,
+      },
+      {
+        type: "ul",
+        items: [
+          "`Sites.Selected` with no site grant is no SharePoint access. That is the point. You add the site on purpose, with `roles: [\"read\"]`. Finance, HR, and the 2019 dump are not in the crawl.",
+          "A client secret does not belong in `mcp.json`. Use a federated credential or a managed identity — the Entra equivalent of the workload role. The first anatomy is this miss on AWS.",
+          "Pin the package. `npx -y @platform/mcp-graph` fetches whatever `latest` is today.",
+          "`SITE_ID` in env is hygiene. It only holds if the server refuses other sites. Graph enforces `Sites.Selected`. A prompt that says \"only the support site\" is not a control.",
+          "Delegated, on-behalf-of the current user, is the right shape for an interactive agent. It is not a fix for oversharing. If the site is shared to Everyone except external users, the user can see it, so the agent can too. Fix the sharing. Then pick delegated.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "How to tell you are looking at this",
+      },
+      {
+        type: "ul",
+        items: [
+          "The Entra app has application `Sites.Read.All` or `Files.Read.All`, with admin consent, and no site-permission grants.",
+          "`mcp.json` or the connector has `CLIENT_SECRET` and `GRAPH_SCOPE` of `.default`.",
+          "You cannot name which site the agent is allowed to read, or who is allowed to add a new one.",
+          "The same app is used by more than one agent, and every call looks like the app in the audit log — if there is an audit log.",
+          "A SharePoint search for \"Everyone except external users\" still returns sites the chatbot was never meant to see.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "Do not approve the agent until you can approve the permission list and the site grant. The model will do what the tools allow. The tools will do what this app can read. `Sites.Read.All` is the index. Start there.",
+      },
+    ],
+    related: [
+      {
+        href: "/anatomy/mcp-service-account-in-env/",
+        label: "The Key in the Env Block",
+        note: "The same miss one step earlier: a long-lived secret in the launch file.",
+      },
+      {
+        href: "/articles/mcp-tool-permissions-and-prompt-injection/",
+        label: "Assume Your Agent Is Fooled",
+        note: "Why the permission grant is the control, not the system prompt.",
+      },
+      {
+        href: "/articles/dspm-dlp-shadow-ai-leaks/",
+        label: "The Paste Is the Leak",
+        note: "Oversharing is also how the file got into the tenant in the first place.",
       },
     ],
   },
