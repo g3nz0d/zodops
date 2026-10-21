@@ -11,11 +11,11 @@ export function generateMetadata(): Metadata {
   return {
     title: "Cases · ZodOps",
     description:
-      "Anonymized case studies from enterprise security programs: AI security, data security, and cloud security.",
+      "Anonymized case studies from enterprise security programs: agent security, data security, and cloud security.",
     openGraph: {
       title: "Cases · ZodOps",
       description:
-        "Anonymized case studies from enterprise security programs: AI security, data security, and cloud security.",
+        "Anonymized case studies from enterprise security programs: agent security, data security, and cloud security.",
       type: "website",
     },
   }

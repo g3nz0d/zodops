@@ -12,7 +12,7 @@ const aboutLines: TerminalLine[] = [
   { kind: "out", text: "13y     security architecture · cloud & data protection" },
   { kind: "out", text: "core    cloud security, data security, security automation" },
   { kind: "out", text: "scope   enterprise accounts, large environments" },
-  { kind: "out", text: "focus   AI & agent security" },
+  { kind: "out", text: "focus   agent security" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat credentials.log" },
   { kind: "ok", text: "+  AWS Certified Cloud Practitioner — AWS" },
@@ -25,7 +25,7 @@ const aboutLines: TerminalLine[] = [
   { kind: "ok", text: "+  controls that ship with the code" },
   { kind: "blank", text: "" },
   { kind: "cmd", text: "$ cat reasoning-in-public.log" },
-  { kind: "out", text: "ai-agent-security   active research · writing in progress" },
+  { kind: "out", text: "agent-security       active research · writing in progress" },
   { kind: "out", text: "cloud-security      ongoing coverage · writing in progress" },
   { kind: "out", text: "data-security       ongoing coverage · writing in progress" },
   { kind: "blank", text: "" },
@@ -41,13 +41,13 @@ export default function AboutPage() {
   return (
     <section className="container-page py-14 sm:py-16">
       <p className="text-[11px] font-semibold tracking-[0.18em] text-brand uppercase">
-        Enterprise security architect · AI &amp; data security
+        Enterprise security architect · agent &amp; data security
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight italic text-foreground sm:text-4xl lg:whitespace-nowrap">
         &ldquo;The model isn&apos;t the risk. Its permissions are.&rdquo;
       </h1>
       <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
-        Enterprise security architect. Veteran. Now securing what AI can
+        Enterprise security architect. Veteran. Now securing what agents can
         touch.
       </p>
       <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20">
@@ -66,7 +66,7 @@ export default function AboutPage() {
             getting in its way.
           </p>
           <p>
-            Today that same problem has a new shape. AI agents read your
+            Today that same problem has a new shape. Agents read your
             data, call your tools, and act with credentials of their own.
             The question is no longer just who has access&hellip;it&rsquo;s
             what an agent can do with it. That&rsquo;s where I spend my time
@@ -75,13 +75,13 @@ export default function AboutPage() {
           </p>
           <p>
             ZodOps is my working notebook. Inside are write-ups on image
-            provenance, IAM graphs, admission policy, DSPM, DLP, and AI
+            provenance, IAM graphs, admission policy, DSPM, DLP, and
             agent security. Each one aims to be practical enough to use and
             specific enough to build on. My rule of thumb: if a design
             can&rsquo;t be committed to a repo, it isn&rsquo;t finished.
           </p>
           <p>
-            If you&rsquo;re building in AI or data security, or wrestling
+            If you&rsquo;re building in agent or data security, or wrestling
             with a control that keeps getting bypassed, I&rsquo;d love to
             hear about it.
           </p>

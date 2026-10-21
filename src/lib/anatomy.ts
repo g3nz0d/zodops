@@ -71,12 +71,12 @@ export const anatomies: Anatomy[] = [
       },
       {
         type: "p",
-        text: "This is a composite, not a dump from one tenant. I keep seeing the same three lines in Cursor, Claude Desktop, and the compose file that starts the same server on a shared host. That yaml is a launch file in a repo. It is not an AWS resource, and it is not where the permission grant belongs.",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same three lines in agent hosts and the compose file that starts the same server on a shared host. That yaml is a launch file in a repo. It is not an AWS resource, and it is not where the permission grant belongs.",
       },
       {
         type: "code",
         caption:
-          "mcp.json / claude_desktop_config.json — what the agent host actually loads",
+          "mcp.json — what the agent host actually loads",
         code: `{
   "mcpServers": {
     "itsm-mcp": {
@@ -313,7 +313,7 @@ networks:
       {
         type: "ul",
         items: [
-          "`mcp.json`, `claude_desktop_config.json`, or Compose has `AWS_ACCESS_KEY_ID`, a Salesforce token, or a Slack bot token in plain env.",
+          "`mcp.json` or Compose has `AWS_ACCESS_KEY_ID`, a Salesforce token, or a Slack bot token in plain env.",
           "The command is `npx -y @something/mcp-…`. That flag fetches whatever `latest` is today, the same unpinned-dependency problem as an unpinned image tag.",
           "The tool list includes `sql`, `query`, or `exec`, or more than one system in a single server.",
           "You cannot name the IAM principal, its last rotation, or who is allowed to mint a new key.",
@@ -398,12 +398,12 @@ networks:
       },
       {
         type: "p",
-        text: "This is a composite, not a dump from one tenant. I keep seeing the same pair in Cursor, Claude Desktop, and Copilot Studio connectors: a SharePoint MCP server with a client secret in env, and an Entra app that has application `Sites.Read.All` with admin consent.",
+        text: "This is a composite, not a dump from one tenant. I keep seeing the same pair in agent hosts and Graph connectors: a SharePoint MCP server with a client secret in env, and an Entra app that has application `Sites.Read.All` with admin consent.",
       },
       {
         type: "code",
         caption:
-          "mcp.json / claude_desktop_config.json — the job that knocks",
+          "mcp.json — the job that knocks",
         code: `{
   "mcpServers": {
     "sharepoint": {

@@ -5,7 +5,7 @@ import { topics } from "@/lib/content"
 
 export const metadata: Metadata = {
   description:
-    "Explore ZodOps by topic: AI and agent security, cloud security, data security, field notes, and security automation.",
+    "Explore ZodOps by topic: agent security, cloud security, data security, field notes, and security automation.",
 }
 
 export default function TechPage() {

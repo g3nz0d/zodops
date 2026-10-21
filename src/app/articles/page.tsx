@@ -5,7 +5,7 @@ import { publishedArticles } from "@/lib/content"
 
 export const metadata: Metadata = {
   description:
-    "Implementation-level articles on AI and agent security, data security, field notes, and security automation.",
+    "Implementation-level articles on agent security, data security, field notes, and security automation.",
 }
 
 export default function ArticlesPage() {
@@ -18,7 +18,7 @@ export default function ArticlesPage() {
         &ldquo;The playbook I wish I&rsquo;d had.&rdquo;
       </h1>
       <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
-        Implementation-level guides for securing cloud, data, and AI agents.
+        Implementation-level guides for securing cloud, data, and agents.
       </p>
       {publishedArticles.length > 0 ? (
         <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-2">

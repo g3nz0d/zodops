@@ -24,12 +24,12 @@ export type CaseStudy = {
 export const caseStudies: CaseStudy[] = [
   {
     slug: "finding-shadow-ai",
-    title: "Finding Shadow AI Before It Found Us",
+    title: "Finding Shadow Assistants Before They Found Us",
     excerpt:
-      "Employees were sending sensitive data, including AWS secret keys, to AI tools nobody had approved. I paired DSPM with endpoint and inline DLP to find it, then rebuilt policy around corporate versus personal AI instances, cutting false positives by about two-thirds.",
+      "Employees were sending sensitive data, including AWS secret keys, to assistants nobody had approved. I paired DSPM with endpoint and inline DLP to find it, then rebuilt policy around corporate versus personal assistant instances, cutting false positives by about two-thirds.",
     description:
-      "How I paired DSPM with endpoint and inline DLP to find shadow AI usage and leaked credentials, and cut false positives by distinguishing corporate from personal AI instances.",
-    subtitle: "Case study · Data Security · AI Security",
+      "How I paired DSPM with endpoint and inline DLP to find shadow-assistant usage and leaked credentials, and cut false positives by distinguishing corporate from personal assistant instances.",
+    subtitle: "Case study · Data Security · Agent Security",
     topics: ["data-security", "ai-agent-security"],
     tools: ["Cyera", "Microsoft Purview", "Zscaler"],
     minutes: 5,
@@ -59,7 +59,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "Employees had started using AI tools faster than security could approve them. Some used the company's sanctioned enterprise AI service. Many used personal accounts on public AI tools, and nobody could say which ones, how often, or what data was going into them.",
+        text: "Employees had started using assistants faster than security could approve them. Some used the company's sanctioned enterprise assistant service. Many used personal accounts on public assistants, and nobody could say which ones, how often, or what data was going into them.",
       },
       {
         type: "p",
@@ -68,7 +68,7 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ol",
         items: [
-          "Which AI tools are people actually using?",
+          "Which assistants are people actually using?",
           "What sensitive data is being sent to them?",
           "How do we reduce that risk without blocking the approved tools people rely on?",
         ],
@@ -81,8 +81,8 @@ export const caseStudies: CaseStudy[] = [
         type: "ul",
         items: [
           "**No single tool saw the whole picture.** DSPM knew where sensitive data lived, but not where it went. DLP saw data moving, but not which of it mattered most.",
-          "**The same AI service often served both corporate and personal accounts** through the same domain, so traffic-based rules couldn't tell them apart.",
-          "**Blocking everything wasn't an option.** The business had approved AI tools for real work, and a heavy-handed rollout would have pushed people to unmanaged devices.",
+          "**The same assistant service often served both corporate and personal accounts** through the same domain, so traffic-based rules couldn't tell them apart.",
+          "**Blocking everything wasn't an option.** The business had approved assistants for real work, and a heavy-handed rollout would have pushed people to unmanaged devices.",
         ],
       },
       {
@@ -95,7 +95,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "**Watched the paths data actually takes.** Purview covered paste and upload activity on managed devices. Zscaler covered inline traffic to AI applications. Together they showed which AI tools were in use and what was being sent.",
+        text: "**Watched the paths data actually takes.** Purview covered paste and upload activity on managed devices. Zscaler covered inline traffic to assistant applications. Together they showed which assistants were in use and what was being sent.",
       },
       {
         type: "p",
@@ -103,7 +103,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "**Rebuilt policy around instance, not destination.** Early results were dominated by false positives from people using the approved AI tools correctly. I changed the policy to key on which instance the user was in (the corporate tenant versus a personal account) and on the class of data involved, rather than on the AI service's domain.",
+        text: "**Rebuilt policy around instance, not destination.** Early results were dominated by false positives from people using the approved assistants correctly. I changed the policy to key on which instance the user was in (the corporate tenant versus a personal account) and on the class of data involved, rather than on the assistant service's domain.",
       },
       {
         type: "p",
@@ -116,9 +116,9 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**Shadow AI usage was broader than expected:** 8 AI applications in use, most of them unsanctioned.",
+          "**Shadow-assistant usage was broader than expected:** 8 assistant applications in use, most of them unsanctioned.",
           "**Sensitive data was leaving through prompts and pastes,** including patient-adjacent records, internal protocol documents, and engineering config.",
-          "**The most serious findings were credentials.** AWS secret keys and other secrets were being pasted into AI chats, usually by engineers debugging an error with logs or config files.",
+          "**The most serious findings were credentials.** AWS secret keys and other secrets were being pasted into chats, usually by engineers debugging an error with logs or config files.",
         ],
       },
       {
@@ -128,10 +128,10 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "**False positives dropped by about two-thirds** once policy distinguished the corporate AI tenant from personal accounts.",
+          "**False positives dropped by about two-thirds** once policy distinguished the corporate tenant from personal accounts.",
           "**Leaked credentials were deactivated within hours** through a defined response: confirm the IAM user, set the key inactive, then rotate and delete.",
-          "**Most flagged users moved to the sanctioned AI tool** after an in-the-moment coaching prompt instead of a ticket two days later.",
-          "**Leadership got the first complete inventory of AI usage** across the company, including which tools were approved and which were not.",
+          "**Most flagged users moved to the sanctioned assistant** after an in-the-moment coaching prompt instead of a ticket two days later.",
+          "**Leadership got the first complete inventory of assistant usage** across the company, including which tools were approved and which were not.",
         ],
       },
       {
@@ -156,7 +156,7 @@ export const caseStudies: CaseStudy[] = [
           {
             href: "/articles/dspm-dlp-shadow-ai-leaks/",
             label: "The Paste Is the Leak",
-            note: "the full write-up on DSPM, DLP, and policy design for shadow AI.",
+            note: "the full write-up on DSPM, DLP, and policy design for shadow assistants.",
           },
           {
             href: "/articles/data-security-shadow-data-inventory/",
