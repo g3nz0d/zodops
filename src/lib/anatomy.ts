@@ -79,14 +79,17 @@ export const anatomies: Anatomy[] = [
           "mcp.json / claude_desktop_config.json — what the agent host actually loads",
         code: `{
   "mcpServers": {
-    "acme-support": {
+    "itsm-mcp": {
       "command": "npx",
-      "args": ["-y", "@acme/mcp-support"],
+      "args": ["-y", "@platform/mcp-itsm"],
       "env": {
-        "AWS_ACCESS_KEY_ID": "AKIAIOSFODNN7EXAMPLE",
-        "AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-        "SALESFORCE_TOKEN": "00Dxx0000000001!AQoAQ...",
-        "SLACK_BOT_TOKEN": "xoxb-0000-0000-example"
+        "AWS_REGION": "us-east-1",
+        "AWS_ACCESS_KEY_ID": "AKIA••••••••••••W3KQ",
+        "AWS_SECRET_ACCESS_KEY": "••••••••••••••••••••••••••••••••••••••••",
+        "SALESFORCE_INSTANCE_URL": "https://••••.my.salesforce.com",
+        "SALESFORCE_TOKEN": "00D••••••••!••••••••••••••••",
+        "SLACK_BOT_TOKEN": "xoxb-••••••••••••-••••••••••••-••••••••••••••••",
+        "SLACK_TEAM_ID": "T0•••••••"
       }
     }
   }
@@ -98,19 +101,41 @@ export const anatomies: Anatomy[] = [
       },
       {
         type: "code",
-        caption: "docker-compose.yml — same server, same identity",
+        caption: "docker-compose.yml — same server, same identity, from the shared-host repo",
         code: `services:
-  acme-mcp:
-    image: ghcr.io/acme/mcp-support:1.4.2
+  itsm-mcp:
+    image: ************.dkr.ecr.us-east-1.amazonaws.com/platform/mcp-itsm:1.4.2
+    container_name: itsm-mcp
     restart: unless-stopped
+    networks:
+      - shared-services
     environment:
-      AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
-      AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-      SALESFORCE_TOKEN: 00Dxx0000000001!AQoAQ...
-      SLACK_BOT_TOKEN: xoxb-0000-0000-example
-    command: >
-      mcp-server
-      --tools tickets,customers,sql,slack`,
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: AKIA••••••••••••W3KQ
+      AWS_SECRET_ACCESS_KEY: ••••••••••••••••••••••••••••••••••••••••
+      SALESFORCE_INSTANCE_URL: https://••••.my.salesforce.com
+      SALESFORCE_TOKEN: 00D••••••••!••••••••••••••••
+      SLACK_BOT_TOKEN: xoxb-••••••••••••-••••••••••••-••••••••••••••••
+      SLACK_TEAM_ID: T0•••••••
+      LOG_LEVEL: info
+    command:
+      - mcp-server
+      - --transport
+      - stdio
+      - --tools
+      - tickets,customers,sql,slack
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      com.corp.owner: platform-ai
+      com.corp.service: itsm-mcp
+
+networks:
+  shared-services:
+    external: true`,
       },
       {
         type: "h2",
@@ -121,7 +146,7 @@ export const anatomies: Anatomy[] = [
         items: [
           "The access key. It is a long-lived principal. It does not expire with the session, the user, or the ticket the agent is reading. Every copy on every laptop and in repo history works until you rotate, and rotating breaks every one of them, so nobody does. The Salesforce value next to it is a session token — it expires — but it is still sitting beside a key that does not.",
           "The tool list. tickets, customers, sql, slack is not a support agent. It is read, join, and send on one process. SQL is a general-purpose query surface sitting behind a model that will call whatever the last document told it to call.",
-          "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as acme-support. A prompt that says \"only look up the current requester\" is not an authorization check.",
+          "The missing user. Nothing in this file binds a call to the person who opened the chat. Every tool runs as itsm-mcp. A prompt that says \"only look up the current requester\" is not an authorization check.",
         ],
       },
       {
@@ -156,18 +181,43 @@ export const anatomies: Anatomy[] = [
         type: "code",
         caption: "docker-compose.yml — identity on the workload, tools cut down",
         code: `services:
-  acme-mcp:
-    image: ghcr.io/acme/mcp-support:1.4.2@sha256:4f2c…pinned
+  itsm-mcp:
+    image: ************.dkr.ecr.us-east-1.amazonaws.com/platform/mcp-itsm:1.4.2@sha256:4f2c••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+    container_name: itsm-mcp
     restart: unless-stopped
+    read_only: true
+    networks:
+      - shared-services
     environment:
-      # No AWS_* vars. On EC2 the instance profile supplies credentials.
-      # ECS: task role. EKS: IRSA or Pod Identity.
+      AWS_REGION: us-east-1
+      # No AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY.
+      # EC2: instance profile. ECS: task role. EKS: IRSA or Pod Identity.
       # Off AWS: IAM Roles Anywhere or an SSO profile — not a pasted key.
-      TICKET_AUDIENCE: tickets.acme.internal
-    command: >
-      mcp-server
-      --tools ticket_status,requester_account,slack_post
-      --confirm slack_post`,
+      SALESFORCE_INSTANCE_URL: https://••••.my.salesforce.com
+      TICKET_AUDIENCE: tickets.internal
+      SLACK_BOT_TOKEN_SECRET_ARN: arn:aws:secretsmanager:us-east-1:************:secret:prod/itsm-mcp/slack-bot-••••••
+      SALESFORCE_TOKEN_SECRET_ARN: arn:aws:secretsmanager:us-east-1:************:secret:prod/itsm-mcp/salesforce-••••••
+      LOG_LEVEL: info
+    command:
+      - mcp-server
+      - --transport
+      - stdio
+      - --tools
+      - ticket_status,requester_account,slack_post
+      - --confirm
+      - slack_post
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      com.corp.owner: platform-ai
+      com.corp.service: itsm-mcp
+
+networks:
+  shared-services:
+    external: true`,
       },
       {
         type: "ul",

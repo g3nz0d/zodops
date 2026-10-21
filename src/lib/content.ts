@@ -2186,7 +2186,7 @@ async function injectionRegression(fixtures, classify) {
       },
       {
         type: "code",
-        code: String.raw`KEY_ID="AKIA..."   # from the DLP event
+        code: String.raw`KEY_ID="AKIA••••••••••••W3KQ"   # from the DLP event
 
 # 1. Find which IAM user owns the key, and when it was last used.
 USER_NAME=$(aws iam get-access-key-last-used --access-key-id "$KEY_ID" \
