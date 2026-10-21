@@ -180,6 +180,7 @@ networks:
       {
         type: "code",
         caption: "docker-compose.yml — identity on the workload, tools cut down",
+        changedLines: [3, 6, 11, 12, 13, 15, 16, 17, 24, 25, 26],
         code: `services:
   itsm-mcp:
     image: ************.dkr.ecr.us-east-1.amazonaws.com/platform/mcp-itsm:1.4.2@sha256:4f2c••••••••••••••••••••••••••••••••••••••••••••••••••••••••

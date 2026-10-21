@@ -97,7 +97,12 @@ export type Block =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "code"; caption?: string; code: string }
+  | {
+      type: "code"
+      caption?: string
+      code: string
+      changedLines?: number[]
+    }
   | {
       type: "table"
       headers: string[]

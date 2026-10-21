@@ -43,7 +43,14 @@ export function ArticleBody({ blocks }: { blocks: Block[] }) {
           )
         }
         if (block.type === "code") {
-          return <CodeBlock key={index} caption={block.caption} code={block.code} />
+          return (
+            <CodeBlock
+              key={index}
+              caption={block.caption}
+              code={block.code}
+              changedLines={block.changedLines}
+            />
+          )
         }
         return (
           <TableBlock

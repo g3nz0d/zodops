@@ -1,10 +1,15 @@
 export function CodeBlock({
   caption,
   code,
+  changedLines,
 }: {
   caption?: string
   code: string
+  changedLines?: number[]
 }) {
+  const changed = new Set(changedLines ?? [])
+  const lines = code.split("\n")
+
   return (
     <figure className="overflow-hidden rounded-xl border border-brand bg-navy">
       {caption ? (
@@ -13,7 +18,19 @@ export function CodeBlock({
         </figcaption>
       ) : null}
       <pre className="overflow-x-auto p-4 font-mono text-[12.5px] leading-relaxed text-navy-foreground">
-        {code}
+        {changed.size === 0
+          ? code
+          : lines.map((line, index) => (
+              <span
+                key={index}
+                className={
+                  changed.has(index + 1) ? "text-[#ED7014]" : undefined
+                }
+              >
+                {line}
+                {index < lines.length - 1 ? "\n" : null}
+              </span>
+            ))}
       </pre>
     </figure>
   )
