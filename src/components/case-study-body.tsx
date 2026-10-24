@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { InlineText } from "@/components/inline-text"
+import { TableBlock } from "@/components/table-block"
 import type { CaseStudyBlock } from "@/lib/work"
 import { slugifyHeading } from "@/lib/content"
 
@@ -55,6 +56,16 @@ export function CaseStudyBody({ blocks }: { blocks: CaseStudyBlock[] }) {
                 </li>
               ))}
             </ul>
+          )
+        }
+        if (block.type === "table") {
+          return (
+            <TableBlock
+              key={index}
+              headers={block.headers}
+              rows={block.rows}
+              compact={block.compact}
+            />
           )
         }
         return (

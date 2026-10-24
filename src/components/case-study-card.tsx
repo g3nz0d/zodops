@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { topicBadgeClassName, topicBySlug } from "@/lib/content"
+import { formatDate, topicBadgeClassName, topicBySlug } from "@/lib/content"
 import { type CaseStudy } from "@/lib/work"
 import { cn } from "@/lib/utils"
 
@@ -20,7 +20,10 @@ export function CaseStudyCard({
     >
       <div className="flex flex-col items-start gap-2">
         <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
-          Case study · {study.minutes} min
+          {study.industry
+            ? `Cases · ${study.industry} · ${study.minutes} min`
+            : `Case study · ${study.minutes} min`}
+          {study.date ? ` · ${formatDate(study.date)}` : ""}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {study.topics.map((slug) => {

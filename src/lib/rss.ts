@@ -40,10 +40,13 @@ export function buildRssFeed(): string {
   const caseItems = publishedCaseStudies.map((study) => {
     const url = `${BASE_URL}/cases/${study.slug}/`
     const topic = primaryTopic(study)
+    const pubDate = study.date
+      ? `\n      <pubDate>${new Date(`${study.date}T00:00:00Z`).toUTCString()}</pubDate>`
+      : ""
     return `    <item>
       <title>${escapeXml(study.title)}</title>
       <link>${url}</link>
-      <guid isPermaLink="true">${url}</guid>
+      <guid isPermaLink="true">${url}</guid>${pubDate}
       <category>${escapeXml(topic.label)}</category>
       <description>${escapeXml(study.excerpt)}</description>
     </item>`

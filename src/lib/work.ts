@@ -5,6 +5,12 @@ export type CaseStudyBlock =
   | { type: "h2"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
+  | {
+      type: "table"
+      headers: string[]
+      rows: string[][]
+      compact?: boolean
+    }
   | { type: "links"; items: { href: string; label: string; note: string }[] }
 
 export type CaseStudy = {
@@ -16,12 +22,318 @@ export type CaseStudy = {
   topics: TopicSlug[]
   tools: string[]
   minutes: number
+  date?: string
+  industry?: string
   draft?: boolean
   glance: { label: string; value: string }[]
+  glanceCaption?: string
+  glanceHeading?: string
+  related?: { href: string; label: string; note: string }[]
   body: CaseStudyBlock[]
 }
 
 export const caseStudies: CaseStudy[] = [
+  {
+    slug: "encrypted-still-readable",
+    title: "Encrypted. Still Readable.",
+    excerpt:
+      "The warehouse was encrypted. Every analyst could still read every Social Security number. This is how a hospital stopped moving real patient identifiers into places that only needed to join on them.",
+    description:
+      "The warehouse was encrypted. Every analyst could still read every SSN. How a hospital tokenized patient identifiers at ingest so analysts and an AI pilot work on tokens, not patients.",
+    subtitle: "Cases · Healthcare · 8 min",
+    topics: ["data-security", "ai-agent-security"],
+    tools: ["Protegrity"],
+    minutes: 8,
+    date: "2026-10-24",
+    industry: "Healthcare",
+    glanceHeading: "Case summary",
+    glanceCaption: "Case summary: client, trigger, constraint, decision, outcome",
+    glance: [
+      {
+        label: "Client",
+        value: "Regional hospital system, composite of programs I have worked",
+      },
+      {
+        label: "Trigger",
+        value:
+          "An AI assistant pilot was about to get read access to the analytics warehouse",
+      },
+      {
+        label: "Constraint",
+        value:
+          "Dashboards, models, the call center, and billing could not break",
+      },
+      {
+        label: "Decision",
+        value:
+          "Tokenize patient identifiers at ingest with Protegrity vaultless tokenization, and control clear access by role",
+      },
+      {
+        label: "Outcome",
+        value:
+          "Analysts and the AI pilot work on tokens. Clear values go only to the roles whose job is the patient.",
+      },
+    ],
+    related: [
+      {
+        href: "/anatomy/sites-read-all-is-the-index/",
+        label: "Sites.Read.All Is the Index",
+        note: "the same broad-grant miss, on the AI agent side.",
+      },
+      {
+        href: "/anatomy/github-oidc-org-can-assume-prod/",
+        label: "The Org Can Assume Prod",
+        note: "a wide trust condition instead of a wide warehouse role.",
+      },
+    ],
+    body: [
+      {
+        type: "h2",
+        text: "The ask",
+      },
+      {
+        type: "p",
+        text: "The AI team wanted their assistant pilot connected to the analytics warehouse, so staff could ask questions about readmissions and capacity in plain English. Security was asked to sign off.",
+      },
+      {
+        type: "p",
+        text: "The review started with one question: who can read a patient's SSN outside the EHR?",
+      },
+      {
+        type: "p",
+        text: "The answer was \"the warehouse is encrypted.\" True, and not the question. A nightly job copied name, SSN, MRN, date of birth, address, phone, email, and insurance member ID into the warehouse in clear text. Encryption at rest protected the disk. The database decrypted on read for every analyst, every data scientist, the platform admins, and now, the AI pilot's service account.",
+      },
+      {
+        type: "p",
+        text: "A prompt-injected assistant would have been a patient export with a chat window.",
+      },
+      {
+        type: "h2",
+        text: "The constraints",
+      },
+      {
+        type: "ul",
+        items: [
+          "Analytics could not break. Dashboards and the readmissions model join across a dozen tables on MRN.",
+          "The call center verifies callers with the last four of the SSN.",
+          "Revenue cycle needs real values for claims and insurance member IDs.",
+          "The EHR was off limits. No changes to clinical workflows or the source system.",
+          "Dev and test still needed realistic data. Synthetic data had been tried and never matched production.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The options we weighed",
+      },
+      {
+        type: "p",
+        text: "Five approaches were on the table. Only one kept the joins working without putting real identifiers in the warehouse.",
+      },
+      {
+        type: "table",
+        headers: ["Option", "What it does", "Why it did or did not fit"],
+        rows: [
+          [
+            "Encryption at rest",
+            "Protects storage and backups",
+            "Already in place. Does nothing about who can query.",
+          ],
+          [
+            "Dynamic masking in the warehouse",
+            "Hides values at query time",
+            "Real values still land and sit in the warehouse, dev copies, and exports. One misconfigured view undoes it.",
+          ],
+          [
+            "De-identification",
+            "Strips identifiers out",
+            "Breaks the call center and billing, and the readmissions model loses its join key.",
+          ],
+          [
+            "Synthetic data",
+            "Replaces production data",
+            "Already tried for dev. Never matched reality, and useless for production analytics.",
+          ],
+          [
+            "Tokenization at ingest",
+            "Replaces identifiers with consistent, format-preserving tokens before they land",
+            "Joins keep working on tokens. Clear values come back only for roles with Unprotect. Chosen.",
+          ],
+        ],
+      },
+      {
+        type: "h2",
+        text: "What we did, in phases",
+      },
+      {
+        type: "ol",
+        items: [
+          "The warehouse and the AI pilot first. That is where the blast radius was largest. Identifiers were tokenized in the ETL job, before they reached the warehouse, and the AI service account was set to get nulls for every identifier.",
+          "Dev and test next. New copies are refreshed from the tokenized warehouse, so real patients stop appearing in lower environments.",
+          "The role policy last. Unprotect was granted field by field, role by role, in the Enterprise Security Administrator (ESA), starting from no access.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Protegrity's vaultless tokenization generates tokens algorithmically on the protector, so there is no central lookup table of real values to steal or to bottleneck on. Two properties carried the analytics: the same input always produces the same token, so MRN still joins to MRN; and tokens keep the original format, so schemas and BI tools did not break.",
+      },
+      {
+        type: "table",
+        headers: ["Field", "Token type", "What stays clear", "Why"],
+        rows: [
+          [
+            "SSN",
+            "Numeric, delimiters preserved",
+            "Last 4, only for roles that need it",
+            "Call center verification",
+          ],
+          [
+            "MRN",
+            "Alpha-Numeric",
+            "Nothing",
+            "It is the join key. Consistency is all analytics needs.",
+          ],
+          [
+            "Name",
+            "Unicode Gen2",
+            "Nothing",
+            "No consumer in the warehouse needs it",
+          ],
+          [
+            "Date of birth",
+            "Datetime",
+            "Only the date parts the model needs",
+            "Readmission risk needs age, not a birthday",
+          ],
+          [
+            "Phone, email",
+            "Numeric, Email",
+            "Nothing",
+            "Outreach runs from the EHR, not the warehouse",
+          ],
+          [
+            "Insurance member ID",
+            "Alpha-Numeric",
+            "Clear for billing roles only",
+            "Claims need the real value",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "Diagnosis and procedure codes stayed in the clear. They are the analytics. With the identifiers tokenized, a code is no longer attached to a name anyone in the warehouse can read.",
+      },
+      {
+        type: "h2",
+        text: "Who sees what",
+      },
+      {
+        type: "p",
+        text: "Each role gets Protect, Unprotect, or Reprotect permission per data element. Roles without Unprotect get a null, the token, or an exception. Masks apply on unprotect, so a role can see the last four and nothing else.",
+      },
+      {
+        type: "table",
+        headers: ["Role", "SSN", "Name", "DOB", "Without Unprotect"],
+        rows: [
+          [
+            "BI analysts",
+            "Token",
+            "Token",
+            "Token",
+            "Token, so joins and counts still work",
+          ],
+          [
+            "Data science (readmissions model)",
+            "Token",
+            "Token",
+            "Partial, per the Datetime setting",
+            "Token",
+          ],
+          [
+            "AI assistant service account",
+            "None",
+            "None",
+            "None",
+            "Null. The agent cannot return what it never receives.",
+          ],
+          [
+            "Call center",
+            "Masked, last 4",
+            "Clear",
+            "Clear",
+            "Has Unprotect: verifying the caller is the job",
+          ],
+          [
+            "Revenue cycle",
+            "Clear",
+            "Clear",
+            "Clear",
+            "Has Unprotect: claims need real values",
+          ],
+          [
+            "Platform and DBA admins",
+            "Token",
+            "Token",
+            "Token",
+            "Token. They run the system; they do not read the patients.",
+          ],
+        ],
+      },
+      {
+        type: "p",
+        text: "The AI row is what got the pilot approved. A fooled assistant still runs as its service account, and that account only ever receives nulls for identifiers.",
+      },
+      {
+        type: "h2",
+        text: "What pushed back",
+      },
+      {
+        type: "ul",
+        items: [
+          "**Will my dashboards break?** The analysts' first question, every time. The answer was a side-by-side run: the same dashboards on tokenized data, with the same counts.",
+          "**Everyone wanted Unprotect.** \"Just in case\" requests came from every team. Each one needed a named job reason, or it was a no.",
+          "**Free text.** Clinical notes and comment fields carry names and numbers in prose. Structured tokenization does not touch them. They became a separate workstream with discovery first.",
+          "**Time.** Protectors, data elements, policy, and every pipeline that touches the fields. This was a program measured in months, not a setting someone flipped.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Where it landed",
+      },
+      {
+        type: "ul",
+        items: [
+          "The AI pilot went live on tokenized data. Identifiers come back as nulls.",
+          "Analysts kept their dashboards and joins. The readmissions model trains on tokens.",
+          "Dev and test stopped holding real patients.",
+          "\"Who can see a clear SSN outside the EHR?\" now has an answer by role: the call center, masked to the last four, and revenue cycle.",
+        ],
+      },
+      {
+        type: "p",
+        text: "One line stayed in every review: tokenized data is not automatically de-identified under HIPAA. It is still PHI, with a much smaller blast radius.",
+      },
+      {
+        type: "h2",
+        text: "What I would do differently",
+      },
+      {
+        type: "ul",
+        items: [
+          "Start with the policy conversation, not the protectors. Deciding who truly needs Unprotect took longer than the engineering.",
+          "Run discovery on free text in parallel, not after. It was always going to be the next finding.",
+          "Treat the Unprotect list like any other grant. Put it on a quarterly review from day one, before it quietly grows back to \"all analysts.\"",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "The analyst needed the join, not the patient. Tokenize identifiers before they land, give clear values only to the roles whose job is the patient, and give the AI agent nulls.",
+      },
+    ],
+  },
   {
     slug: "finding-shadow-ai",
     title: "Finding Shadow Assistants Before They Found Us",
@@ -445,6 +757,15 @@ export const caseStudies: CaseStudy[] = [
 
 export const publishedCaseStudies = caseStudies.filter((study) => !study.draft)
 
+function compareCaseStudies(a: CaseStudy, b: CaseStudy) {
+  if (a.date && b.date) {
+    return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+  }
+  if (a.date) return -1
+  if (b.date) return 1
+  return 0
+}
+
 export function isCasesVisible(): boolean {
   return (
     process.env.NODE_ENV === "development" || publishedCaseStudies.length > 0
@@ -452,9 +773,13 @@ export function isCasesVisible(): boolean {
 }
 
 export function visibleCaseStudies(): CaseStudy[] {
-  return process.env.NODE_ENV === "development"
-    ? caseStudies
-    : publishedCaseStudies
+  const studies =
+    process.env.NODE_ENV === "development" ? caseStudies : publishedCaseStudies
+  return [...studies].sort(compareCaseStudies)
+}
+
+export function casesByTopic(slug: TopicSlug): CaseStudy[] {
+  return visibleCaseStudies().filter((study) => study.topics.includes(slug))
 }
 
 export function getCaseStudy(slug: string): CaseStudy | undefined {

@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { ArticleCard } from "@/components/article-card"
+import { CaseStudyCard } from "@/components/case-study-card"
 import {
   articlesByTopic,
   getTopic,
   topicSlugs,
 } from "@/lib/content"
+import { casesByTopic } from "@/lib/work"
 
 type Props = PageProps<"/tech/[slug]">
 
@@ -35,6 +37,7 @@ export default async function TopicPage({ params }: Props) {
   }
 
   const posts = articlesByTopic(topic.slug)
+  const studies = casesByTopic(topic.slug)
 
   return (
     <section className="container-page py-14 sm:py-16">
@@ -64,6 +67,19 @@ export default async function TopicPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      {studies.length > 0 ? (
+        <div className="mt-14">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Cases on {topic.name}
+          </h2>
+          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {studies.map((study) => (
+              <CaseStudyCard key={study.slug} study={study} />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }
