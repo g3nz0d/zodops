@@ -5,7 +5,12 @@ import { notFound } from "next/navigation"
 import { ArticleToc } from "@/components/article-toc"
 import { CaseStudyBody } from "@/components/case-study-body"
 import { GlanceBox } from "@/components/glance-box"
-import { slugifyHeading, topicBadgeClassName, topicBySlug } from "@/lib/content"
+import {
+  formatDate,
+  slugifyHeading,
+  topicBadgeClassName,
+  topicBySlug,
+} from "@/lib/content"
 import {
   canViewCaseStudy,
   caseStudies,
@@ -70,6 +75,7 @@ export default async function CaseStudyPage({ params }: Props) {
           {study.industry
             ? `Cases · ${study.industry} · ${study.minutes} min`
             : `Case study · ${study.minutes} min`}
+          {study.date ? ` · ${formatDate(study.date)}` : ""}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {study.topics.map((topicSlug) => {

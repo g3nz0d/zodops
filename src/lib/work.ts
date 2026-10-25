@@ -345,6 +345,7 @@ export const caseStudies: CaseStudy[] = [
     topics: ["data-security", "ai-agent-security"],
     tools: ["Cyera", "Microsoft Purview", "Zscaler"],
     minutes: 5,
+    date: "2026-03-26",
     glance: [
       {
         label: "Environment",
@@ -490,6 +491,7 @@ export const caseStudies: CaseStudy[] = [
     topics: ["cloud-security"],
     tools: ["AWS Organizations", "CloudTrail", "AWS Config", "GuardDuty"],
     minutes: 5,
+    date: "2026-05-20",
     glance: [
       {
         label: "Environment",
@@ -627,6 +629,7 @@ export const caseStudies: CaseStudy[] = [
     topics: ["cloud-security"],
     tools: ["Azure CLI", "Microsoft Entra PIM", "Azure Lighthouse"],
     minutes: 5,
+    date: "2026-08-18",
     glance: [
       {
         label: "Environment",
