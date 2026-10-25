@@ -50,9 +50,11 @@ export function CaseStudyCard({
       <p className="mt-3 flex-1 text-[14px] leading-relaxed text-muted-foreground">
         {study.excerpt}
       </p>
-      <p className="mt-3 text-[12px] tracking-[0.02em] text-muted-foreground/80">
-        {study.tools.join(" · ")}
-      </p>
+      {study.tools.length > 0 ? (
+        <p className="mt-3 text-[12px] tracking-[0.02em] text-muted-foreground/80">
+          {study.tools.join(" · ")}
+        </p>
+      ) : null}
       <Link
         href={`/cases/${study.slug}/`}
         className="mt-6 text-[11px] font-semibold tracking-[0.16em] text-brand uppercase hover:underline"

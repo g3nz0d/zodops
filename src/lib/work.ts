@@ -42,7 +42,7 @@ export const caseStudies: CaseStudy[] = [
       "The warehouse was encrypted. Every analyst could still read every SSN. How a hospital tokenized patient identifiers at ingest so analysts and an AI pilot work on tokens, not patients.",
     subtitle: "Cases · Healthcare · 8 min",
     topics: ["data-security", "ai-agent-security"],
-    tools: ["Protegrity"],
+    tools: [],
     minutes: 8,
     date: "2026-10-24",
     industry: "Healthcare",
@@ -66,7 +66,7 @@ export const caseStudies: CaseStudy[] = [
       {
         label: "Decision",
         value:
-          "Tokenize patient identifiers at ingest with Protegrity vaultless tokenization, and control clear access by role",
+          "Tokenize patient identifiers at ingest with vaultless tokenization, and control clear access by role",
       },
       {
         label: "Outcome",
@@ -156,7 +156,7 @@ export const caseStudies: CaseStudy[] = [
           [
             "Tokenization at ingest",
             "Replaces identifiers with consistent, format-preserving tokens before they land",
-            "Joins keep working on tokens. Clear values come back only for roles with Unprotect. Chosen.",
+            "Joins keep working on tokens. Clear values come back only for roles with detokenize permission. Chosen.",
           ],
         ],
       },
@@ -169,12 +169,12 @@ export const caseStudies: CaseStudy[] = [
         items: [
           "The warehouse and the AI pilot first. That is where the blast radius was largest. Identifiers were tokenized in the ETL job, before they reached the warehouse, and the AI service account was set to get nulls for every identifier.",
           "Dev and test next. New copies are refreshed from the tokenized warehouse, so real patients stop appearing in lower environments.",
-          "The role policy last. Unprotect was granted field by field, role by role, in the Enterprise Security Administrator (ESA), starting from no access.",
+          "The role policy last. Detokenize permission was granted field by field, role by role, in the central policy server, starting from no access.",
         ],
       },
       {
         type: "p",
-        text: "Protegrity's vaultless tokenization generates tokens algorithmically on the protector, so there is no central lookup table of real values to steal or to bottleneck on. Two properties carried the analytics: the same input always produces the same token, so MRN still joins to MRN; and tokens keep the original format, so schemas and BI tools did not break.",
+        text: "Vaultless tokenization generates tokens algorithmically where the data is processed, so there is no central lookup table of real values to steal or to bottleneck on. Two properties carried the analytics: the same input always produces the same token, so MRN still joins to MRN; and tokens keep the original format, so schemas and BI tools did not break.",
       },
       {
         type: "table",
@@ -194,7 +194,7 @@ export const caseStudies: CaseStudy[] = [
           ],
           [
             "Name",
-            "Unicode Gen2",
+            "Unicode",
             "Nothing",
             "No consumer in the warehouse needs it",
           ],
@@ -228,11 +228,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "Each role gets Protect, Unprotect, or Reprotect permission per data element. Roles without Unprotect get a null, the token, or an exception. Masks apply on unprotect, so a role can see the last four and nothing else.",
+        text: "Each role gets tokenize or detokenize permission per field. Roles without detokenize get a null, the token, or an error. Masks apply on detokenize, so a role can see the last four and nothing else.",
       },
       {
         type: "table",
-        headers: ["Role", "SSN", "Name", "DOB", "Without Unprotect"],
+        headers: ["Role", "SSN", "Name", "DOB", "Without detokenize"],
         rows: [
           [
             "BI analysts",
@@ -245,7 +245,7 @@ export const caseStudies: CaseStudy[] = [
             "Data science (readmissions model)",
             "Token",
             "Token",
-            "Partial, per the Datetime setting",
+            "Partial, per the date setting",
             "Token",
           ],
           [
@@ -260,14 +260,14 @@ export const caseStudies: CaseStudy[] = [
             "Masked, last 4",
             "Clear",
             "Clear",
-            "Has Unprotect: verifying the caller is the job",
+            "Can detokenize: verifying the caller is the job",
           ],
           [
             "Revenue cycle",
             "Clear",
             "Clear",
             "Clear",
-            "Has Unprotect: claims need real values",
+            "Can detokenize: claims need real values",
           ],
           [
             "Platform and DBA admins",
@@ -290,9 +290,9 @@ export const caseStudies: CaseStudy[] = [
         type: "ul",
         items: [
           "**Will my dashboards break?** The analysts' first question, every time. The answer was a side-by-side run: the same dashboards on tokenized data, with the same counts.",
-          "**Everyone wanted Unprotect.** \"Just in case\" requests came from every team. Each one needed a named job reason, or it was a no.",
+          "**Everyone wanted detokenize access.** \"Just in case\" requests came from every team. Each one needed a named job reason, or it was a no.",
           "**Free text.** Clinical notes and comment fields carry names and numbers in prose. Structured tokenization does not touch them. They became a separate workstream with discovery first.",
-          "**Time.** Protectors, data elements, policy, and every pipeline that touches the fields. This was a program measured in months, not a setting someone flipped.",
+          "**Time.** Tokenization services, field definitions, policy, and every pipeline that touches the fields. This was a program measured in months, not a setting someone flipped.",
         ],
       },
       {
@@ -319,9 +319,9 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "ul",
         items: [
-          "Start with the policy conversation, not the protectors. Deciding who truly needs Unprotect took longer than the engineering.",
+          "Start with the policy conversation, not the tooling. Deciding who truly needs detokenize access took longer than the engineering.",
           "Run discovery on free text in parallel, not after. It was always going to be the next finding.",
-          "Treat the Unprotect list like any other grant. Put it on a quarterly review from day one, before it quietly grows back to \"all analysts.\"",
+          "Treat the detokenize list like any other grant. Put it on a quarterly review from day one, before it quietly grows back to \"all analysts.\"",
         ],
       },
       {
