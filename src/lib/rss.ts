@@ -18,23 +18,21 @@ function escapeXml(value: string): string {
 }
 
 export function buildRssFeed(): string {
-  const newest = publishedArticles[0]
-  const lastBuildDate = newest
-    ? new Date(`${newest.date}T00:00:00Z`).toUTCString()
-    : new Date("2026-01-01T00:00:00Z").toUTCString()
-
   const articleItems = publishedArticles.map((article) => {
     const url = `${BASE_URL}/articles/${article.slug}/`
     const topic = topicBySlug(article.topic)
     const pubDate = new Date(`${article.date}T00:00:00Z`).toUTCString()
-    return `    <item>
+    return {
+      date: article.date,
+      xml: `    <item>
       <title>${escapeXml(article.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${pubDate}</pubDate>
       <category>${escapeXml(topic.label)}</category>
       <description>${escapeXml(article.excerpt)}</description>
-    </item>`
+    </item>`,
+    }
   })
 
   const caseItems = publishedCaseStudies.map((study) => {
@@ -43,29 +41,42 @@ export function buildRssFeed(): string {
     const pubDate = study.date
       ? `\n      <pubDate>${new Date(`${study.date}T00:00:00Z`).toUTCString()}</pubDate>`
       : ""
-    return `    <item>
+    return {
+      date: study.date ?? "",
+      xml: `    <item>
       <title>${escapeXml(study.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>${pubDate}
       <category>${escapeXml(topic.label)}</category>
       <description>${escapeXml(study.excerpt)}</description>
-    </item>`
+    </item>`,
+    }
   })
 
   const anatomyItems = publishedAnatomies.map((item) => {
     const url = `${BASE_URL}/anatomy/${item.slug}/`
     const pubDate = new Date(`${item.date}T00:00:00Z`).toUTCString()
-    return `    <item>
+    return {
+      date: item.date,
+      xml: `    <item>
       <title>${escapeXml(item.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${pubDate}</pubDate>
       <category>${escapeXml(anatomyStackLabel[item.stack])}</category>
       <description>${escapeXml(item.excerpt)}</description>
-    </item>`
+    </item>`,
+    }
   })
 
-  const items = [...articleItems, ...caseItems, ...anatomyItems].join("\n")
+  const sorted = [...articleItems, ...caseItems, ...anatomyItems].sort((a, b) =>
+    a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+  )
+  const items = sorted.map((item) => item.xml).join("\n")
+  const newestDate = sorted.find((item) => item.date)?.date
+  const lastBuildDate = newestDate
+    ? new Date(`${newestDate}T00:00:00Z`).toUTCString()
+    : new Date("2026-01-01T00:00:00Z").toUTCString()
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
