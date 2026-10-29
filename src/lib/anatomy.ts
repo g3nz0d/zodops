@@ -144,6 +144,8 @@ export const anatomies: Anatomy[] = [
       {
         type: "code",
         caption: "mcp.json — the shared team agent",
+        changedLines: [5, 8],
+        changedNote: "marks the personal token GitHub will log as Dana.",
         code: `{
   "mcpServers": {
     "github": {
@@ -250,6 +252,9 @@ export const anatomies: Anatomy[] = [
       {
         type: "code",
         caption: "One audit event per tool call — an example schema, not a standard",
+        changedLines: [3, 5, 6, 8, 9],
+        changedNote:
+          "marks who asked, which credential, which tool, what the agent had just read, and the id that ties this to GitHub.",
         code: `{
   "time": "2026-10-27T02:14:07Z",
   "asked_by": "alex@corp.example",
