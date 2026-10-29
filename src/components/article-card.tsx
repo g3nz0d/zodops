@@ -25,6 +25,7 @@ export function ArticleCard({
           {topic.label} · {article.minutes} min
         </p>
         <span
+          data-topic={article.topic}
           className={cn(
             "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.1em] uppercase",
             topicBadgeClassName[article.topic],

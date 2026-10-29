@@ -144,8 +144,14 @@
   color: #f26522;
 }
 
-.writing-card:hover .writing-card-badge,
-.writing-card:focus-visible .writing-card-badge {
-  background-color: rgb(255 255 255 / 0.2);
-  color: #ffffff;
+.writing-card:hover .writing-card-badge[data-topic="cloud-security"],
+.writing-card:focus-visible .writing-card-badge[data-topic="cloud-security"] {
+  color: #2f86e0;
+  background-color: #d6ebfe;
+}
+
+.writing-card:hover .writing-card-badge[data-topic="security-automation"],
+.writing-card:focus-visible .writing-card-badge[data-topic="security-automation"] {
+  color: #a16207;
+  background-color: #fde68a;
 }
