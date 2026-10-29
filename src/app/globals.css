@@ -127,3 +127,25 @@
     padding-inline: 3rem;
   }
 }
+
+.writing-card:hover,
+.writing-card:focus-visible {
+  background-color: var(--brand);
+  box-shadow: 0 14px 32px -16px rgb(15 23 42 / 0.38);
+}
+
+.writing-card:hover .writing-card-ink,
+.writing-card:focus-visible .writing-card-ink {
+  color: #ffffff;
+}
+
+.writing-card:hover .writing-card-read,
+.writing-card:focus-visible .writing-card-read {
+  color: #f26522;
+}
+
+.writing-card:hover .writing-card-badge,
+.writing-card:focus-visible .writing-card-badge {
+  background-color: rgb(255 255 255 / 0.2);
+  color: #ffffff;
+}
