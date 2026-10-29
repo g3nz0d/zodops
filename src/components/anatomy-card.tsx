@@ -4,7 +4,7 @@ import {
   anatomyStackLabel,
   type Anatomy,
 } from "@/lib/anatomy"
-import { topicBadgeClassName, topicBySlug } from "@/lib/content"
+import { formatDate, topicBadgeClassName, topicBySlug } from "@/lib/content"
 import { cn } from "@/lib/utils"
 
 export function AnatomyCard({
@@ -23,7 +23,8 @@ export function AnatomyCard({
     >
       <div className="flex flex-col items-start gap-2">
         <p className="text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
-          {anatomyStackLabel[item.stack]} · {item.minutes} min
+          {anatomyStackLabel[item.stack]} · {item.minutes} min ·{" "}
+          {formatDate(item.date)}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {item.topics.map((slug) => {

@@ -363,7 +363,7 @@ export const anatomies: Anatomy[] = [
     stack: "mcp",
     topics: ["ai-agent-security"],
     minutes: 6,
-    date: "2026-10-20",
+    date: "2026-08-11",
     glance: [
       {
         label: "System",
@@ -681,7 +681,7 @@ networks:
     stack: "mcp",
     topics: ["ai-agent-security", "data-security"],
     minutes: 7,
-    date: "2026-10-21",
+    date: "2026-08-25",
     glance: [
       {
         label: "System",
@@ -951,7 +951,7 @@ Files.Read.All: removed`,
     stack: "ci",
     topics: ["cloud-security"],
     minutes: 7,
-    date: "2026-10-21",
+    date: "2026-09-08",
     glance: [
       {
         label: "System",
@@ -1256,7 +1256,11 @@ export function isAnatomyVisible(): boolean {
 }
 
 export function visibleAnatomies(): Anatomy[] {
-  return process.env.NODE_ENV === "development" ? anatomies : publishedAnatomies
+  const items =
+    process.env.NODE_ENV === "development" ? anatomies : publishedAnatomies
+  return [...items].sort((a, b) =>
+    a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+  )
 }
 
 export function getAnatomy(slug: string): Anatomy | undefined {

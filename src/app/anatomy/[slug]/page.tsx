@@ -12,7 +12,7 @@ import {
   getAnatomy,
   primaryAnatomyTopic,
 } from "@/lib/anatomy"
-import { topicBadgeClassName, topicBySlug } from "@/lib/content"
+import { formatDate, topicBadgeClassName, topicBySlug } from "@/lib/content"
 import { cn } from "@/lib/utils"
 
 type Props = PageProps<"/anatomy/[slug]">
@@ -59,7 +59,7 @@ export default async function AnatomyPage({ params }: Props) {
           {" · "}
           {anatomyStackLabel[item.stack]}
           {" · "}
-          {item.minutes} min
+          {item.minutes} min · {formatDate(item.date)}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {item.topics.map((topicSlug) => {
