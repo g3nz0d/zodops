@@ -204,7 +204,7 @@ export const anatomies: Anatomy[] = [
       },
       {
         type: "p",
-        text: "An audit trail that names the wrong person is worse than an empty one. It sends the investigation in the wrong direction.",
+        text: "An audit trail that names the wrong person can be worse than an empty one. It sends the investigation in the wrong direction.",
       },
       {
         type: "h2",
@@ -220,7 +220,7 @@ export const anatomies: Anatomy[] = [
         rows: [
           ["GitHub", "A personal access token", "The token's owner, a real engineer", "GitHub App user access tokens: actions are attributed to the user who authorized the app"],
           ["Microsoft Graph", "An app-only token: client secret or certificate", "The app. There is no user on the token.", "Delegated, on-behalf-of access, so the user is on the token"],
-          ["Slack", "A bot token (`xoxb-`)", "The app's bot", "A user token (`xoxp-`) acts as the user who authorized it, or log the requester yourself"],
+          ["Slack", "A bot token (`xoxb-`)", "The app's bot", "Each user's own user token (`xoxp-`), so actions appear under that user, or log the requester yourself"],
           ["Google Workspace", "A service account with domain-wide delegation", "The impersonated user. Security researchers note the service account shows up only as a numeric ID.", "Per-user OAuth"],
           ["Databases", "One shared login in `DATABASE_URL`", "That one login, for everyone", "Per-user database auth, or pass the user into your own audit record"],
         ],
@@ -254,21 +254,21 @@ export const anatomies: Anatomy[] = [
         caption: "One audit event per tool call — an example schema, not a standard",
         changedLines: [3, 5, 6, 8, 9],
         changedNote:
-          "marks who asked, which credential, which tool, what the agent had just read, and the id that ties this to GitHub.",
+          "marks who asked, which credential, which tool, what the agent had just read, and what it created.",
         code: `{
-  "time": "2026-10-27T02:14:07Z",
+  "time": "2026-10-27T02:14:07-07:00",
   "asked_by": "alex@corp.example",
   "agent": "team-repo-assistant",
   "credential": "github-app:repo-assistant",
   "tool": "create_pull_request",
   "target": "corp/website (public)",
   "context_sources": ["corp/website issue #4821"],
-  "correlation_id": "9f2c…"
+  "result": "corp/website pull request #4822"
 }`,
       },
       {
         type: "p",
-        text: "The fields that matter: who asked, which agent, which credential, which tool, which resource, and what the agent had just read. The correlation ID ties your record to the platform's.",
+        text: "The fields that matter: who asked, which agent, which credential, which tool, which resource, and what the agent had just read. Recording the result, the pull request it opened, lets you match your record to GitHub's by object and time.",
       },
       {
         type: "p",
