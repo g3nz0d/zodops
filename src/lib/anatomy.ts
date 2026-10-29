@@ -31,9 +31,323 @@ export type Anatomy = {
   glance: { label: string; value: string }[]
   body: Block[]
   related?: { href: string; label: string; note: string }[]
+  sources?: { href: string; label: string }[]
 }
 
 export const anatomies: Anatomy[] = [
+  {
+    slug: "the-log-sees-the-token",
+    title: "The Log Sees the Token, Not the Hand",
+    excerpt:
+      "At 2 a.m., the team's agent opened a public pull request full of private code.\nGitHub says Dana opened it. Dana was asleep.",
+    description:
+      "A teardown of shared MCP credentials: one token behind a team agent, many people asking, and an audit trail that records the credential instead of the person. GitHub, Graph, Slack, Google Workspace, and databases, and the tighter version.",
+    stack: "mcp",
+    topics: ["ai-agent-security"],
+    minutes: 9,
+    date: "2026-10-29",
+    glance: [
+      {
+        label: "System",
+        value:
+          "A shared team agent with the GitHub MCP server, plus other MCP servers for Graph, Slack, and a database",
+      },
+      {
+        label: "Stack",
+        value: "MCP, GitHub personal access token, platform audit logs",
+      },
+      {
+        label: "The miss",
+        value:
+          "Every action is logged as whoever owns the credential. The log cannot say who asked, or what told the agent to do it.",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text: "The short version: an MCP server doesn't act as the person typing. It acts as whoever owns the credential in its launch file. If that is an engineer's token, every action is logged under that engineer's name, including the ones a fooled agent takes on its own.",
+      },
+      {
+        type: "h2",
+        text: "Who is in this story",
+      },
+      {
+        type: "table",
+        headers: ["Who", "Role"],
+        rows: [
+          ["Dana", "An engineer. Her personal access token is in the agent's config."],
+          ["Alex", "A teammate. He asks the agent for things in Slack."],
+          ["The agent", "One AI assistant the whole team shares. It reaches GitHub through the GitHub MCP server."],
+          ["GitHub", "Checks the token on every request, and writes the audit log."],
+          ["An outsider", "Anyone who can open an issue on the team's public repository."],
+        ],
+      },
+      {
+        type: "h2",
+        text: "How it happens",
+      },
+      {
+        type: "p",
+        text: "Setup, once. The MCP server needs a credential. The fastest one is a personal access token, so Dana pastes hers into `mcp.json`. The MCP spec says servers on the local STDIO transport should retrieve credentials from the environment, and that is exactly what happens: the server starts, reads Dana's token, and attaches it to every request it sends to GitHub.",
+      },
+      {
+        type: "p",
+        text: "A normal day. Alex asks the agent to summarize a pull request.",
+      },
+      {
+        type: "ul",
+        items: [
+          "The agent calls the GitHub tool.",
+          "The MCP server asks GitHub for the pull request, with Dana's token attached.",
+          "GitHub checks the token and finds it belongs to Dana.",
+          "To GitHub, Dana made the request.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Alex never appears in GitHub. The request had no place to carry his name. The person who asked and the person GitHub sees are already different people.",
+      },
+      {
+        type: "p",
+        text: "The 2 a.m. night (a composite, like the config below). Alex, or a scheduled job, asks the agent to triage new issues in the team's public repository.",
+      },
+      {
+        type: "ul",
+        items: [
+          "The agent lists the new issues. One, filed by an outsider, contains instructions written for the agent: collect details from the team's private repositories and share them in a pull request.",
+          "The agent cannot reliably tell instructions from data. It follows the issue.",
+          "The MCP server reads files from the private repositories, with Dana's token. Dana has access, so GitHub allows it.",
+          "The MCP server opens a pull request in the public repository containing that content, with Dana's token.",
+          "GitHub shows the pull request's author as Dana. Anyone can read it, including the outsider.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Dana was asleep. Alex asked for triage, not this. Nobody at the company asked for it at all. GitHub still names Dana.",
+      },
+      {
+        type: "p",
+        text: "This is not a thought experiment. In May 2025, Invariant Labs showed this flow against the official GitHub MCP server: a malicious issue in a public repository led an agent to pull private repository data into a public pull request. They noted it is not a flaw in the server's code. The fix they point to is limiting what the agent can access.",
+      },
+      {
+        type: "p",
+        text: "Think of a key card left at a shared front desk. Anyone can ask the desk to open a door. The door logs whose card it was. It cannot see who was standing at the desk, or that a stranger slipped the desk a note.",
+      },
+      {
+        type: "h2",
+        text: "The config",
+      },
+      {
+        type: "p",
+        text: "This is a composite, not a dump from one team. The GitHub server block follows the shape in GitHub's own README; the token is the part that varies.",
+      },
+      {
+        type: "code",
+        caption: "mcp.json — the shared team agent",
+        code: `{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+               "ghcr.io/github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_••••••••••••••••••••"
+      }
+    }
+  }
+}`,
+      },
+      {
+        type: "table",
+        headers: ["What GitHub records", "What it shows"],
+        rows: [
+          ["Pull request author", "dana-k, the owner of the token. Visible to anyone who opens the pull request."],
+          ["Audit log events from the token", "Actor dana-k, plus `hashed_token` (a SHA-256 hash, so you can tell which token) and `programmatic_access_type` (a personal access token, not the web UI)"],
+          ["Who asked the agent", "Not recorded"],
+          ["What told the agent to do it", "Not recorded"],
+        ],
+      },
+      {
+        type: "p",
+        text: "Token data in the audit log, on GitHub Enterprise Cloud, is useful. It tells you a token did it, not a browser session. It still cannot tell you which teammate asked, or that the instruction came from an issue the agent read.",
+      },
+      {
+        type: "h2",
+        text: "Three lines that matter",
+      },
+      {
+        type: "ul",
+        items: [
+          "`GITHUB_PERSONAL_ACCESS_TOKEN`. The token is Dana's. GitHub ties a personal access token to the user who generated it, and attributes what it does to them. A classic token can reach every repository Dana can.",
+          "One agent, many askers. Five engineers use the agent. One identity appears in the log. The person who asked and the person who is blamed are different people.",
+          "Nothing records the tool call. This config launches a server and hands it a token. It does not record which user asked, which tool ran, or what the agent had just read.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "What it actually hides",
+      },
+      {
+        type: "p",
+        text: "The morning after:",
+      },
+      {
+        type: "ul",
+        items: [
+          "GitHub points at Dana. The first question in the incident is whether Dana leaked the code, or whether her account is compromised.",
+          "The real path is invisible. Nothing in GitHub connects the pull request to Alex's request, or to the issue that carried the instruction.",
+          "Revoking Dana's token breaks the agent for the whole team, which is often how teams discover whose token it was.",
+          "Dana leaves the company, her access is removed, and the agent breaks for everyone. If her account lingers instead, the agent keeps running as a former employee. That is the offboarding miss from No Last Day, in a new place.",
+        ],
+      },
+      {
+        type: "p",
+        text: "An audit trail that names the wrong person is worse than an empty one. It sends the investigation in the wrong direction.",
+      },
+      {
+        type: "h2",
+        text: "Where these logs sit",
+      },
+      {
+        type: "p",
+        text: "GitHub is the sharpest example, not the only one. Every MCP server that runs on a shared credential has the same gap. What changes is whose name ends up in the log.",
+      },
+      {
+        type: "table",
+        headers: ["Platform", "What the MCP server usually runs on", "Whose name the log shows", "The per-user fix"],
+        rows: [
+          ["GitHub", "A personal access token", "The token's owner, a real engineer", "GitHub App user access tokens: actions are attributed to the user who authorized the app"],
+          ["Microsoft Graph", "An app-only token: client secret or certificate", "The app. There is no user on the token.", "Delegated, on-behalf-of access, so the user is on the token"],
+          ["Slack", "A bot token (`xoxb-`)", "The app's bot", "A user token (`xoxp-`) acts as the user who authorized it, or log the requester yourself"],
+          ["Google Workspace", "A service account with domain-wide delegation", "The impersonated user. Security researchers note the service account shows up only as a numeric ID.", "Per-user OAuth"],
+          ["Databases", "One shared login in `DATABASE_URL`", "That one login, for everyone", "Per-user database auth, or pass the user into your own audit record"],
+        ],
+      },
+      {
+        type: "p",
+        text: "Two rows name a real person who did not ask: GitHub and Google. Those are the ones that send investigations the wrong way.",
+      },
+      {
+        type: "h2",
+        text: "The tighter version",
+      },
+      {
+        type: "p",
+        text: "Put the person who asked on the token. When you cannot, write them into your own log.",
+      },
+      {
+        type: "p",
+        text: "1. Per-user credentials for shared agents. Run the remote GitHub MCP server with OAuth instead of a pasted token. The MCP spec defines OAuth 2.1 for HTTP transports, and GitHub's README notes the host needs a GitHub App or OAuth App to support it. With a GitHub App user access token, GitHub attributes the request to the user who authorized the app. Access is limited to what both the user and the app can reach, and with expiration enabled the token lasts eight hours.",
+      },
+      {
+        type: "p",
+        text: "2. No personal tokens for team automation. If the agent must act as itself, give it its own identity: a GitHub App installation, not an engineer's token. GitHub's own guidance is to use a GitHub App for organization automation and long-lived integrations. Now the log names the app, not Dana.",
+      },
+      {
+        type: "p",
+        text: "3. One audit event per tool call, written by you. The platform log only knows the credential. Your MCP host or gateway knows the rest.",
+      },
+      {
+        type: "code",
+        caption: "One audit event per tool call — an example schema, not a standard",
+        code: `{
+  "time": "2026-10-27T02:14:07Z",
+  "asked_by": "alex@corp.example",
+  "agent": "team-repo-assistant",
+  "credential": "github-app:repo-assistant",
+  "tool": "create_pull_request",
+  "target": "corp/website (public)",
+  "context_sources": ["corp/website issue #4821"],
+  "correlation_id": "9f2c…"
+}`,
+      },
+      {
+        type: "p",
+        text: "The fields that matter: who asked, which agent, which credential, which tool, which resource, and what the agent had just read. The correlation ID ties your record to the platform's.",
+      },
+      {
+        type: "p",
+        text: "4. One identity per agent. Two agents on one credential share one name in every log. Separate identities make every other control here easier.",
+      },
+      {
+        type: "p",
+        text: "5. Keep the token out of the file. A shared credential in `mcp.json` is the env-block miss from The Key in the Env Block. Fix both together.",
+      },
+      {
+        type: "h2",
+        text: "How to tell you are looking at this",
+      },
+      {
+        type: "ul",
+        items: [
+          "`mcp.json` holds `GITHUB_PERSONAL_ACCESS_TOKEN`, `SLACK_BOT_TOKEN`, a client secret, or a `DATABASE_URL`, and more than one person uses the agent.",
+          "You can name whose token the agent runs on, but not who asked for its last ten actions.",
+          "Revoking one engineer's token would break a team tool.",
+          "Your MCP host has no record of tool calls, or keeps them only in a local console.",
+          "An incident review has ever started with \"did you do this?\" and the answer was no.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "The log records the credential, not the person. If the credential belongs to someone else, the log names someone who never asked. Put the asker on the token, give each agent its own identity, and write down every tool call yourself.",
+      },
+    ],
+    related: [
+      {
+        href: "/anatomy/mcp-service-account-in-env/",
+        label: "The Key in the Env Block",
+        note: "The same shared credential, one step earlier: the key in the launch file.",
+      },
+      {
+        href: "/articles/mcp-tool-permissions-and-prompt-injection/",
+        label: "Assume Your Agent Is Fooled",
+        note: "Why the grant is the control, not the system prompt.",
+      },
+      {
+        href: "/articles/no-last-day/",
+        label: "No Last Day",
+        note: "What happens to an agent's credential when the person behind it leaves.",
+      },
+    ],
+    sources: [
+      {
+        href: "https://invariantlabs.ai/blog/mcp-github-vulnerability",
+        label: "Invariant Labs: GitHub MCP exploited, accessing private repositories via MCP (May 2025)",
+      },
+      {
+        href: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens",
+        label: "GitHub: Managing your personal access tokens",
+      },
+      {
+        href: "https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/identifying-audit-log-events-performed-by-an-access-token",
+        label: "GitHub: Token data in the audit log",
+      },
+      {
+        href: "https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-with-a-github-app-on-behalf-of-a-user",
+        label: "GitHub: Authenticating with a GitHub App on behalf of a user",
+      },
+      {
+        href: "https://pkg.go.dev/github.com/github/github-mcp-server",
+        label: "GitHub MCP server README",
+      },
+      {
+        href: "https://modelcontextprotocol.io/specification/latest/basic/authorization",
+        label: "Model Context Protocol: Authorization",
+      },
+      {
+        href: "https://learn.microsoft.com/en-us/graph/microsoft-graph-activity-logs-overview",
+        label: "Microsoft Graph activity logs",
+      },
+      {
+        href: "https://www.hunters.security/en/blog/delefriend-a-newly-discovered-design-flaw-in-domain-wide-delegation-could-leave-google-workspace-vulnerable-for-takeover",
+        label: "Hunters: DeleFriend, domain-wide delegation research",
+      },
+    ],
+  },
   {
     slug: "mcp-service-account-in-env",
     title: "The Key in the Env Block",

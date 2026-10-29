@@ -81,7 +81,7 @@ export default async function AnatomyPage({ params }: Props) {
       <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.5rem] sm:leading-tight">
         {item.title}
       </h1>
-      <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted-foreground">
+      <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted-foreground whitespace-pre-line">
         {item.excerpt}
       </p>
 
@@ -110,6 +110,27 @@ export default async function AnatomyPage({ params }: Props) {
                 </li>
               ))}
             </ul>
+          ) : null}
+          {item.sources && item.sources.length > 0 ? (
+            <div className="mt-10 border-t border-border pt-8">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Sources
+              </h2>
+              <ul className="mt-4 space-y-3 text-[16.5px] leading-[1.75] text-foreground/85">
+                {item.sources.map((source) => (
+                  <li key={source.href} className="list-none">
+                    <a
+                      href={source.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-brand hover:underline"
+                    >
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
         </div>
         <ArticleToc
