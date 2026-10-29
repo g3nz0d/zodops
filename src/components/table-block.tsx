@@ -1,6 +1,18 @@
 import { InlineCopy } from "@/components/inline-copy"
 import { cn } from "@/lib/utils"
 
+/**
+ * Two-line titles (short labels) should sit on one line.
+ * Longer titles that would wrap to three or more lines keep wrapping
+ * so wide tables still fit the column.
+ */
+const TWO_LINE_TITLE = 34
+
+function keepOnOneLine(text: string): boolean {
+  const length = text.trim().length
+  return length > 0 && length <= TWO_LINE_TITLE
+}
+
 export function TableBlock({
   headers,
   rows,
@@ -27,6 +39,7 @@ export function TableBlock({
                 key={index}
                 className={cn(
                   "px-4 font-semibold tracking-[0.02em] text-foreground",
+                  keepOnOneLine(header) && "whitespace-nowrap",
                   compact
                     ? "whitespace-nowrap py-2.5 text-[12px]"
                     : "border-b border-brand/30 py-3",
@@ -50,11 +63,14 @@ export function TableBlock({
                 {row.map((cell, cellIndex) => (
                   <td
                     key={cellIndex}
-                    className={
-                      rowIndex === visibleRows.length - 1
-                        ? "px-4 py-3 leading-relaxed text-foreground/85"
-                        : "border-b border-border px-4 py-3 leading-relaxed text-foreground/85"
-                    }
+                    className={cn(
+                      "px-4 py-3 leading-relaxed text-foreground/85",
+                      rowIndex !== visibleRows.length - 1 &&
+                        "border-b border-border",
+                      cellIndex === 0 &&
+                        keepOnOneLine(cell) &&
+                        "whitespace-nowrap"
+                    )}
                   >
                     <InlineCopy text={cell} />
                   </td>
