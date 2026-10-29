@@ -300,7 +300,7 @@ export const anatomies: Anatomy[] = [
       {
         href: "/anatomy/mcp-service-account-in-env/",
         label: "The Key in the Env Block",
-        note: "The same shared credential, one step earlier: the key in the launch file.",
+        note: "The same shared credential, one step earlier.",
       },
       {
         href: "/articles/mcp-tool-permissions-and-prompt-injection/",

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import { ArticleToc } from "@/components/article-toc"
 import { CaseStudyBody } from "@/components/case-study-body"
 import { GlanceBox } from "@/components/glance-box"
+import { RelatedLinks } from "@/components/related-links"
 import {
   formatDate,
   slugifyHeading,
@@ -124,20 +125,7 @@ export default async function CaseStudyPage({ params }: Props) {
         <div className="min-w-0 max-w-2xl">
           <CaseStudyBody blocks={study.body} />
           {study.related && study.related.length > 0 ? (
-            <ul className="mt-10 space-y-3 border-t border-border pt-8 text-[16.5px] leading-[1.75] text-foreground/85">
-              {study.related.map((link) => (
-                <li key={link.href} className="list-none">
-                  <Link
-                    href={link.href}
-                    className="font-medium text-brand hover:underline"
-                  >
-                    {link.label}
-                  </Link>
-                  {": "}
-                  {link.note}
-                </li>
-              ))}
-            </ul>
+            <RelatedLinks links={study.related} />
           ) : null}
         </div>
         <ArticleToc

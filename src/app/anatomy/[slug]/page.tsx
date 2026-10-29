@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { ArticleBody } from "@/components/article-body"
 import { ArticleToc } from "@/components/article-toc"
 import { GlanceBox } from "@/components/glance-box"
+import { RelatedLinks } from "@/components/related-links"
 import {
   anatomies,
   anatomyStackLabel,
@@ -96,20 +96,7 @@ export default async function AnatomyPage({ params }: Props) {
         <div className="min-w-0 max-w-2xl">
           <ArticleBody blocks={item.body} />
           {item.related && item.related.length > 0 ? (
-            <ul className="mt-10 space-y-3 border-t border-border pt-8 text-[16.5px] leading-[1.75] text-foreground/85">
-              {item.related.map((link) => (
-                <li key={link.href} className="list-none">
-                  <Link
-                    href={link.href}
-                    className="font-medium text-brand hover:underline"
-                  >
-                    {link.label}
-                  </Link>
-                  {": "}
-                  {link.note}
-                </li>
-              ))}
-            </ul>
+            <RelatedLinks links={item.related} />
           ) : null}
           {item.sources && item.sources.length > 0 ? (
             <div className="mt-10 border-t border-border pt-8">
