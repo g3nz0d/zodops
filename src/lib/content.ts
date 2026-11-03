@@ -121,6 +121,7 @@ export type Article = {
   body: Block[]
   fieldNotes?: boolean
   draft?: boolean
+  sources?: { href: string; label: string }[]
 }
 
 export type Principle = {
@@ -1841,12 +1842,12 @@ AND
     excerpt:
       "Adding an LLM to your triage workflow means the attacker gets a vote.",
     topic: "security-automation",
-    minutes: 7,
+    minutes: 9,
     date: "2026-09-14",
     body: [
       {
         type: "p",
-        text: "Security teams are adding model steps to their Tines and n8n workflows to summarize alerts, score severity, and close the noise nobody has time to read. It's a reasonable move. Triage is repetitive, high-volume work, and language models are good at reading messy context.",
+        text: "Security teams are wiring language models into their Tines and n8n workflows to summarize alerts, score severity, and close the noise nobody has time to read. It's a reasonable move. Triage is repetitive, high-volume work, and language models are good at reading messy context.",
       },
       {
         type: "p",
@@ -1878,6 +1879,38 @@ AND
       },
       {
         type: "h2",
+        text: "This is already happening",
+      },
+      {
+        type: "p",
+        text: "Attackers are already writing to the models that defend against them. In September 2025, LevelBlue's SpiderLabs showed that a user-agent, an SSH username, or a Windows 4625 logon field is enough to change what a SOC summarizer reports: source IPs rewritten, workstations renamed, a real event recast as something else. ZENDATA published the same week. Once the SIEM feeds those logs to an LLM, the attacker has a channel into triage.",
+      },
+      {
+        type: "p",
+        text: "The payload does not have to be visible. Unicode tag characters and zero-width characters can carry text a human analyst never sees and a model still reads. That technique, ASCII smuggling, has been public since 2024. If your sanitizer only strips what it can print, the instruction still arrives.",
+      },
+      {
+        type: "h2",
+        text: "Where this sits in OWASP",
+      },
+      {
+        type: "p",
+        text: "This is not a new class of bug. It is three items from the OWASP Top 10 for LLM Applications 2025, in one workflow:",
+      },
+      {
+        type: "ul",
+        items: [
+          "LLM01 Prompt Injection: attacker-controlled alert fields become instructions. Indirect is enough. The attacker never talks to the model; they talk to your logs.",
+          "LLM05 Improper Output Handling: a structured verdict is still untrusted input to the next node. Auto-close on that verdict is the failure.",
+          "LLM06 Excessive Agency: the model should not pick the next action or hold tools that close tickets, suppress rules, or update allowlists.",
+        ],
+      },
+      {
+        type: "p",
+        text: "The rest of this piece is how those three look in a Tines or n8n triage step, and the gate that keeps the model from being the reason an alert disappears.",
+      },
+      {
+        type: "h2",
         text: "Where attacker text enters your alerts",
       },
       {
@@ -1896,7 +1929,7 @@ AND
       },
       {
         type: "p",
-        text: "Some of it will also be invisible. Unicode \"tag\" characters and zero-width characters can carry text a human analyst never sees but a model still reads. This is often called ASCII smuggling.",
+        text: "Some of it will also be invisible. Unicode tag characters (U+E0000 to U+E007F) and zero-width characters can carry text a human analyst never sees but a model still reads.",
       },
       {
         type: "h2",
@@ -1972,11 +2005,11 @@ function gate(alert, model, fieldFlags) {
       },
       {
         type: "code",
-        code: String.raw`const HIDDEN = /[\u{E0000}-\u{E007F}​-‏⁠﻿]/gu;
+        code: `const HIDDEN = /[\\u{E0000}-\\u{E007F}\\u200B-\\u200F\\u2060\\uFEFF]/gu;
 const INSTRUCTION_PATTERNS = [
-  /\b(ignore|disregard|forget)\b.{0,40}\b(previous|prior|above|instructions?)\b/i,
-  /\b(classify|mark|label|treat)\b.{0,40}\b(as\s+)?(benign|safe|false\s+positive|low\s+priority)\b/i,
-  /\b(system|assistant)\s*:/i,
+  /\\b(ignore|disregard|forget)\\b.{0,40}\\b(previous|prior|above|instructions?)\\b/i,
+  /\\b(classify|mark|label|treat)\\b.{0,40}\\b(as\\s+)?(benign|safe|false\\s+positive|low\\s+priority)\\b/i,
+  /\\b(system|assistant)\\s*:/i,
 ];
 
 function sanitizeField(value, maxLen = 512) {
@@ -2118,6 +2151,39 @@ async function injectionRegression(fixtures, classify) {
       {
         type: "p",
         text: "Let it read, rank, and summarize. Don't let it be the reason an alert disappears.",
+      },
+    ],
+    sources: [
+      {
+        href: "https://www.levelblue.com/blogs/spiderlabs-blog/rogue-ai-agents-in-your-socs-and-siems-indirect-prompt-injection-via-log-files",
+        label:
+          "LevelBlue SpiderLabs: Rogue AI agents in SOCs and SIEMs, prompt injection via logs (September 2025)",
+      },
+      {
+        href: "https://zendata.security/2025/09/06/llms-in-the-soc-value-risks-and-the-hidden-threat-of-adversarial-injections/",
+        label:
+          "ZENDATA: LLMs in the SOC and adversarial injections in log data (September 2025)",
+      },
+      {
+        href: "https://www.sygnia.co/blog/log-prompt-poisoning-xdr-ai-risks/",
+        label: "Sygnia: Prompt poisoning and injection risks in XDR AI summaries",
+      },
+      {
+        href: "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+        label: "OWASP LLM01:2025 Prompt Injection",
+      },
+      {
+        href: "https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/",
+        label: "OWASP LLM05:2025 Improper Output Handling",
+      },
+      {
+        href: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/",
+        label: "OWASP LLM06:2025 Excessive Agency",
+      },
+      {
+        href: "https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/",
+        label:
+          "Embrace The Red: ASCII Smuggler, hidden Unicode tag characters (January 2024)",
       },
     ],
   },

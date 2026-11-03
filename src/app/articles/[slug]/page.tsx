@@ -83,6 +83,27 @@ export default async function ArticlePage({ params }: Props) {
       <div className="mt-12 grid min-w-0 gap-10 lg:max-w-[68rem] lg:grid-cols-[minmax(0,42rem)_1fr] lg:gap-16">
         <div className="min-w-0 max-w-2xl">
           <ArticleBody blocks={article.body} />
+          {article.sources && article.sources.length > 0 ? (
+            <div className="mt-10 border-t border-border pt-8">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Sources
+              </h2>
+              <ul className="mt-4 space-y-3 text-[16.5px] leading-[1.75] text-foreground/85">
+                {article.sources.map((source) => (
+                  <li key={source.href} className="list-none">
+                    <a
+                      href={source.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-brand hover:underline"
+                    >
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
         <ArticleToc blocks={article.body} topic={topic} />
       </div>
