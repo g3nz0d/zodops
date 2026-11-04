@@ -6,6 +6,13 @@ export type CaseStudyBlock =
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
   | {
+      type: "code"
+      caption?: string
+      code: string
+      changedLines?: number[]
+      changedNote?: string
+    }
+  | {
       type: "table"
       headers: string[]
       rows: string[][]
@@ -101,7 +108,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "The answer was \"the warehouse is encrypted.\" True, and not the question. A nightly job copied name, SSN, MRN, date of birth, address, phone, email, and insurance member ID into the warehouse in clear text. Encryption at rest protected the disk. The database decrypted on read for every analyst, every data scientist, the platform admins, and now, the AI pilot's service account.",
+        text: "The answer was \"the warehouse is encrypted.\" True, and not the question. A nightly job copied name, Social Security number, medical record number, date of birth, address, phone, email, and insurance member ID into the warehouse in clear text. Encryption at rest protected the disk. The database decrypted on read for every analyst, every data scientist, the platform admins, and now, the AI pilot's service account.",
       },
       {
         type: "p",
@@ -174,7 +181,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "Vaultless tokenization generates tokens algorithmically where the data is processed, so there is no central lookup table of real values to steal or to bottleneck on. Two properties carried the analytics: the same input always produces the same token, so MRN still joins to MRN; and tokens keep the original format, so schemas and BI tools did not break.",
+        text: "Vaultless tokenization generates tokens with an algorithm where the data is processed. There is no central lookup table of real values to steal, or to bottleneck on. Two properties carried the analytics. The same input always produces the same token, so a medical record number still joins to a medical record number. And tokens keep the original format, so schemas and BI tools did not break.",
       },
       {
         type: "table",
@@ -283,6 +290,19 @@ export const caseStudies: CaseStudy[] = [
         text: "The AI row is what got the pilot approved. A fooled assistant still runs as its service account, and that account only ever receives nulls for identifiers.",
       },
       {
+        type: "code",
+        caption: "Detokenize policy — AI pilot",
+        changedLines: [3, 4, 5],
+        changedNote:
+          "marks what the assistant is allowed to see: nothing.",
+        code: `{
+  "role": "ai-assistant",
+  "ssn": "none",
+  "name": "none",
+  "dob": "none"
+}`,
+      },
+      {
         type: "h2",
         text: "What pushed back",
       },
@@ -372,7 +392,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "Employees had started using assistants faster than security could approve them. Some used the company's sanctioned enterprise assistant service. Many used personal accounts on public assistants, and nobody could say which ones, how often, or what data was going into them.",
+        text: "Employees had started using assistants faster than security could approve them. Some used the company's sanctioned enterprise assistant. Many used personal accounts on public assistants. Nobody could say which ones, how often, or what data was going into them.",
       },
       {
         type: "p",
@@ -421,6 +441,18 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "p",
         text: "**Treated credentials as their own class.** Credentials got the strictest rule: blocked everywhere, including in approved tools, with leaked keys handed off for rotation.",
+      },
+      {
+        type: "code",
+        caption: "DLP action — credentials",
+        changedLines: [3, 4],
+        changedNote:
+          "marks the rule that does not change by tenant: credentials are blocked everywhere.",
+        code: `{
+  "dataClass": "credentials",
+  "corporateTenant": "block",
+  "personalAccount": "block"
+}`,
       },
       {
         type: "h2",
@@ -518,11 +550,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "The platform team reviewed IAM policies carefully and treated the organization-level deny as a footnote. Member accounts could still leave the organization. Security services could still be turned off in an account that had drifted. And a migration weekend left AdministratorAccess attached to a deployment role on Monday morning.",
+        text: "The platform team reviewed IAM policies carefully — who can do what inside an account — and treated the organization-level deny as a footnote. Member accounts could still leave the organization. Security services could still be turned off in an account that had drifted. And a migration weekend left AdministratorAccess attached to a deployment role on Monday morning.",
       },
       {
         type: "p",
-        text: "The organization needed a ceiling that still held when someone attached a broad IAM policy, without pretending that ceiling was the whole perimeter around the data.",
+        text: "The organization needed a ceiling that still held when someone attached a broad IAM policy. It also needed to stop pretending that ceiling was the whole perimeter around the data.",
       },
       {
         type: "h2",
@@ -553,8 +585,37 @@ export const caseStudies: CaseStudy[] = [
         text: "**Left a named exception for security operators.** The SCP used an ArnNotLike condition so a SecurityAdmin role could still manage the services the deny was protecting. Everyone else hit the ceiling.",
       },
       {
+        type: "code",
+        caption: "SCP — SecurityAdmin exception",
+        changedLines: [5],
+        changedNote:
+          "marks the named role that can still operate logging. Everyone else hits the deny.",
+        code: `{
+  "Condition": {
+    "ArnNotLike": {
+      "aws:PrincipalArn":
+        "arn:aws:iam::*:role/SecurityAdmin"
+    }
+  }
+}`,
+      },
+      {
         type: "p",
         text: "**Paired SCPs with resource control policies on data accounts.** After we found a migration bucket that trusted an account outside the organization, I added RCPs so resource policies on supported services couldn't grant access to principals outside the organization.",
+      },
+      {
+        type: "code",
+        caption: "RCP — keep data inside the organization",
+        changedLines: [4],
+        changedNote:
+          "marks the condition a bucket policy cannot override.",
+        code: `{
+  "Condition": {
+    "StringNotEqualsIfExists": {
+      "aws:PrincipalOrgID": "o-xxxxxxxxxx"
+    }
+  }
+}`,
       },
       {
         type: "p",
@@ -656,11 +717,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "p",
-        text: "Owner looks like just another Azure RBAC role. At a subscription it is root for everything underneath it, including the right to grant roles to anyone else. User Access Administrator cannot change those resources directly, but it can assign itself Owner, so it is Owner with one extra step.",
+        text: "Owner looks like just another Azure role. At a subscription it is root for everything underneath it, including the right to grant roles to anyone else. User Access Administrator cannot change those resources directly. It can assign itself Owner. So it is Owner with one extra step.",
       },
       {
         type: "p",
-        text: "The tenant had standing assignments of both. Nobody had a complete list. A single-subscription CLI command had been treated as the inventory.",
+        text: "The tenant had standing assignments of both: access that was on all the time, with no request and no expiry. Nobody had a complete list. A command that only covered one subscription had been treated as the inventory.",
       },
       {
         type: "h2",
@@ -681,6 +742,15 @@ export const caseStudies: CaseStudy[] = [
       {
         type: "p",
         text: "**Inventoried every Enabled subscription in the tenant.** I looped az account list filtered to this tenant and Enabled subscriptions, then listed Owner and User Access Administrator with --all and --include-inherited. That surfaces assignments inherited from management groups without querying tenant root.",
+      },
+      {
+        type: "code",
+        caption: "Azure CLI — tenant-wide Owner inventory",
+        changedLines: [1, 2],
+        changedNote:
+          "marks inherited assignments and the two roles a single-subscription command would miss.",
+        code: `az role assignment list --all --include-inherited \\
+  --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='User Access Administrator']"`,
       },
       {
         type: "p",

@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { CodeBlock } from "@/components/code-block"
 import { InlineText } from "@/components/inline-text"
 import { TableBlock } from "@/components/table-block"
 import type { CaseStudyBlock } from "@/lib/work"
@@ -56,6 +57,17 @@ export function CaseStudyBody({ blocks }: { blocks: CaseStudyBlock[] }) {
                 </li>
               ))}
             </ul>
+          )
+        }
+        if (block.type === "code") {
+          return (
+            <CodeBlock
+              key={index}
+              caption={block.caption}
+              code={block.code}
+              changedLines={block.changedLines}
+              changedNote={block.changedNote}
+            />
           )
         }
         if (block.type === "table") {
