@@ -642,22 +642,30 @@ export const articles: Article[] = [
     slug: "scp-deny-is-the-perimeter",
     title: "The Deny Is the Perimeter",
     excerpt:
-      "SCPs set the ceiling that still holds when an IAM policy is wrong. Paired with resource control policies, they're how you draw a real boundary around your data.",
+      "The org-level deny still holds when someone attaches Admin for the weekend. It does not stop a bucket from trusting an account you don't own. Pair it with a cap on what resources can grant.",
     topic: "cloud-security",
     minutes: 8,
     date: "2026-04-21",
     body: [
       {
         type: "p",
-        text: "Most teams review IAM policies closely and treat the org-level deny as a footnote. That's backwards. An explicit deny in a service control policy overrides any allow in a member account, including that account's root user. When someone attaches AdministratorAccess for a weekend migration and forgets to take it off, the SCP is what still holds.",
+        text: "Most teams review who can do what inside an account, and treat the organization-wide deny as a footnote. That's backwards.",
       },
       {
         type: "p",
-        text: "That insight is real. The mistake is stopping there. SCPs are the outer bound for identities inside your organization, not usually the bound that decides a breach. Effective permissions are the overlap of SCPs, IAM policies, permission boundaries, and session policies. Most SCPs are broad guardrails — deny unused regions, deny disabling CloudTrail — so for a compromised role, its IAM policy is still what decides the blast radius.",
+        text: "A service control policy, or SCP, is a rule you attach to the AWS organization. An explicit deny in it overrides any allow in a member account, including that account's root user. When someone attaches AdministratorAccess for a weekend migration and forgets to take it off, the SCP is what still holds.",
       },
       {
         type: "p",
-        text: "And SCPs alone aren't a perimeter around your data. They don't stop a bucket or key policy from granting access to an account outside the organization. AWS's data-perimeter model pairs them with resource control policies, which cap what those resource policies can grant, and with VPC endpoint policies on the network path.",
+        text: "That insight is real. The mistake is stopping there.",
+      },
+      {
+        type: "p",
+        text: "An SCP is the outer bound for identities you own. It is not usually the bound that decides a breach. What a role can actually do is the overlap of several policies: the SCP, the IAM policy on the role, any permission boundary, and any session policy. Most SCPs are broad guardrails. They deny unused regions. They deny disabling CloudTrail. For a compromised role, its IAM policy is still what decides how far an attacker can go.",
+      },
+      {
+        type: "p",
+        text: "And an SCP is not a perimeter around your data. A bucket policy or a KMS key policy can grant access to an account outside the organization. The SCP never sees that grant. AWS's data-perimeter model pairs SCPs with resource control policies, which cap what those resource policies can grant, and with VPC endpoint policies on the network path.",
       },
       {
         type: "h2",
@@ -673,7 +681,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Separately, a bucket policy from the same migration trusts an account that isn't in the organization. The SCP never sees that grant. Identity policies constrain principals you own. Resource policies can invite principals you don't.",
+        text: "Separately, a bucket policy from the same migration trusts an account that isn't in the organization. The SCP never sees that grant. Identity policies constrain the roles you own. Resource policies — a bucket policy, a key policy — can invite accounts you don't.",
       },
       {
         type: "h2",
@@ -681,7 +689,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "An SCP never grants access. It sets the maximum an IAM principal in a member account is allowed to have. The actual permission is the intersection: the SCP allow-list, the identity policy, any permission boundary, any session policy, and — if the call is to a resource with its own policy — that resource policy too.",
+        text: "An SCP never grants access. It only sets a ceiling: the most a role in a member account is allowed to have. The actual permission is whatever is left after every layer agrees. That usually means the SCP, the IAM policy on the role, any permission boundary, and any session policy. If the call is to a bucket or a key that has its own policy, that policy counts too.",
       },
       {
         type: "p",
@@ -689,7 +697,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Write SCPs for things you never want anyone in a member account to do. Leave the day-to-day blast radius to IAM, and review both.",
+        text: "Write SCPs for things you never want anyone in a member account to do. Leave the day-to-day blast radius — what a compromised role can actually read or change — to IAM. Review both.",
       },
       {
         type: "code",
@@ -736,18 +744,18 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Two gaps belong in every write-up of \"the real bound,\" because they surprise people who treated the SCP as a perimeter:",
+        text: "Two gaps surprise people who treated the SCP as a perimeter:",
       },
       {
         type: "ul",
         items: [
-          "SCPs do not apply to the management account. Identities there, including that account's root, are outside the ceiling. That's one reason AWS tells you not to run workloads in it.",
+          "SCPs do not apply to the management account. Identities there, including that account's root, sit outside the ceiling. That's one reason AWS tells you not to run workloads in it.",
           "SCPs do not apply to service-linked roles. Those roles exist so AWS services can do their job in your account, and the SCP can't clip them.",
         ],
       },
       {
         type: "p",
-        text: "The third gap is the one that turns an SCP into a false perimeter: resource-based policies. A bucket policy, a KMS key policy, or an SQS queue policy can grant an outside account access even when every identity in your organization is tightly scoped. The SCP never evaluates that grant. It only evaluates principals in member accounts.",
+        text: "The third gap is the one that turns an SCP into a false perimeter: resource-based policies. A bucket policy, a KMS key policy, or an SQS queue policy can grant an outside account access even when every identity in your organization is tightly scoped. The SCP never evaluates that grant. It only evaluates roles and users in your member accounts.",
       },
       {
         type: "h2",
@@ -755,7 +763,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Resource control policies are the other half of the identity bound. An SCP caps what principals inside the organization can do. An RCP caps what a resource in a member account can be talked into granting, including to principals outside the organization. No RCP grants access; like an SCP, it only sets a ceiling.",
+        text: "A resource control policy, or RCP, is the other half. An SCP caps what identities inside the organization can do. An RCP caps what a resource in a member account can be talked into granting, including to identities outside the organization. An RCP never grants access. Like an SCP, it only sets a ceiling.",
       },
       {
         type: "p",
@@ -763,7 +771,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "An RCP that keeps S3 and KMS inside the organization looks like this. o-xxxxxxxxxx is a placeholder for your organization ID. The aws:PrincipalIsAWSService exception is there so AWS services can still do their job; test it against backup, logging, and deployment paths before you attach it widely.",
+        text: "An RCP that keeps S3 and KMS inside the organization looks like this. o-xxxxxxxxxx is a placeholder for your organization ID. The aws:PrincipalIsAWSService exception is there so AWS services can still do their job. Test it against backup, logging, and deployment paths before you attach it widely.",
       },
       {
         type: "code",
@@ -790,7 +798,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "RCPs have the same honesty requirements as SCPs. They don't apply to the management account. They don't apply to service-linked roles. They don't apply to AWS managed KMS keys. And they only cover a specific list of services — S3, KMS, Secrets Manager, SQS, STS, ECR, and a growing set of others — not every resource in the account. An RCP is not a blanket \"no external access\" switch.",
+        text: "RCPs have the same limits as SCPs. They don't apply to the management account. They don't apply to service-linked roles. They don't apply to AWS managed KMS keys. And they only cover a specific list of services — S3, KMS, Secrets Manager, SQS, STS, ECR, and a growing set of others — not every resource in the account. An RCP is not a blanket \"no external access\" switch.",
       },
       {
         type: "p",
@@ -805,7 +813,7 @@ export const articles: Article[] = [
         items: [
           "Review SCPs with the same care as IAM policies. They're the ceiling that still holds when an identity policy is wrong.",
           "Write SCPs as guardrails for things you never want a member account to do: leave the org, disable logging, use regions you don't operate in. Don't try to encode every least-privilege decision in them.",
-          "Keep treating IAM as the control that decides blast radius for a compromised role. Permission boundaries and session policies sit in that same intersection.",
+          "Keep treating IAM as the control that decides blast radius for a compromised role. Permission boundaries and session policies sit in that same stack.",
           "Add RCPs for the data stores that shouldn't be shareable outside the organization, starting with S3 and KMS.",
           "Don't run workloads in the management account. SCPs and RCPs don't apply there.",
           "Account for service-linked roles. Neither policy type constrains them.",
@@ -831,22 +839,30 @@ export const articles: Article[] = [
     slug: "azure-owner-means-root",
     title: "Owner Means Root",
     excerpt:
-      "Owner and User Access Administrator are root for everything beneath them, and Global Administrator is one setting from both. The fix is removing standing access: PIM for people, tighter controls for the identities PIM can't cover.",
+      "Owner is root for everything beneath it. User Access Administrator can become Owner in one step. Global Administrator is one setting from both. Take standing access off people, and tighten the pipeline identities PIM can't cover.",
     topic: "cloud-security",
     minutes: 9,
     date: "2026-06-09",
     body: [
       {
         type: "p",
-        text: "Owner looks like just another Azure RBAC role. At a subscription, it isn't. It has full control of every resource underneath it, including the right to grant roles to anyone else. User Access Administrator can't change those resources directly, but it can assign itself Owner, so it's Owner with one extra step. Treating them as equivalent is correct, and it's a point a lot of teams miss.",
+        text: "Owner looks like just another Azure role. At a subscription, it isn't.",
       },
       {
         type: "p",
-        text: "The control is removing standing access. Privileged Identity Management turns a permanent assignment into a time-limited, just-in-time activation with approval, an audit trail, and — if you set it that way — phishing-resistant MFA. That's the right shape for people.",
+        text: "Owner has full control of every resource underneath it. It can also grant roles to anyone else. That is root for that scope.",
       },
       {
         type: "p",
-        text: "It is not the whole fix. \"Root\" depends on scope. Owner doesn't control Entra ID, but several Entra roles can still reach Azure Owner. Contributor is privileged too, and on a compute resource it can become Owner. And the riskiest Owners in most tenants aren't people: they're service principals and managed identities in CI/CD pipelines, which can't be made PIM-eligible.",
+        text: "User Access Administrator cannot change those resources directly. It can assign itself Owner. So it is Owner with one extra step. Treating the two as equivalent is correct, and a lot of teams miss that.",
+      },
+      {
+        type: "p",
+        text: "The control is removing standing access: access that is on all the time, with no request and no expiry. Privileged Identity Management, or PIM, turns a permanent assignment into a time-limited, just-in-time activation. You can require approval, keep an audit trail, and — if you set it that way — demand phishing-resistant MFA. That's the right shape for people.",
+      },
+      {
+        type: "p",
+        text: "It is not the whole fix. \"Root\" depends on where the assignment sits. Owner does not control Entra ID, the directory that holds users and admin roles, but several Entra roles can still reach Azure Owner. Contributor is privileged too. On a compute resource it can become Owner. And the riskiest Owners in most tenants aren't people. They're service principals and managed identities in CI/CD pipelines. Those identities can't be made PIM-eligible.",
       },
       {
         type: "h2",
@@ -854,11 +870,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "A subscription has four standing Owners. One is a platform engineer who needed it during an outage two years ago. One is a vendor's deployment identity — which may not even live in your tenant. One is a pipeline service principal with a secret that lives in a variable group. One is a Global Administrator who flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back.",
+        text: "A subscription has four standing Owners. One is a platform engineer who needed it during an outage two years ago. One is a vendor's deployment identity, which may not even live in your tenant. One is a pipeline service principal with a secret that lives in a variable group. One is a Global Administrator who flipped \"Access management for Azure resources\" to Yes during a tenant cleanup and never flipped it back.",
       },
       {
         type: "p",
-        text: "None of those four think of themselves as root. Three of them aren't even people. The Activity Log will show some of the assignments if you look. A single-subscription CLI command will miss most of the rest.",
+        text: "None of those four think of themselves as root. Three of them aren't even people. The Activity Log will show some of the assignments if you look. A command that only covers one subscription will miss most of the rest.",
       },
       {
         type: "h2",
@@ -870,11 +886,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The true top of the hierarchy is in Entra ID, not Azure RBAC. A Global Administrator can turn on elevate access — the \"Access management for Azure resources\" setting — and receive User Access Administrator at tenant root scope (/). From there they can assign themselves Owner on every subscription. That is one setting, not a click you can shrug off. An article about root equivalents that skips this path is describing a smaller system than the one you run.",
+        text: "The true top of the hierarchy is in Entra ID, not in Azure roles. A Global Administrator can turn on elevate access — the \"Access management for Azure resources\" setting — and receive User Access Administrator at tenant root scope (/). From there they can assign themselves Owner on every subscription. That is one setting, not a click you can shrug off. Skip this path and you are describing a smaller system than the one you run.",
       },
       {
         type: "p",
-        text: "Owner still isn't AWS root. It cannot manage users, groups, or Entra roles. Those are a separate control plane. A standing Owner who also holds a privileged Entra role is a different problem than either assignment alone.",
+        text: "Owner still isn't AWS root. It cannot manage users, groups, or Entra roles. Those live on a separate control plane. A standing Owner who also holds a privileged Entra role is a different problem than either assignment alone.",
       },
       {
         type: "h2",
@@ -882,11 +898,20 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "You don't need Owner in Azure to become Owner in Azure.",
+        text: "You don't need an Owner assignment in Azure to become Owner in Azure.",
       },
       {
         type: "p",
-        text: "Privileged Role Administrator can grant Global Administrator. Global Administrator can elevate access. Elevate access is User Access Administrator at /. User Access Administrator can assign Owner. That chain is four steps, and the first one never touches Azure RBAC.",
+        text: "The chain is four steps, and the first one never touches Azure roles:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Privileged Role Administrator can grant Global Administrator.",
+          "Global Administrator can turn on elevate access.",
+          "Elevate access is User Access Administrator at tenant root (/).",
+          "User Access Administrator can assign Owner.",
+        ],
       },
       {
         type: "p",
@@ -894,7 +919,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "If you only inventory Azure RBAC, you will miss both paths.",
+        text: "If you only inventory Azure role assignments, you will miss both paths.",
       },
       {
         type: "h2",
@@ -906,11 +931,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "It can list and regenerate storage account keys. That is data-plane access only when shared-key authorization is enabled on the account. Disable Allow storage account key access and listing the keys no longer opens the account; Microsoft Entra authorization is what remains. If shared-key is still on, Contributor on the storage account is a reader of everything in it.",
+        text: "It can list and regenerate storage account keys. Those keys open the data only when shared-key authorization is still enabled on the account. Turn off Allow storage account key access and listing the keys no longer opens the account. Microsoft Entra is what remains. If shared-key is still on, Contributor on the storage account can read everything in it.",
       },
       {
         type: "p",
-        text: "Contributor can also become Owner. If a VM's managed identity holds Owner, anyone who can run commands on that VM — Contributor includes Microsoft.Compute/virtualMachines/runCommand/action — can request a token for that identity and act as Owner. The same pattern applies to Function Apps, Logic Apps, and Automation accounts: control of the compute is control of whatever identity it presents.",
+        text: "Contributor can also become Owner. If a VM's managed identity holds Owner, anyone who can run commands on that VM — Contributor includes Microsoft.Compute/virtualMachines/runCommand/action — can request a token for that identity and act as Owner. The same pattern applies to Function Apps, Logic Apps, and Automation accounts. Control of the compute is control of whatever identity it presents.",
       },
       {
         type: "p",
@@ -922,7 +947,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "For human identities, standing Owner and User Access Administrator should become eligible assignments. Activation is the control: whether someone has to approve, how long the elevation lasts, whether it writes an audit trail you actually read, and what kind of MFA it demands.",
+        text: "For people, standing Owner and User Access Administrator should become eligible assignments: they can ask for the role, they do not hold it all day. Activation is the control. Does someone have to approve? How long does the elevation last? Does it write an audit trail you actually read? What kind of MFA does it demand?",
       },
       {
         type: "p",
@@ -930,7 +955,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "PIM requires Entra ID P2 or Entra ID Governance. Without one of those, the portal will still let you create permanent assignments, and \"we use PIM\" becomes a sentence with no mechanism behind it.",
+        text: "PIM requires Entra ID P2 or Entra ID Governance. Without one of those, the portal will still let you create permanent assignments. \"We use PIM\" becomes a sentence with no mechanism behind it.",
       },
       {
         type: "p",
@@ -942,7 +967,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "You can't make a service principal or managed identity eligible for an Azure role. They can't complete an activation flow. The common pattern is worse than that limitation: a pipeline identity with standing Owner, often authenticated with a client secret rather than workload identity federation.",
+        text: "You can't make a service principal or managed identity eligible for an Azure role. They can't complete an activation flow. The common pattern is worse than that limit: a pipeline identity with standing Owner, often authenticated with a client secret rather than workload identity federation.",
       },
       {
         type: "p",
@@ -964,11 +989,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "az role assignment list --all lists assignments in the current subscription and below it. It does not walk the tenant. A command that only covers one subscription will miss every other one. Limit the loop to enabled subscriptions in the tenant you're actually signed into; az account list otherwise returns every tenant you've ever logged into, plus disabled subscriptions.",
+        text: "az role assignment list --all lists assignments in the current subscription and below it. It does not walk the whole tenant. A command that only covers one subscription will miss every other one. Limit the loop to enabled subscriptions in the tenant you're actually signed into. Without that filter, az account list returns every tenant you've ever logged into, plus disabled subscriptions.",
       },
       {
         type: "p",
-        text: "Don't query tenant root separately. az role assignment list --scope \"/\" only works if you've turned on elevate access, and for everyone else it errors or returns nothing, which looks like \"no root assignments.\" --include-inherited on each subscription already surfaces assignments inherited from root and management groups.",
+        text: "Don't query tenant root separately. az role assignment list --scope \"/\" only works if you've turned on elevate access. For everyone else it errors or returns nothing, which looks like \"no root assignments.\" --include-inherited on each subscription already surfaces assignments inherited from root and from management groups.",
       },
       {
         type: "code",
@@ -1049,7 +1074,11 @@ AND
       },
       {
         type: "p",
-        text: "And clean up leftover elevate access. Deactivating a PIM-eligible Global Administrator role does not flip the setting back. The User Access Administrator assignment at / stays until someone sets Access management for Azure resources to No. Microsoft Entra ID > Manage > Properties shows a banner when users still have elevated access — \"You have X users with elevated access\" — with a link to remove them. The same events land in Microsoft Entra audit logs under the Azure RBAC (Elevated Access) service, and Microsoft Sentinel ships an Azure RBAC (Elevate Access) analytics rule template that watches for them. Use all three: the banner for leftovers, the audit log for history, the Sentinel rule for the next time someone flips the setting.",
+        text: "And clean up leftover elevate access. Deactivating a PIM-eligible Global Administrator role does not flip the setting back. The User Access Administrator assignment at / stays until someone sets Access management for Azure resources to No.",
+      },
+      {
+        type: "p",
+        text: "Microsoft Entra ID > Manage > Properties shows a banner when users still have elevated access — \"You have X users with elevated access\" — with a link to remove them. The same events land in Microsoft Entra audit logs under the Azure RBAC (Elevated Access) service. Microsoft Sentinel ships an Azure RBAC (Elevate Access) analytics rule template that watches for them. Use all three: the banner for leftovers, the audit log for history, the Sentinel rule for the next time someone flips the setting.",
       },
       {
         type: "h2",
@@ -1079,7 +1108,7 @@ AND
       },
       {
         type: "p",
-        text: "Owner and User Access Administrator are root for everything beneath them. Global Administrator is one setting from both. Contributor is the privileged role that doesn't look like one, and several Entra roles never need an Azure assignment to get there.",
+        text: "Owner and User Access Administrator are root for everything beneath them. Global Administrator is one setting from both. Contributor is the privileged role that doesn't look like one. Several Entra roles never need an Azure assignment to get there.",
       },
       {
         type: "p",
@@ -1883,7 +1912,7 @@ AND
       },
       {
         type: "p",
-        text: "This isn't theoretical. In September 2025, LevelBlue's SpiderLabs showed it against three ordinary log sources. Text planted in a web request's user-agent, in the username of a failed SSH login, and in the account name of a Windows 4625 failed-logon event changed what an AI summarizer reported. The source IP came back as one the researcher chose, and a workstation was renamed PAYROLL.",
+        text: "This isn't theoretical. In September 2025, LevelBlue's SpiderLabs showed it against three ordinary log sources: a web request's user-agent, the username of a failed SSH login, and the account name on a Windows failed-logon event (event 4625). Text planted in those fields changed what an AI summarizer reported. The source IP came back as one the researcher chose. A workstation was renamed PAYROLL.",
       },
       {
         type: "p",
@@ -1891,7 +1920,7 @@ AND
       },
       {
         type: "p",
-        text: "The tricks also move between attacks on models and attacks on filters. In September 2026, Microsoft reported a high-volume phishing campaign that spent about three months inserting an invisible Unicode tag character into words like \"funding,\" so keyword matches on those words failed while readers saw nothing odd. That campaign went after filters, not models, but the technique came from prompt injection against AI assistants. Microsoft's advice applies to both: normalize before you match, and treat tag characters as a strong anomaly signal.",
+        text: "The same tricks also show up against filters, not just models. In September 2026, Microsoft reported a high-volume phishing campaign that spent about three months inserting an invisible Unicode tag character into words like \"funding.\" Keyword matches on those words failed. Readers saw nothing odd. That campaign went after filters, but the technique came from prompt injection against AI assistants. Microsoft's advice applies to both: normalize the text before you match on it, and treat tag characters as a strong anomaly signal.",
       },
       {
         type: "h2",
@@ -1913,7 +1942,7 @@ AND
       },
       {
         type: "p",
-        text: "Some of it will be invisible. The Unicode tag block, U+E0000 to U+E007F, mirrors ASCII, so a whole sentence can be written in characters that render as nothing on screen, and some models still read them. This is usually called ASCII smuggling. Zero-width and bidirectional control characters do related damage: they hide or reorder text for the human, or split a word so a keyword match misses it.",
+        text: "Some of it will be invisible. Unicode has a block of tag characters, U+E0000 to U+E007F, that mirrors ordinary ASCII. A whole sentence can be written in those characters. It renders as nothing on screen. Some models still read it. This is usually called ASCII smuggling. Zero-width and bidirectional control characters do related damage. They hide or reorder text for the human, or split a word so a keyword match misses it.",
       },
       {
         type: "h2",
@@ -1921,15 +1950,15 @@ AND
       },
       {
         type: "p",
-        text: "The rule from Who Gets to Say Yes applies directly: an LLM can inform a decision, but it shouldn't be the only thing standing between an alert and a closed ticket.",
+        text: "The rule from Who Gets to Say Yes applies directly: a language model can inform a decision. It shouldn't be the only thing standing between an alert and a closed ticket.",
       },
       {
         type: "p",
-        text: "The cleanest way to enforce that is asymmetric trust. The model is allowed to raise an alert's priority on its own. It is never allowed to lower it below a floor set by deterministic logic. Escalating a harmless alert costs an analyst a few minutes. De-escalating a real one costs you the incident.",
+        text: "The cleanest way to enforce that is asymmetric trust. The model may raise an alert's priority on its own. It may never lower it below a floor set by ordinary code — checks that don't ask the model anything. Escalating a harmless alert costs an analyst a few minutes. De-escalating a real one costs you the incident.",
       },
       {
         type: "p",
-        text: "In practice, the model produces a structured verdict, and a deterministic step decides what happens. This is the kind of logic you'd put in an n8n Code node or your platform's equivalent:",
+        text: "In practice, the model returns a structured verdict: benign, suspicious, or malicious. A separate step, written in ordinary code, decides what happens next. This is the kind of logic you'd put in an n8n Code node or your platform's equivalent:",
       },
       {
         type: "code",
@@ -1972,9 +2001,9 @@ function gate(alert, model, fieldFlags) {
         type: "ul",
         items: [
           "Auto-close is an allowlist. Only specific, well-understood rules are eligible, no matter what the model says.",
-          "The model is one vote, not the vote. It must agree with every deterministic check.",
-          "The model's output is an enum, not free text. Request structured output with a fixed set of verdicts, and treat anything unparseable as malicious.",
-          "The model never picks the next action. It returns a verdict; the workflow decides which branch runs. Don't give a triage step tools that can close tickets, suppress rules, or update allowlists.",
+          "The model is one vote, not the vote. It must agree with every check that doesn't ask the model.",
+          "The model's output is a fixed set of verdicts, not free text. Treat anything you can't parse as malicious.",
+          "The model never picks the next action. It returns a verdict. The workflow decides which branch runs. Don't give a triage step tools that can close tickets, suppress rules, or update allowlists.",
           "An injection attempt is itself a signal. Someone who plants instructions in your logs is telling you something. Raise priority instead of just stripping the text.",
           "The model's own injection_observed flag counts too. Like everything else the model says, it can only push an alert toward a human, never away from one.",
         ],
@@ -2013,11 +2042,11 @@ function sanitizeField(value, maxLen = 512) {
       },
       {
         type: "p",
-        text: "Be clear-eyed about what this is. Pattern matching is a tripwire, not a wall. A determined attacker will phrase around any regex. Its job is to catch the cheap attempts and to feed the injectionSuspected signal into the gate, where it blocks auto-close and raises priority.",
+        text: "Be clear-eyed about what this is. Pattern matching is a tripwire, not a wall. A determined attacker will phrase around any regex. Its job is to catch the cheap attempts and to feed the injectionSuspected signal into the gate. That is what blocks auto-close and raises priority.",
       },
       {
         type: "p",
-        text: "Mark untrusted data clearly in the prompt. Put your instructions first, then pass alert fields as labeled data inside explicit boundaries, and tell the model what that data is:",
+        text: "Mark untrusted data clearly in the prompt. Put your instructions first. Then pass the alert fields as labeled data inside explicit boundaries, and tell the model what that data is:",
       },
       {
         type: "code",
@@ -2036,7 +2065,7 @@ Respond only with JSON: {"verdict": "benign" | "suspicious" | "malicious",
       },
       {
         type: "p",
-        text: "Pass fields as JSON rather than pasting them into prose, so the boundary between your words and theirs stays visible. Marking where untrusted input begins and ends helps, and it's measurable. In Microsoft's spotlighting research, transforming untrusted input so the model can tell where it came from cut attack success from over 50% to under 2% in tests on GPT-family models. Under 2% is not zero, and an attacker gets a try in every field you pass. That's why the gate above doesn't trust the verdict alone.",
+        text: "Pass fields as JSON rather than pasting them into prose, so the boundary between your words and theirs stays visible. Marking where untrusted input begins and ends helps, and it's measurable. In Microsoft's spotlighting research, transforming untrusted input so the model can tell where it came from cut attack success from over 50% to under 2% in tests on GPT-family models. Under 2% is not zero. An attacker gets a try in every field you pass. That's why the gate above doesn't trust the verdict alone.",
       },
       {
         type: "p",
@@ -2052,7 +2081,7 @@ Respond only with JSON: {"verdict": "benign" | "suspicious" | "malicious",
       },
       {
         type: "p",
-        text: "Sample a fixed percentage of auto-closed alerts for human review. Pick them with a keyed hash of the alert ID instead of Math.random(). The selection is reproducible when someone audits it later, and without the key, nobody can predict which closes a human will see:",
+        text: "Sample a fixed percentage of auto-closed alerts for human review. Pick them with a keyed hash of the alert ID instead of Math.random(). The selection is reproducible when someone audits it later. Without the key, nobody can predict which closes a human will see:",
       },
       {
         type: "code",
@@ -2117,7 +2146,7 @@ async function injectionRegression(fixtures, classify) {
       },
       {
         type: "p",
-        text: "Here classify is a function that calls your actual triage step. Any entry in failures means a payload talked the model down. Model output varies between runs, so set temperature to 0 where your provider allows it, or run each case several times and fail on any downgrade. Grow the payload list over time with variations: other languages, encodings, hidden characters, and text that sounds like legitimate context rather than commands. Then run the same seeded alerts through the full workflow and confirm the gate still routes them to an analyst, even when the model gets fooled.",
+        text: "Here classify is a function that calls your actual triage step. Any entry in failures means a payload talked the model down. Model output varies between runs, so set temperature to 0 where your provider allows it, or run each case several times and fail on any downgrade. Grow the payload list over time: other languages, encodings, hidden characters, and text that sounds like legitimate context rather than commands. Then run the same seeded alerts through the full workflow. Confirm the gate still routes them to an analyst, even when the model gets fooled.",
       },
       {
         type: "h2",
@@ -2125,7 +2154,15 @@ async function injectionRegression(fixtures, classify) {
       },
       {
         type: "p",
-        text: "In the 2026 OWASP Top 10 for LLM Applications, this is LLM01, Prompt Injection, in its indirect form: the instruction arrives inside content the model was asked to process. Letting the model's verdict close tickets on its own is LLM03, Excessive Agency. In the OWASP Top 10 for Agentic Applications, a triage agent talked into closing a real attack is ASI01, Agent Goal Hijack.",
+        text: "In the 2026 lists, this is not a new class of bug. It is three named items in one workflow:",
+      },
+      {
+        type: "ul",
+        items: [
+          "LLM01 Prompt Injection, in its indirect form: the instruction arrives inside content the model was asked to process.",
+          "LLM03 Excessive Agency: the model's verdict is allowed to close tickets on its own.",
+          "ASI01 Agent Goal Hijack, from the OWASP Top 10 for Agentic Applications: a triage agent is talked into closing a real attack.",
+        ],
       },
       {
         type: "h2",
@@ -2135,8 +2172,8 @@ async function injectionRegression(fixtures, classify) {
         type: "ul",
         items: [
           "Inventory attacker-controllable fields in every alert source your LLM step reads.",
-          "Use asymmetric trust: the model may raise priority on its own, never lower it below a deterministic floor.",
-          "Keep auto-close on an allowlist of specific rules, gated by deterministic checks the model can't override.",
+          "Use asymmetric trust: the model may raise priority on its own, never lower it below a floor set by ordinary code.",
+          "Keep auto-close on an allowlist of specific rules, gated by checks the model can't override.",
           "Require structured output with a fixed set of verdicts; treat anything unparseable as malicious.",
           "Never let the triage model choose actions or hold tools that close, suppress, or allowlist.",
           "Normalize before you match: strip hidden characters, normalize Unicode, and truncate attacker-controlled fields before the model or any filter sees them.",
