@@ -248,6 +248,9 @@ export const articles: Article[] = [
       {
         type: "code",
         caption: "From any terminal with dig, using your domain in place of example.com",
+        changedLines: [2, 5, 8],
+        changedNote:
+          "marks the three records that should come back.",
         code: `dig +short TXT example.com
 "v=spf1 -all"
 
