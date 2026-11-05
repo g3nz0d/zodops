@@ -158,6 +158,150 @@ export const principles: Principle[] = [
 
 export const articles: Article[] = [
   {
+    slug: "parked-not-protected",
+    title: "Parked, Not Protected",
+    excerpt:
+      "A domain that never sends email can still be used to send phishing. Three DNS records tell every mail server to reject anything that claims to come from it.",
+    topic: "field-notes",
+    minutes: 4,
+    date: "2026-11-04",
+    fieldNotes: true,
+    body: [
+      {
+        type: "p",
+        text: "The short version: a domain you own but don't use for email can still be impersonated. Three DNS records tell receiving mail servers to reject anything that claims to come from it. It takes about five minutes per domain.",
+      },
+      {
+        type: "h2",
+        text: "Why parked domains get abused",
+      },
+      {
+        type: "p",
+        text: "Email doesn't check, on its own, who is allowed to use a domain in the From line. Receiving servers look that up in DNS. SPF lists the servers allowed to send for a domain. DMARC tells receivers what to do when a message fails those checks. If neither record exists, the receiver has no instruction from you and decides for itself.",
+      },
+      {
+        type: "p",
+        text: "Parked domains, typo domains, and old campaign or product domains carry your brand, and nobody is watching them. That is exactly what makes them useful to someone sending phishing.",
+      },
+      {
+        type: "h2",
+        text: "The three records",
+      },
+      {
+        type: "p",
+        text: "For any domain that should never send or receive email, add these at your DNS provider. In the Name column, @ means the domain itself.",
+      },
+      {
+        type: "table",
+        headers: ["Type", "Name", "Value", "What it tells the world"],
+        rows: [
+          ["TXT", "@", "`v=spf1 -all`", "No server is allowed to send email as this domain"],
+          ["TXT", "_dmarc", "`v=DMARC1; p=reject;`", "Reject any message that fails the checks"],
+          ["MX", "@", "`0 .`", "This domain accepts no email (a \"null MX\")"],
+        ],
+      },
+      {
+        type: "p",
+        text: "These are the same records the UK's National Cyber Security Centre publishes for parked public-sector domains, and they match the anti-abuse group M3AAWG's best practice for parked domains.",
+      },
+      {
+        type: "ul",
+        items: [
+          "SPF with only -all authorizes no sending servers at all.",
+          "DMARC with p=reject asks receivers to reject failing mail. With no sp= tag, the same policy applies to subdomains, so spoofed mail from any subdomain fails too.",
+          "The null MX record, defined in RFC 7505, says the domain accepts no email. Without it, a sender trying to deliver mail to the domain may fall back to its web server's address.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Want to see who is trying?",
+      },
+      {
+        type: "p",
+        text: "Add a report address to the DMARC record, for example `v=DMARC1; p=reject; rua=mailto:dmarc@example.com`. Receivers that support reporting send daily summaries of mail that used your domain, including the mail they rejected.",
+      },
+      {
+        type: "p",
+        text: "One catch: if the report address is on a different domain from the one you are protecting, that other domain has to publish a small authorization record, or the reports are not sent. A DMARC reporting service sets this up for you.",
+      },
+      {
+        type: "h2",
+        text: "Find every domain you own",
+      },
+      {
+        type: "p",
+        text: "The records are the easy part. The hard part is the list.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Export the domain list from every registrar account. Larger companies often have several, opened by different teams.",
+          "Ask finance for domain renewal charges. They surface registrar accounts nobody remembers.",
+          "Search Certificate Transparency logs, for example at crt.sh, for your brand and product names. This only finds domains that have had a TLS certificate.",
+          "Include acquisitions, retired product names, campaign sites, and the typo domains you registered defensively.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Check that it worked",
+      },
+      {
+        type: "code",
+        caption: "From any terminal with dig, using your domain in place of example.com",
+        code: `dig +short TXT example.com
+"v=spf1 -all"
+
+dig +short TXT _dmarc.example.com
+"v=DMARC1; p=reject;"
+
+dig +short MX example.com
+0 .`,
+      },
+      {
+        type: "p",
+        text: "On Windows, `nslookup -type=TXT example.com` and `nslookup -type=MX example.com` give the same answers.",
+      },
+      {
+        type: "h2",
+        text: "When not to do this",
+      },
+      {
+        type: "ul",
+        items: [
+          "Anything sends mail as the domain: Google Workspace, Microsoft 365, a marketing platform, a ticketing system, or password-reset emails from an app. p=reject blocks those messages.",
+          "The domain receives mail. The null MX record makes inbound mail fail.",
+          "You are not sure. Start with p=none and a report address, read the reports for a few weeks, then move to p=reject.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "The takeaway",
+      },
+      {
+        type: "p",
+        text: "A domain you are not using is still a domain someone else can use. Three records, five minutes, and it stops being an easy option.",
+      },
+    ],
+    sources: [
+      {
+        href: "https://www.ncsc.gov.uk/blog-post/protecting-parked-domains",
+        label: "UK National Cyber Security Centre: Protecting parked domains",
+      },
+      {
+        href: "https://m3aawg.org/M3AAWG-Protecting-Parked-Domains-BCP-update-2022-06",
+        label: "M3AAWG: Protecting Parked Domains best common practices (2022 update)",
+      },
+      {
+        href: "https://www.rfc-editor.org/rfc/rfc7489",
+        label: "RFC 7489: Domain-based Message Authentication, Reporting, and Conformance (DMARC)",
+      },
+      {
+        href: "https://www.rfc-editor.org/rfc/rfc7505",
+        label: "RFC 7505: A \"Null MX\" No Service Resource Record for Domains That Accept No Mail",
+      },
+    ],
+  },
+  {
     slug: "the-package-doesnt-exist-yet",
     title: "The Package Doesn't Exist Yet",
     excerpt:
