@@ -69,16 +69,9 @@ export default async function ArticlePage({ params }: Props) {
       <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.5rem] sm:leading-tight">
         {article.title}
       </h1>
-      <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-muted-foreground">
+      <p className="mt-4 max-w-2xl whitespace-pre-line text-[17px] leading-relaxed text-muted-foreground">
         {article.excerpt}
       </p>
-      {article.fieldNotes ? (
-        <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground/80 italic">
-          Field Notes: working through something still being figured out,
-          not settled guidance. Read it as one practitioner&rsquo;s
-          playbook, and adapt freely.
-        </p>
-      ) : null}
 
       <div className="mt-12 grid min-w-0 gap-10 lg:max-w-[68rem] lg:grid-cols-[minmax(0,42rem)_1fr] lg:gap-16">
         <div className="min-w-0 max-w-2xl">

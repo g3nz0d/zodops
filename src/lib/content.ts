@@ -161,16 +161,12 @@ export const articles: Article[] = [
     slug: "parked-not-protected",
     title: "Parked, Not Protected",
     excerpt:
-      "A domain that never sends email can still be used to send phishing. Three DNS records tell every mail server to reject anything that claims to come from it.",
+      "A domain that never sends email can still be used to send phishing.\nThree DNS records tell every mail server to reject anything that claims to come from it.",
     topic: "field-notes",
     minutes: 4,
     date: "2026-11-04",
     fieldNotes: true,
     body: [
-      {
-        type: "p",
-        text: "The short version: a domain you own but don't use for email can still be impersonated. Three DNS records tell receiving mail servers to reject anything that claims to come from it. It takes about five minutes per domain.",
-      },
       {
         type: "h2",
         text: "Why parked domains get abused",
