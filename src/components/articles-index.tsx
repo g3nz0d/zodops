@@ -5,8 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { ArticleCard } from "@/components/article-card"
 import {
   type Article,
+  type TopicSlug,
   publishedArticles,
   topicBadgeClassName,
+  topicSlugs,
+  topics,
 } from "@/lib/content"
 import { cn } from "@/lib/utils"
 
@@ -14,20 +17,38 @@ function isFieldNote(article: Article) {
   return article.topic === "field-notes" || Boolean(article.fieldNotes)
 }
 
-const fieldNotes = publishedArticles.filter(isFieldNote)
+function articlesForTopic(slug: TopicSlug) {
+  if (slug === "field-notes") {
+    return publishedArticles.filter(isFieldNote)
+  }
+  return publishedArticles.filter((article) => article.topic === slug)
+}
+
+function isTopicSlug(value: string | null): value is TopicSlug {
+  return value !== null && topicSlugs.includes(value as TopicSlug)
+}
 
 export function ArticlesIndex() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const notesOnly = searchParams.get("notes") === "1"
-  const articles = notesOnly ? fieldNotes : publishedArticles
+  const requested = searchParams.get("topic")
+  const notesFallback = searchParams.get("notes") === "1"
+  const activeTopic = isTopicSlug(requested)
+    ? requested
+    : notesFallback
+      ? "field-notes"
+      : null
+  const articles = activeTopic
+    ? articlesForTopic(activeTopic)
+    : publishedArticles
+  const active = topics.find((topic) => topic.slug === activeTopic)
 
   function showAll() {
     router.replace("/articles/", { scroll: false })
   }
 
-  function showNotes() {
-    router.replace("/articles/?notes=1", { scroll: false })
+  function showTopic(slug: TopicSlug) {
+    router.replace(`/articles/?topic=${slug}`, { scroll: false })
   }
 
   return (
@@ -36,31 +57,37 @@ export function ArticlesIndex() {
         <button
           type="button"
           onClick={showAll}
-          aria-pressed={!notesOnly}
+          aria-pressed={activeTopic === null}
           className={cn(
             "rounded-full px-3 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase transition-colors",
-            notesOnly
+            activeTopic
               ? "border border-border bg-white text-muted-foreground hover:text-foreground"
               : "bg-brand text-white"
           )}
         >
           All {publishedArticles.length}
         </button>
-        <button
-          type="button"
-          onClick={showNotes}
-          aria-pressed={notesOnly}
-          className={cn(
-            "rounded-full px-3 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase transition-colors",
-            notesOnly
-              ? topicBadgeClassName["field-notes"]
-              : "border border-border bg-white text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Field Notes {fieldNotes.length}
-        </button>
+        {topics.map((topic) => {
+          const selected = activeTopic === topic.slug
+          return (
+            <button
+              key={topic.slug}
+              type="button"
+              onClick={() => showTopic(topic.slug)}
+              aria-pressed={selected}
+              className={cn(
+                "rounded-full px-3 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase transition-colors",
+                selected
+                  ? topicBadgeClassName[topic.slug]
+                  : "border border-border bg-white text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {topic.label} {articlesForTopic(topic.slug).length}
+            </button>
+          )
+        })}
       </div>
-      {notesOnly ? (
+      {activeTopic === "field-notes" ? (
         <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-muted-foreground/80 italic">
           Working through something still being figured out, not settled
           guidance.
@@ -74,8 +101,8 @@ export function ArticlesIndex() {
         </div>
       ) : (
         <p className="mt-10 text-muted-foreground">
-          {notesOnly
-            ? "No Field Notes yet."
+          {active
+            ? `No articles in ${active.label} yet.`
             : "First essays are in progress. Check back soon."}
         </p>
       )}
