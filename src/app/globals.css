@@ -144,14 +144,32 @@
   color: #f26522;
 }
 
+.writing-card:hover .writing-card-badge[data-topic="ai-agent-security"],
+.writing-card:focus-visible .writing-card-badge[data-topic="ai-agent-security"] {
+  color: #9f1239;
+  background-color: #fecdd3;
+}
+
 .writing-card:hover .writing-card-badge[data-topic="cloud-security"],
 .writing-card:focus-visible .writing-card-badge[data-topic="cloud-security"] {
-  color: #2f86e0;
+  color: #1d4f8f;
   background-color: #d6ebfe;
+}
+
+.writing-card:hover .writing-card-badge[data-topic="data-security"],
+.writing-card:focus-visible .writing-card-badge[data-topic="data-security"] {
+  color: #065f46;
+  background-color: #a7f3d0;
+}
+
+.writing-card:hover .writing-card-badge[data-topic="field-notes"],
+.writing-card:focus-visible .writing-card-badge[data-topic="field-notes"] {
+  color: #9a3412;
+  background-color: #fed7aa;
 }
 
 .writing-card:hover .writing-card-badge[data-topic="security-automation"],
 .writing-card:focus-visible .writing-card-badge[data-topic="security-automation"] {
-  color: #a16207;
+  color: #854d0e;
   background-color: #fde68a;
 }
