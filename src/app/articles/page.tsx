@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
-import { ArticleCard } from "@/components/article-card"
+import { ArticlesIndex } from "@/components/articles-index"
 import { publishedArticles } from "@/lib/content"
 
 export const metadata: Metadata = {
@@ -20,17 +21,17 @@ export default function ArticlesPage() {
       <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground lg:whitespace-nowrap">
         Implementation-level guides for securing cloud, data, and agents.
       </p>
-      {publishedArticles.length > 0 ? (
-        <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-2">
-          {publishedArticles.map((article) => (
-            <ArticleCard key={article.slug} article={article} />
-          ))}
-        </div>
-      ) : (
-        <p className="mt-10 text-muted-foreground">
-          First essays are in progress. Check back soon.
-        </p>
-      )}
+      <Suspense
+        fallback={
+          <p className="mt-10 text-muted-foreground">
+            {publishedArticles.length > 0
+              ? "Loading articles…"
+              : "First essays are in progress. Check back soon."}
+          </p>
+        }
+      >
+        <ArticlesIndex />
+      </Suspense>
     </section>
   )
 }
